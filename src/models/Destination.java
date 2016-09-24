@@ -27,18 +27,23 @@ public class Destination {
 
 	public void addPlaceToSleep(PlaceToSleep place) {
 		synchronized (this) {
-			this.placesToSleep.add(place);
+			if (place != null)
+				this.placesToSleep.add(place);
 		}
 	}
 
 	public void addComment(Comment comment) {
 		synchronized (this) {
-			this.comments.add(comment);
+			if (comment != null)
+				this.comments.add(comment);
 		}
 	}
 
 	public void addPlaceToEat(PlaceToEat place) {
-		this.placesToEat.add(place);
+		synchronized (this) {
+			if (place != null)
+				this.placesToEat.add(place);
+		}
 	}
 
 	public String getName() {
@@ -75,25 +80,29 @@ public class Destination {
 
 	public void setName(String name) {
 		synchronized (this) {
-			this.name = name;
+			if (name != null && !name.isEmpty())
+				this.name = name;
 		}
 	}
 
 	public void setDescription(String description) {
 		synchronized (this) {
-			this.description = description;
+			if (description != null && !description.isEmpty())
+				this.description = description;
 		}
 	}
 
 	public void setLocation(Location location) {
 		synchronized (this) {
-			this.location = location;
+			if (location != null)
+				this.location = location;
 		}
 	}
 
 	public void setPicture(String picture) {
 		synchronized (this) {
-			this.picture = picture;
+			if (picture != null && !picture.isEmpty())
+				this.picture = picture;
 		}
 	}
 
