@@ -41,7 +41,7 @@
 				<ul class="nav navbar-nav pull-right">
 					<li><a href="index.jsp">Home</a></li>
 					<li><a href="AllDestinations.jsp">Destinations</a></li>
-					<li class="active"><a class="btn" href="signin.html">SIGN IN / SIGN UP</a></li>
+					<li class="active"><a class="btn" href="SignIn.jsp">SIGN IN / SIGN UP</a></li>
 				</ul>
 			</div><!--/.nav-collapse -->
 		</div>
@@ -70,53 +70,52 @@
 					<div class="panel panel-default">
 						<div class="panel-body">
 							<h3 class="thin text-center">Register a new account</h3>
-							<p><a href="signin.html">Login</a></p>
+							<p class="text-center text-muted">or <a href="SignIn.jsp">Sign in</a> to your account</p>
 							<hr>
 
-							<form action = "registration" method = "POST" enctype="multipart/form-data" onsubmit="Validate(this)">
-    <div class="top-margin">
-        <label>First Name<span class="text-danger">*</span></label>
-        <input type="text" name="userFirstName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
-    </div>
-    <div class="top-margin">
-        <label>Last Name<span class="text-danger">*</span></label>
-        <input type="text" name="userLastName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
-    </div>
-    <div class="top-margin">
-        <label>Email Address <span class="text-danger">*</span></label>
-        <input type="text" name="userEmailAddress" class="form-control" maxlength="40" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9]+.[a-z.]+$" required>
-    </div>
-
-    <div class="row top-margin">
-        <div class="col-sm-6">
-            <label>Password <span class="text-danger">*</span></label>
-            <input type="password" name="userPassword" class="form-control" maxlength="40" pattern="(.+){6,}" required>
-        </div>
-    </div>
-    <div class = "row top-margin">
-        <label>Description<span class="text-danger">*</span></label>
-        <input type = "textarea" name="userDescription" class = "form-control" maxlength="500" required>
-
-    </div>
-
-    <div class = "row">
-        <label>Picture<span class="text-danger">*</span></label>
-        <input type = "file" name="profilePic" class = "form-control" required>
-
-    </div>
-
-    <hr>
-
-    <div class="row">
-
-        <div class="col-lg-4 text-right">
-            <button class="btn btn-action" type="submit">Register</button>
-        </div>
-    </div>
-</form>
+							<form action="registration" method="POST" enctype="multipart/form-data" onsubmit="Validate(this)">
+							    <div class="top-margin">
+							        <label>First Name <span class="text-danger">*</span></label>
+							        <input type="text" name="userFirstName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
+							    </div>
+							    
+							    <div class="top-margin">
+							        <label>Last Name <span class="text-danger">*</span></label> 
+							        <input type="text" name="userLastName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
+							    </div>
+							    
+							    <div class="top-margin">
+							        <label>Email Address <span class="text-danger">*</span></label>
+							        <input type="text" name="userEmailAddress" class="form-control" maxlength="40" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9]+.[a-z.]+$" required>
+							    </div>
+							
+							    <div class="row top-margin">
+							        <div class="col-sm-6">
+							            <label>Password <span class="text-danger">*</span></label>
+							            <input type="password" name="userPassword" class="form-control" maxlength="40" pattern="(.+){6,}" required>
+							        </div>
+							    </div>
+							    
+							    <div class="row top-margin">
+							        <label>Description <span class="text-danger">*</span></label>
+							        <input type="textarea" name="userDescription" class="form-control" maxlength="500" required>
+							    </div>
+							
+							    <div class="row">
+							        <label>Picture <span class="text-danger">*</span></label>
+							        <input type="file" name="profilePic" class="form-control" required>
+							    </div>
+							    <hr>
+							
+							    <div class="row">
+							        <div class="col-lg-4 text-right">
+							            <button class="btn btn-action" type="submit">Register</button>
+							        </div>
+							    </div>
+							</form>
+							
 						</div>
 					</div>
-
 				</div>
 				
 			</article>
@@ -178,7 +177,7 @@
                                 <a href="SectionUnderConstructionPage.html">About</a> |
                                 <a href="SectionUnderConstructionPage.html">Sidebar</a> |
                                 <a href="SectionUnderConstructionPage.html">Contact</a> |
-                                <b><a href="signup.html">Sign up</a></b>
+                                <b><a href="SignUp.jsp">Sign up</a></b>
                             </p>
                         </div>
                     </div>

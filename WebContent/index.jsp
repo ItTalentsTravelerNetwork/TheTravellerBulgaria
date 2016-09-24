@@ -229,7 +229,7 @@
 								<a href="SectionUnderConstructionPage.html">About</a> |
 								<a href="SectionUnderConstructionPage.html">Sidebar</a> |
 								<a href="SectionUnderConstructionPage.html">Contact</a> |
-								<b><a href="signup.html">Sign up</a></b>
+								<b><a href="SignUp.jsp">Sign up</a></b>
 							</p>
 						</div>
 					</div>
