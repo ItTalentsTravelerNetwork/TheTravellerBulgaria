@@ -76,27 +76,30 @@
 							<p class="text-center text-muted"><a href="SignUp.jsp">Register</a></p>
 							<hr>
 							
-							<form action="login" method="POST">
-								<div class="top-margin">
-									<label>Email <span class="text-danger">*</span></label>
-									<input type="text" name="userEmail" class="form-control">
-								</div>
-								<div class="top-margin">
-									<label>Password <span class="text-danger">*</span></label>
-									<input type="password" name="userPassword" class="form-control">
-								</div>
+							<form action="javascript:login()">
+   			 					<div class="top-margin">
+   			  					   <label>Email <span class="text-danger">*</span></label>
+  			  					    <input type="text" id="userEmail" name="userEmail" class="form-control" required>
+ 			 					 </div>
+  								 <div class="top-margin">
+       								 <label>Password <span class="text-danger">*</span></label>
+       								 <input type="password" id="userPassword" name="userPassword" class="form-control" required>
+   								 </div>
+   			 					<div class ="top-margin" id="message">
+   			 
+   								 </div>
 
-								<hr>
+  								  <hr>
 
-								<div class="row">
-									<div class="col-lg-8">
-										<b><a href="">Forgot password?</a></b>
-									</div>
-									<div class="col-lg-4 text-right">
-										<button class="btn btn-action" type="submit">Sign in</button>
-									</div>
-								</div>
-							</form>
+   			 					<div class="row">
+   			  					   <div class="col-lg-8">
+      								      <b><a href="">Forgot password?</a></b>
+       								 </div>
+       			 					<div class="col-lg-4 text-right">
+       	 								    <button class="btn btn-action" id="login" type="submit">Sign in</button>
+       								 </div>
+   								 </div>
+   								 </form>
 						</div>
 					</div>
 
@@ -191,4 +194,41 @@
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
 </body>
+
+<script>
+		function login(){
+			var userEmail = $("#userEmail").val();
+			var userPassword = $("#userPassword").val();
+			$.ajax({
+				url : "login",
+				method : "POST",
+				data: {
+					userEmail : userEmail,
+					userPassword : userPassword
+				},
+				success : function(results){
+					if(results!=null && results != ""){
+						showMessage(results);
+						
+						
+					}else{
+						alert("Some error occured, try again.")
+					}
+				}
+			})
+			
+		}
+		
+		function showMessage(results){
+                if(results == 'SUCCESS'){
+                    $('#message').html("<font color='green'>You are successfully logged in. </font>")
+                    setTimeout(function(){
+							window.location.href = "index.jsp";
+						}, 500)
+                }else if(results == 'FAILURE'){
+                    $('#message').html("<font color='red'>Username or password incorrect </font>")
+                }
+            }
+	
+	</script>
 </html>

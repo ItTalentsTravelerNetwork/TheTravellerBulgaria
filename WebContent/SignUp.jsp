@@ -73,47 +73,47 @@
 							<p><a href="signin.html">Login</a></p>
 							<hr>
 
-							<form action = "registration" method = "POST" enctype="multipart/form-data">
-								<div class="top-margin">
-									<label>First Name</label>
-									<input type="text" name="userFirstName" class="form-control">
-								</div>
-								<div class="top-margin">
-									<label>Last Name</label>
-									<input type="text" name="userLastName" class="form-control">
-								</div>
-								<div class="top-margin">
-									<label>Email Address <span class="text-danger">*</span></label>
-									<input type="text" name="userEmailAddress" class="form-control">
-								</div>
+							<form action = "registration" method = "POST" enctype="multipart/form-data" onsubmit="Validate(this)">
+    <div class="top-margin">
+        <label>First Name<span class="text-danger">*</span></label>
+        <input type="text" name="userFirstName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
+    </div>
+    <div class="top-margin">
+        <label>Last Name<span class="text-danger">*</span></label>
+        <input type="text" name="userLastName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
+    </div>
+    <div class="top-margin">
+        <label>Email Address <span class="text-danger">*</span></label>
+        <input type="text" name="userEmailAddress" class="form-control" maxlength="40" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9]+.[a-z.]+$" required>
+    </div>
 
-								<div class="row top-margin">
-									<div class="col-sm-6">
-										<label>Password <span class="text-danger">*</span></label>
-										<input type="password" name="userPassword" class="form-control">
-									</div>									
-								</div>
-								<div class = "row top-margin">
-									<label>Description<span class="text-danger">*</span></label>
-									<input type = "textarea" name="userDescription" class = "form-control">
-									
-								</div>
-								
-								<div class = "row">
-									<label>Picture<span class="text-danger">*</span></label>
-									<input type = "file" name="profilePic" class = "form-control">
-									
-								</div>
+    <div class="row top-margin">
+        <div class="col-sm-6">
+            <label>Password <span class="text-danger">*</span></label>
+            <input type="password" name="userPassword" class="form-control" maxlength="40" pattern="(.+){6,}" required>
+        </div>
+    </div>
+    <div class = "row top-margin">
+        <label>Description<span class="text-danger">*</span></label>
+        <input type = "textarea" name="userDescription" class = "form-control" maxlength="500" required>
 
-								<hr>
+    </div>
 
-								<div class="row">
-									
-									<div class="col-lg-4 text-right">
-										<button class="btn btn-action" type="submit">Register</button>
-									</div>
-								</div>
-							</form>
+    <div class = "row">
+        <label>Picture<span class="text-danger">*</span></label>
+        <input type = "file" name="profilePic" class = "form-control" required>
+
+    </div>
+
+    <hr>
+
+    <div class="row">
+
+        <div class="col-lg-4 text-right">
+            <button class="btn btn-action" type="submit">Register</button>
+        </div>
+    </div>
+</form>
 						</div>
 					</div>
 
@@ -207,5 +207,6 @@
 	<script src="assets/js/headroom.min.js"></script>
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
+	<script src="js/PictureValidate.js"></script>
 </body>
 </html>

@@ -79,35 +79,35 @@
 					Share your experience and photos of a destination you have visited.
 				</p>
 				<br>
-					<form action="AddDestinationServlet" method="POST" enctype="multipart/form-data">
-						<div class="row">
-							<div class="col-sm-4">
-								<input name="name" class="form-control" type="text" placeholder="Name">
-							</div>
-							<div class="col-sm-4">
-								<input id="lngbox" name="long" class="form-control" type="text" placeholder="Longitude">
-							</div>
-							<div class="col-sm-4">
-								<input id="latbox" name="lat" class="form-control" type="text" placeholder="Latitude">
-							</div>
-						</div>
-						<br>
-						<div class="row">
-							<div class="col-sm-12">
-								<textarea name="description" placeholder="Type your experience here" class="form-control" rows="9"></textarea>
-							</div>
-						</div>
-						<br>
-						<div class="row">
-							<div class="col-sm-6">
-								<input name="picture" type="file" class="form-control" placeholder="Insert Picture">
-							</div>
-							<div class="col-sm-6 text-right">
-								<input class="btn btn-action" type="submit" value="Add Destination">
-							</div>
-						</div>
-						<div class="row" id="map" style="width:100% height:100%"></div>
-					</form>
+					<form action="AddDestinationServlet" method="POST" enctype="multipart/form-data" onsubmit="Validate(this)">
+    <div class="row">
+        <div class="col-sm-4">
+            <input name="name" class="form-control" type="text" placeholder="Name" maxlength="64" required>
+        </div>
+        <div class="col-sm-4">
+            <input id="lngbox" name="long" class="form-control" type="text" placeholder="Longitude" maxlength="20" required>
+        </div>
+        <div class="col-sm-4">
+            <input id="latbox" name="lat" class="form-control" type="text" placeholder="Latitude" maxlength="20" required>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            <textarea name="description" placeholder="Type your experience here" class="form-control" rows="9" maxlength="500" required></textarea>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-6">
+            <input name="picture" type="file" class="form-control" placeholder="Insert Picture">
+        </div>
+        <div class="col-sm-6 text-right">
+            <input class="btn btn-action" type="submit" value="Add Destination">
+        </div> 
+    </div>
+    <div class="row" id="map" style="width:100% height:100%"></div>
+</form>
 					
 			</article>
 			<!-- /Article -->
@@ -158,6 +158,7 @@
 	<script src="assets/js/headroom.min.js"></script>
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
+	<script src="js/PictureValidate.js"></script>
 	
 	<!-- Google Maps -->
 	

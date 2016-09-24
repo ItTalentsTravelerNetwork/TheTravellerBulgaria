@@ -87,7 +87,7 @@
 						
 						<div class="row">
 							<div class="col-sm-12">
-								<textarea name="comment" placeholder="Type your comment here..." class="form-control" rows="9"></textarea>
+								<textarea name="comment" placeholder="Type your comment here..." class="form-control" rows="9" maxlength="500" required></textarea>
 							</div>
 						</div>
 						<br>
