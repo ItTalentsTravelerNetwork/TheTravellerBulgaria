@@ -15,18 +15,17 @@ public class Comment {
 
 	public Comment(String authorEmail, String placeName, String text, int numberOfLikes)
 			throws InvalidDataException, InvalidAuthorException {
-		setAuthor(authorEmail);
+		setAuthorEmail(authorEmail);
 		this.placeName = placeName;
 		this.setText(text);
 		this.numberOfLikes = numberOfLikes;
 		this.userLikers = new ArrayList<>();
 	}
 
-	public void setAuthor(String authorEmail) {
+	public void setAuthorEmail(String authorEmail) {
 		synchronized (this) {
-			if (authorEmail != null) {
+			if (authorEmail != null)
 				this.authorEmail = authorEmail;
-			}
 		}
 	}
 
@@ -60,8 +59,10 @@ public class Comment {
 
 	public void like(String userEmail) {
 		synchronized (this) {
-			if (addUserLiker(userEmail)) { // if the user has not liked yet
-				this.numberOfLikes++;
+			if (userEmail != null && !userEmail.isEmpty()) {
+				if (addUserLiker(userEmail)) { // if the user has not liked yet
+					this.numberOfLikes++;
+				}
 			}
 		}
 	}
@@ -76,13 +77,17 @@ public class Comment {
 
 	private boolean addUserLiker(String userEmail) {
 		synchronized (this) {
-			for (int i = 0; i < userLikers.size(); i++) {
-				if (userLikers.get(i) == userEmail) {
-					return false;
+			if (userEmail != null && !userEmail.isEmpty()) {
+				for (int i = 0; i < userLikers.size(); i++) {
+					if (userLikers.get(i) == userEmail) {
+						return false;
+					}
 				}
+				userLikers.add(userEmail);
+				return true;
+			} else {
+				return false;
 			}
-			userLikers.add(userEmail);
-			return true;
 		}
 	}
 
@@ -94,13 +99,15 @@ public class Comment {
 
 	public void setPlaceName(String placeName) {
 		synchronized (this) {
-			this.placeName = placeName;
+			if (placeName != null && !placeName.isEmpty())
+				this.placeName = placeName;
 		}
 	}
 
 	public void setNumberOfLikes(int numberOfLikes) {
 		synchronized (this) {
-			this.numberOfLikes = numberOfLikes;
+			if (numberOfLikes > -1)
+				this.numberOfLikes = numberOfLikes;
 		}
 	}
 

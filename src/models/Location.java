@@ -17,10 +17,9 @@ public class Location {
 
 	private void setLattitude(double lattitude) {
 		synchronized (this) {
-			if (lattitude < 0 || lattitude > 90) {
-
+			if (lattitude >= 0 && lattitude <= 90) {
+				this.lattitude = lattitude;
 			}
-			this.lattitude = lattitude;
 		}
 	}
 
@@ -32,10 +31,9 @@ public class Location {
 
 	private void setLongitude(double longitude) {
 		synchronized (this) {
-			if (longitude < 0 || longitude > 180) {
-
+			if (longitude >= 0 && longitude <= 180) {
+				this.longitude = longitude;
 			}
-			this.longitude = longitude;
 		}
 	}
 

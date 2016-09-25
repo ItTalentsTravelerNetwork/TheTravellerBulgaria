@@ -40,20 +40,32 @@ public class RegistrationServlet extends HttpServlet {
 
 		if (validateData(firstName, lastName, email, inputPassword)) {
 			if (profilePic != null) {
-				InputStream picStream = profilePic.getInputStream();
-				File dir = new File("userPics");
-				if (!dir.exists()) {
-					dir.mkdir();
+				String profilePicName = profilePic.getSubmittedFileName();
+				System.out.println("Input profile picture name: " + profilePicName);
+				if (ServletUtils.checkIfValidPictureType(profilePicName)) {
+					InputStream picStream = profilePic.getInputStream();
+					File dir = new File("userPics");
+					if (!dir.exists()) {
+						dir.mkdir();
+					}
+					File profilePicFile = new File(dir,
+							email + "-profilePic." + profilePic.getContentType().split("/")[1]);
+					Files.copy(picStream, profilePicFile.toPath());
+					UsersManager.getInstance().registerUser(firstName, lastName, email, inputPassword, description,
+							profilePicFile.getName());
+
+					System.out.println("User Registration Successful!");
+					response.sendRedirect("SignIn.jsp");
+				} else {
+					System.out.println("Registration failed! Incorrect picture type!");
+					RequestDispatcher view = request.getRequestDispatcher("SignUp.jsp");
+					view.forward(request, response);
 				}
-				File profilePicFile = new File(dir, email + "-profilePic." + profilePic.getContentType().split("/")[1]);
-				Files.copy(picStream, profilePicFile.toPath());
-				UsersManager.getInstance().registerUser(firstName, lastName, email, inputPassword, description,
-						profilePicFile.getName());
 			} else {
-				UsersManager.getInstance().registerUser(firstName, lastName, email, inputPassword, description, null);
+				System.out.println("Registration failed! File error!");
+				RequestDispatcher view = request.getRequestDispatcher("SignUp.jsp");
+				view.forward(request, response);
 			}
-			System.out.println("User Registration Successful!");
-			response.sendRedirect("index.jsp");
 		} else {
 			System.out.println("Registration failed! Password is incorrect!");
 			RequestDispatcher view = request.getRequestDispatcher("SignUp.jsp");
@@ -67,7 +79,6 @@ public class RegistrationServlet extends HttpServlet {
 					&& password.length() >= MINIMUM_PASSWORD_LENGTH;
 		}
 		return false;
-
 	}
 
 }

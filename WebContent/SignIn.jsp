@@ -44,7 +44,7 @@
 				<ul class="nav navbar-nav pull-right">
 					<li><a href="index.jsp">Home</a></li>
 					<li><a href="AllDestinations.jsp">Destinations</a></li>
-					<li class="active"><a class="btn" href="signin.html">SIGN IN / SIGN UP</a></li>
+					<li class="active"><a class="btn" href="SignIn.jsp">SIGN IN / SIGN UP</a></li>
 				</ul>
 			</div><!--/.nav-collapse -->
 		</div>
@@ -73,7 +73,7 @@
 					<div class="panel panel-default">
 						<div class="panel-body">
 							<h3 class="thin text-center">Sign in to your account</h3>
-							<p class="text-center text-muted"><a href="SignUp.jsp">Register</a></p>
+							<p class="text-center text-muted">or <a href="SignUp.jsp">Register</a> a new account</p>
 							<hr>
 							
 							<form action="javascript:login()">
@@ -164,7 +164,7 @@
                                 <a href="SectionUnderConstructionPage.html">About</a> |
                                 <a href="SectionUnderConstructionPage.html">Sidebar</a> |
                                 <a href="SectionUnderConstructionPage.html">Contact</a> |
-                                <b><a href="signup.html">Sign up</a></b>
+                                <b><a href="SignUp.jsp">Sign up</a></b>
                             </p>
                         </div>
                     </div>

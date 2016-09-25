@@ -31,7 +31,8 @@ public class User {
 
 	public void setProfilePic(String profilePic) {
 		synchronized (this) {
-			this.profilePic = profilePic;
+			if (profilePic != null && !profilePic.isEmpty())
+				this.profilePic = profilePic;
 		}
 	}
 
@@ -75,37 +76,43 @@ public class User {
 
 	public void setFirstName(String firstName) {
 		synchronized (this) {
-			this.firstName = firstName;
+			if (firstName != null && !firstName.isEmpty())
+				this.firstName = firstName;
 		}
 	}
 
 	public void setLastName(String lastName) {
 		synchronized (this) {
-			this.lastName = lastName;
+			if (lastName != null && !lastName.isEmpty())
+				this.lastName = lastName;
 		}
 	}
 
 	public void setPassword(String password) {
 		synchronized (this) {
-			this.password = password;
+			if (password != null && !password.isEmpty())
+				this.password = password;
 		}
 	}
 
 	public void setEmail(String email) {
 		synchronized (this) {
-			this.email = email;
+			if (email != null && !email.isEmpty())
+				this.email = email;
 		}
 	}
 
 	public synchronized void setDescription(String description) {
 		synchronized (this) {
-			this.description = description;
+			if (description != null && !description.isEmpty())
+				this.description = description;
 		}
 	}
 
 	public synchronized void addPlace(String destinationName) {
 		synchronized (this) {
-			this.addedPlaces.add(destinationName);
+			if (destinationName != null && !destinationName.isEmpty())
+				this.addedPlaces.add(destinationName);
 		}
 	}
 

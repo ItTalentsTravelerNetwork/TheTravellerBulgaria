@@ -170,7 +170,7 @@ public class UsersManager {
 
 	public boolean addUserToComment(String userEmail, Comment comment) {
 		if (registerredUsers.containsKey(userEmail)) {
-			comment.setAuthor(userEmail);
+			comment.setAuthorEmail(userEmail);
 			return true;
 		}
 		return false;

@@ -48,29 +48,38 @@ public class AddDestinationServlet extends HttpServlet {
 		if (name != null && description != null && location != null) {
 			if (!name.trim().equals("") && !description.trim().equals("")) {
 				if (destinationImage != null) {
-					InputStream picStream = destinationImage.getInputStream();
-					File dir = new File("destinationPhotos");
-					if (!dir.exists()) {
-						dir.mkdir();
-					}
-					File destinationPicFile = new File(dir,
-							name + "-image." + destinationImage.getContentType().split("/")[1]);
-					Files.copy(picStream, destinationPicFile.toPath());
+					String destinationImageName = destinationImage.getSubmittedFileName();
+					System.out.println("Input profile picture name: " + destinationImageName);
+					if (ServletUtils.checkIfValidPictureType(destinationImageName)) {
+						InputStream picStream = destinationImage.getInputStream();
+						File dir = new File("destinationPhotos");
+						if (!dir.exists()) {
+							dir.mkdir();
+						}
+						File destinationPicFile = new File(dir,
+								name + "-image." + destinationImage.getContentType().split("/")[1]);
+						Files.copy(picStream, destinationPicFile.toPath());
 
-					try {
-						DestinationsManager.getInstance().addDestination(
-								((User) request.getSession().getAttribute("user")), name, description,
-								Double.parseDouble(lattitude), Double.parseDouble(longitude),
-								destinationPicFile.getName());
-					} catch (NumberFormatException | InvalidCoordinatesException e) {
-						System.out.println("Invalid destination Data");
+						try {
+							DestinationsManager.getInstance().addDestination(
+									((User) request.getSession().getAttribute("user")), name, description,
+									Double.parseDouble(lattitude), Double.parseDouble(longitude),
+									destinationPicFile.getName());
+						} catch (NumberFormatException | InvalidCoordinatesException e) {
+							System.out.println("Invalid destination Data");
+						}
+						System.out.println("Destination Registration Successful!");
+						request.getRequestDispatcher("AllDestinations.jsp").forward(request, response);
+					} else {
+						System.out.println("Destination registration failed! Incorrect picture type!");
+						request.getRequestDispatcher("AddDestination.jsp").forward(request, response);
 					}
-					System.out.println("Destination Registration Successful!");
-					request.getRequestDispatcher("AllDestinations.jsp").forward(request, response);
 				} else {
+					System.out.println("Destination registration failed! File error!");
 					request.getRequestDispatcher("AddDestination.jsp").forward(request, response);
 				}
 			} else {
+				System.out.println("Destination registration failed! Incorrect destination name and/or description!");
 				request.getRequestDispatcher("AddDestination.jsp").forward(request, response);
 			}
 
