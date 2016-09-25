@@ -69,18 +69,26 @@ public class AddDestinationServlet extends HttpServlet {
 							System.out.println("Invalid destination Data");
 						}
 						System.out.println("Destination Registration Successful!");
-						request.getRequestDispatcher("AllDestinations.jsp").forward(request, response);
+						// request.getRequestDispatcher("AllDestinations.jsp").forward(request,
+						// response);
+						response.getWriter().append("SUCCESS");
 					} else {
 						System.out.println("Destination registration failed! Incorrect picture type!");
-						request.getRequestDispatcher("AddDestination.jsp").forward(request, response);
+						// request.getRequestDispatcher("AddDestination.jsp").forward(request,
+						// response);
+						response.getWriter().append("FAILURE");
 					}
 				} else {
 					System.out.println("Destination registration failed! File error!");
-					request.getRequestDispatcher("AddDestination.jsp").forward(request, response);
+					// request.getRequestDispatcher("AddDestination.jsp").forward(request,
+					// response);
+					response.getWriter().append("FAILURE");
 				}
 			} else {
 				System.out.println("Destination registration failed! Incorrect destination name and/or description!");
-				request.getRequestDispatcher("AddDestination.jsp").forward(request, response);
+				// request.getRequestDispatcher("AddDestination.jsp").forward(request,
+				// response);
+				response.getWriter().append("FAILURE");
 			}
 
 		}

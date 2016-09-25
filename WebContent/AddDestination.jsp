@@ -79,35 +79,42 @@
 					Share your experience and photos of a destination you have visited.
 				</p>
 				<br>
-					<form action="AddDestinationServlet" method="POST" enctype="multipart/form-data" onsubmit="Validate(this)">
-    <div class="row">
-        <div class="col-sm-4">
-            <input name="name" class="form-control" type="text" placeholder="Name" maxlength="64" required>
-        </div>
-        <div class="col-sm-4">
-            <input id="lngbox" name="long" class="form-control" type="text" placeholder="Longitude" maxlength="20" required>
-        </div>
-        <div class="col-sm-4">
-            <input id="latbox" name="lat" class="form-control" type="text" placeholder="Latitude" maxlength="20" required>
-        </div>
-    </div>
-    <br>
-    <div class="row">
-        <div class="col-sm-12">
-            <textarea name="description" placeholder="Type your experience here" class="form-control" rows="9" maxlength="500" required></textarea>
-        </div>
-    </div>
-    <br>
-    <div class="row">
-        <div class="col-sm-6">
-            <input name="picture" type="file" class="form-control" placeholder="Insert Picture" required>
-        </div>
-        <div class="col-sm-6 text-right">
-            <input class="btn btn-action" type="submit" value="Add Destination">
-        </div> 
-    </div>
-    <div class="row" id="map" style="width:100% height:100%"></div>
-</form>
+					<form id="form" action="javascript:add()" enctype="multipart/form-data">
+    					<div class="row">
+        					<div class="col-sm-4">
+            					<input  id="name" name="name" class="form-control" type="text" placeholder="Name" maxlength="64" required>
+       				 		</div>
+        					<div class="col-sm-4">
+           						 <input id="lngbox" name="long" class="form-control" type="text" placeholder="Longitude" maxlength="20" required>
+        					</div>
+       					 <div class="col-sm-4">
+         				   <input id="latbox" name="lat" class="form-control" type="text" placeholder="Latitude" maxlength="20" required>
+      					  </div>
+    				</div>
+   					 <br>
+    				<div class="row">
+     				   <div class="col-sm-12">
+           			 <textarea id="description" name="description" placeholder="Type your experience here" class="form-control" rows="9" maxlength="500" required></textarea>
+        				</div>
+        			
+    			</div>
+    			
+    			<br>
+   				 <div class="row">
+       			 	<div class="col-sm-6">
+        			    <input id="picture" name="picture" type="file" class="form-control" placeholder="Insert Picture" required>
+       				</div>
+      			<div class="col-sm-6 text-right">
+      			      <input class="btn btn-action" type="submit" value="Add Destination">
+       			 </div> 
+    			</div>
+    			<div class="row">
+     				   <div class="col-sm-12" id="message">
+     				   
+           			 </div>       			
+    			</div>
+   					 <div class="row" id="map" style="width:100% height:100%"></div>
+			</form>
 					
 			</article>
 			<!-- /Article -->
@@ -159,14 +166,45 @@
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
 	<script src="js/PictureValidate.js"></script>
+	<script src="http://malsup.github.com/jquery.form.js"></script> 
 	
 	<!-- Google Maps -->
 	
 	
 
 </body>
-
+<script>
+function add(){
+	var form = $("#form");
+	form.ajaxSubmit({
+		type : 'post',
+		url : 'AddDestinationServlet',
+		async: true,
+		success : function(results){
+			if(results!=null && results != ""){
+				showMessage(results);					
+				
+			}else{
+				alert("Some error occured, try again.");
+			}
+		}
+	})
+}
+	
+function showMessage(results){
+        if(results == 'SUCCESS'){
+            $('#message').html("<font color='green'>Destination successfully added. </font>")
+            setTimeout(function(){
+					window.location.href = "AllDestinations.jsp";
+				}, 500)
+        }else if(results == 'FAILURE'){
+            $('#message').html("<font color='red'>Incorrect data or picture format </font>")
+        }
+    }
+</script>
 </html>
+
+
 
 <cfoutput>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBQKyIgPewrgRCgagA1sDItFSRZh5hZlL4&sensor=false"></script>
