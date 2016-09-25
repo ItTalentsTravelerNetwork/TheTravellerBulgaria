@@ -100,7 +100,7 @@
     <br>
     <div class="row">
         <div class="col-sm-6">
-            <input name="picture" type="file" class="form-control" placeholder="Insert Picture">
+            <input name="picture" type="file" class="form-control" placeholder="Insert Picture" required>
         </div>
         <div class="col-sm-6 text-right">
             <input class="btn btn-action" type="submit" value="Add Destination">
