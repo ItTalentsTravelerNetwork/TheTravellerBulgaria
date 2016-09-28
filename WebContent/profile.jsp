@@ -33,7 +33,7 @@
 	<![endif]-->
 </head>
 
-<body>
+<body onload="showDestinations()">
 	<!-- Fixed navbar -->
 	<%
    		response.addHeader("Cache-Control", "no-cache,no-store,private,must-revalidate,max-stale=0,post-check=0,pre-check=0"); 
@@ -89,7 +89,7 @@
 				</div>
 				<div class="row widget">
 					<div class="col-xs-12">						
-						<p><img src="PictureServlet?user=<%= ((User)request.getSession().getAttribute("user")).getEmail() %>" height="150" width="150" alt=""></p>
+						<p><img src="PictureServlet?user=<%=((User)request.getSession().getAttribute("user")).getEmail() %>" height="150" width="150" alt=""></p>
 					</div>
 				</div>
 				<div class="row widget">
@@ -102,36 +102,11 @@
 			<!-- /Sidebar -->
 
 			<!-- Article main content -->
-			<article class="col-md-8 maincontent">
-				<header class="page-header">
-					<h1 class="page-title">Added Destinations</h1>
-				</header>
-					<% ArrayList<Destination> addedDestinations = new ArrayList<>(); 
-					for (Map.Entry<String, Destination> destinationEntry : DestinationsManager.getInstance()
-                    .getAllDestinations().entrySet()) {
-					   if (((User)request.getSession().getAttribute("user")).getAddedPlaces().contains(destinationEntry.getKey())) {
-					       addedDestinations.add(destinationEntry.getValue());
-					   }
-					}%>
-					<%int count=0; %>
-					<table>
-						<tr>			
-						<%for(Destination dest : addedDestinations){ %>
-						<%if(count%3==0){ %>
-								</tr>
-								<tr>
-							<%} %>
-							<td>
-								<h5><a href="Destination.jsp?name=<%= dest.getName()%>"><%=dest.getName() %></a></h5>
-								<img src="DestinationPictureServlet?destination=<%= dest.getName()%>" height="150" width="150"/>
-							</td>
-							<%count++; %>
-						<%} %>
-						<%count=0; %>
-						</tr>
-					</table>
+			<article id="destinations" class="col-md-8 maincontent" >
+				
+					
 				</article>
-				<%} %>
+			<%} %>	
 			<!-- /Article -->
 
 		</div>
@@ -219,5 +194,37 @@
 	<script src="assets/js/headroom.min.js"></script>
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </body>
+<script>
+
+function showDestinations(){
+	$.get(
+		"GetUserDestinations", 
+		function(data){
+			var json = JSON.parse(data);
+			var html = "<header class=\"page-header\"><h1 class=\"page-title\">Visited Destinations</h1></header>";
+			html += "<table><tr>";
+			var i = 0;
+			for(var item in json){
+				
+				if(i%3==0){
+					html += "</tr><tr>";					
+				}
+				
+				html+="<td>";
+				var destName = "<h5><a href=\"Destination.jsp?name="+ json[item].name +"\">" + json[item].name + "</a></h5>";
+				html += destName;
+				var imageLocation = "<img src=\"DestinationPictureServlet?destination="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
+				html+=imageLocation;
+				html+="</td>";
+				
+				i++;
+			}
+			html += "</tr></table>";
+			document.getElementById("destinations").innerHTML = html;
+		}		
+	)
+}
+</script>
 </html>

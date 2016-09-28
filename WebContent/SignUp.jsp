@@ -73,37 +73,42 @@
 							<p class="text-center text-muted">or <a href="SignIn.jsp">Sign in</a> to your account</p>
 							<hr>
 
-							<form action="registration" method="POST" enctype="multipart/form-data" onsubmit="Validate(this)">
+							<form id="regForm" action="javascript:add()" enctype="multipart/form-data">
 							    <div class="top-margin">
 							        <label>First Name <span class="text-danger">*</span></label>
-							        <input type="text" name="userFirstName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
+							        <input id="userFirstName" type="text" name="userFirstName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
 							    </div>
 							    
 							    <div class="top-margin">
 							        <label>Last Name <span class="text-danger">*</span></label> 
-							        <input type="text" name="userLastName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
+							        <input id="userLastName" type="text" name="userLastName" class="form-control" maxlength="20" pattern="^[A-Za-z]+$" required>
 							    </div>
 							    
 							    <div class="top-margin">
 							        <label>Email Address <span class="text-danger">*</span></label>
-							        <input type="text" name="userEmailAddress" class="form-control" maxlength="40" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9]+.[a-z.]+$" required>
+							        <input id="userEmailAddress" type="text" name="userEmailAddress" class="form-control" maxlength="40" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9]+.[a-z.]+$" required>
 							    </div>
 							
 							    <div class="row top-margin">
 							        <div class="col-sm-6">
 							            <label>Password <span class="text-danger">*</span></label>
-							            <input type="password" name="userPassword" class="form-control" maxlength="40" pattern="(.+){6,}" required>
+							            <input id="userPassword" type="password" name="userPassword" class="form-control" maxlength="40" pattern="(.+){6,}" required>
 							        </div>
 							    </div>
 							    
 							    <div class="row top-margin">
 							        <label>Description <span class="text-danger">*</span></label>
-							        <input type="textarea" name="userDescription" class="form-control" maxlength="500" required>
+							        <input id="userDescription" type="textarea" name="userDescription" class="form-control" maxlength="500" required>
 							    </div>
+							    
+							   
 							
 							    <div class="row">
 							        <label>Picture <span class="text-danger">*</span></label>
-							        <input type="file" name="profilePic" class="form-control" required>
+							        <input id="profilePic" type="file" name="profilePic" class="form-control" required>
+							    </div>
+							     <div id="message" class="row top-margin">
+							        
 							    </div>
 							    <hr>
 							
@@ -207,5 +212,36 @@
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
 	<script src="js/PictureValidate.js"></script>
+	<script src="http://malsup.github.com/jquery.form.js"></script> 
 </body>
+
+<script>
+function add(){
+	var form = $("#regForm");
+	form.ajaxSubmit({
+		type : 'post',
+		url : 'registration',
+		async: true,
+		success : function(results){
+			if(results!=null && results != ""){
+				showMessage(results);					
+				
+			}else{
+				alert("Some error occured, try again.");
+			}
+		}
+	})
+}
+	
+function showMessage(results){		
+        if(results == 'User Registration Successful!'){
+            $('#message').html("<font color='green'>You have successfully registered. </font>")
+            setTimeout(function(){
+					window.location.href = "SignIn.jsp";
+				}, 500)
+        }else if(results == 'Registration failed!'){
+            $('#message').html("<font color='red'>Incorrect data or picture format </font>")
+        }
+    }
+</script>
 </html>
