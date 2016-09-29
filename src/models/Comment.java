@@ -1,113 +1,166 @@
 package models;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import exceptions.InvalidAuthorException;
 import exceptions.InvalidDataException;
 
 public class Comment {
 
+	private static final DateTimeFormatter DATE_AND_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 	private String authorEmail;
 	private String placeName;
 	private String text;
 	private int numberOfLikes;
-	private ArrayList<String> userLikers; // List of users who like the comment
+	private CopyOnWriteArrayList<String> userLikers; // List of users who like
+														// the comment
+	// (emails)
+	private LocalDateTime dateAndTime;
+	private boolean hasVideo;
+	private String video;
 
-	public Comment(String authorEmail, String placeName, String text, int numberOfLikes)
-			throws InvalidDataException, InvalidAuthorException {
+	public Comment(String authorEmail, String placeName, String text, int numberOfLikes,
+			CopyOnWriteArrayList<String> userLikers, String dateAndTime, String video) throws InvalidDataException {
 		setAuthorEmail(authorEmail);
-		this.placeName = placeName;
+		setPlaceName(placeName);
 		this.setText(text);
-		this.numberOfLikes = numberOfLikes;
-		this.userLikers = new ArrayList<>();
+		setNumberOfLikes(numberOfLikes);
+		setUserLikers(userLikers);
+		LocalDateTime date = LocalDateTime.parse(dateAndTime, DATE_AND_TIME_FORMAT);
+		setDateAndTime(date);
+		setVideo(video); // can be null -> hasVideo=false
 	}
 
-	public void setAuthorEmail(String authorEmail) {
-		synchronized (this) {
-			if (authorEmail != null)
-				this.authorEmail = authorEmail;
+	public Comment(String authorEmail, String placeName, String text, int numberOfLikes, ArrayList<String> userLikers,
+			Date date) throws InvalidDataException, InvalidAuthorException {
+
+	}
+
+	public synchronized void setAuthorEmail(String authorEmail) {
+		if (authorEmail != null)
+			this.authorEmail = authorEmail;
+	}
+
+	public synchronized String getAuthorEmail() {
+		return authorEmail;
+	}
+
+	public synchronized LocalDateTime getDateAndTime() {
+		return dateAndTime;
+	}
+
+	public synchronized String getDateAndTimeToString() {
+		String dateAndTimeToString = dateAndTime.format(DATE_AND_TIME_FORMAT);
+		return dateAndTimeToString;
+	}
+
+	public synchronized void setDateAndTimeFromString(String dateAndTimeString) {
+		LocalDateTime dateAndTime = LocalDateTime.parse(dateAndTimeString, DATE_AND_TIME_FORMAT);
+		this.dateAndTime = dateAndTime;
+	}
+
+	public synchronized void setDateAndTime(LocalDateTime dateAndTime) {
+		this.dateAndTime = dateAndTime;
+	}
+
+	public synchronized void setUserLikers(CopyOnWriteArrayList<String> userLikers) {
+		if (userLikers != null)
+			this.userLikers = userLikers;
+	}
+
+	public synchronized String getText() {
+		return text;
+	}
+
+	private synchronized void setText(String text) throws InvalidDataException {
+		if (text != null && !text.isEmpty()) {
+			this.text = text;
+		} else {
+			throw new InvalidDataException();
 		}
 	}
 
-	public String getAuthorEmail() {
-		synchronized (this) {
-			return authorEmail;
-		}
+	public synchronized int getNumberOfLikes() {
+		return numberOfLikes;
 	}
 
-	public String getText() {
-		synchronized (this) {
-			return text;
-		}
-	}
-
-	private void setText(String text) throws InvalidDataException {
-		synchronized (this) {
-			if (text != null && !text.isEmpty()) {
-				this.text = text;
-			} else {
-				throw new InvalidDataException();
+	public synchronized void like(String userEmail) {
+		if (userEmail != null && !userEmail.isEmpty()) {
+			if (addUserLiker(userEmail)) { // if the user has not liked yet
+				this.numberOfLikes++;
 			}
 		}
 	}
 
-	public int getNumberOfLikes() {
-		synchronized (this) {
-			return numberOfLikes;
+	private synchronized boolean addUserLiker(String userEmail) {
+		if (userEmail != null && !userEmail.isEmpty() && !userLikers.contains(userEmail)
+				&& !userEmail.equals(authorEmail)) {
+			userLikers.add(userEmail);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
-	public void like(String userEmail) {
-		synchronized (this) {
-			if (userEmail != null && !userEmail.isEmpty()) {
-				if (addUserLiker(userEmail)) { // if the user has not liked yet
-					this.numberOfLikes++;
-				}
+	public synchronized void unlike(String userEmail) {
+		if (userEmail != null && !userEmail.isEmpty()) {
+			if (removeUserLiker(userEmail)) { // if the user has liked it
+				this.numberOfLikes--;
 			}
 		}
 	}
 
-	public ArrayList<String> getUserLikers() {
-		synchronized (this) {
-			ArrayList<String> copy = new ArrayList<>();
-			copy.addAll(userLikers);
-			return copy;
+	private synchronized boolean removeUserLiker(String userEmail) {
+		if (userEmail != null && !userEmail.isEmpty() && userLikers.contains(userEmail)) {
+			userLikers.remove(userEmail);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
-	private boolean addUserLiker(String userEmail) {
-		synchronized (this) {
-			if (userEmail != null && !userEmail.isEmpty()) {
-				for (int i = 0; i < userLikers.size(); i++) {
-					if (userLikers.get(i) == userEmail) {
-						return false;
-					}
-				}
-				userLikers.add(userEmail);
-				return true;
-			} else {
-				return false;
-			}
-		}
+	public synchronized CopyOnWriteArrayList<String> getUserLikers() {
+		CopyOnWriteArrayList<String> copy = new CopyOnWriteArrayList<>();
+		copy.addAll(userLikers);
+		return copy;
 	}
 
-	public String getPlaceName() {
-		synchronized (this) {
-			return placeName;
-		}
+	public synchronized String getPlaceName() {
+		return placeName;
 	}
 
-	public void setPlaceName(String placeName) {
-		synchronized (this) {
-			if (placeName != null && !placeName.isEmpty())
-				this.placeName = placeName;
-		}
+	public synchronized void setPlaceName(String placeName) {
+		if (placeName != null && !placeName.isEmpty())
+			this.placeName = placeName;
 	}
 
-	public void setNumberOfLikes(int numberOfLikes) {
-		synchronized (this) {
-			if (numberOfLikes > -1)
-				this.numberOfLikes = numberOfLikes;
+	public synchronized void setNumberOfLikes(int numberOfLikes) {
+		if (numberOfLikes >= 0)
+			this.numberOfLikes = numberOfLikes;
+	}
+
+	public synchronized boolean hasVideo() {
+		return hasVideo;
+	}
+
+	public synchronized void setHasVideo(boolean hasVideo) {
+		this.hasVideo = hasVideo;
+	}
+
+	public synchronized String getVideo() {
+		return video;
+	}
+
+	public synchronized void setVideo(String video) {
+		if (video != null && !video.isEmpty()) {
+			this.video = video;
+			setHasVideo(true);
+		} else {
+			setHasVideo(false);
 		}
 	}
 

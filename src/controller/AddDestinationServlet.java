@@ -64,7 +64,7 @@ public class AddDestinationServlet extends HttpServlet {
 							DestinationsManager.getInstance().addDestination(
 									((User) request.getSession().getAttribute("user")), name, description,
 									Double.parseDouble(lattitude), Double.parseDouble(longitude),
-									destinationPicFile.getName());
+									destinationPicFile.getName(), >> ); //TODO add the rest of the fields!!!!!!!!!!
 						} catch (NumberFormatException | InvalidCoordinatesException e) {
 							System.out.println("Invalid destination Data");
 						}

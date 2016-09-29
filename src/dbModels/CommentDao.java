@@ -37,10 +37,8 @@ public class CommentDao {
 				result = statement.executeQuery(selectAllCommentsFromDB);
 				while (result.next()) {
 					try {
-						Comment comment = new Comment(result.getString("author_email"),
-								result.getString("place_name"),
-								result.getString("text"),
-								result.getInt("number_of_likes"));
+						Comment comment = new Comment(result.getString("author_email"), result.getString("place_name"),
+								result.getString("text"), result.getInt("number_of_likes"));
 						comments.add(comment);
 					} catch (InvalidDataException | InvalidAuthorException e) {
 						// TODO Auto-generated catch block
@@ -103,6 +101,12 @@ public class CommentDao {
 			}
 		}
 		return true;
+	}
+
+	public void deleteComment(Comment comment) {
+		dsfs
+		//TODO
+		
 	}
 
 }

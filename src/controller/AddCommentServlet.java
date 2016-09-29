@@ -8,8 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import exceptions.InvalidDataException;
 import functionality.CommentsManager;
 import functionality.DestinationsManager;
+import functionality.UsersManager;
 import models.User;
 
 /**
@@ -30,11 +32,19 @@ public class AddCommentServlet extends HttpServlet {
 
 		User user = (User) request.getSession().getAttribute("user");
 		String comment = request.getParameter("comment");
+		
+		String video = request.getParameter("video"); // added video to parameters!!!!!!!!
 
 		if (DestinationsManager.getInstance().getDestinationFromCache(destName) == null) {
 			request.getRequestDispatcher("AllDestinations.jsp").forward(request, response);
 		}
-		CommentsManager.getInstance().saveComment(user.getEmail(), destName, comment);
+		try {
+			UsersManager.getInstance().addComment(user.getEmail(), destName, comment, video);
+		} catch (InvalidDataException e) {
+			// TODO show userfriendly message
+			dsadsadsad // remove after implementation !!!!!!!!!!!!!
+			e.printStackTrace();
+		}
 		request.getRequestDispatcher("Destination.jsp?name=" + destName).forward(request, response);
 	}
 

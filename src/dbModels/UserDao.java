@@ -72,6 +72,8 @@ public class UserDao {
 	}
 
 	public synchronized boolean saveUserToDB(User user) {
+		// TODO update
+		asdasd sadsad
 		String insertUserInfoIntoDB = "INSERT INTO users (first_name, last_name, password, email, description, profilePic) VALUES (?, ?, ?, ?, ?, ?);";
 		PreparedStatement statement = null;
 		try {
@@ -104,8 +106,7 @@ public class UserDao {
 	}
 
 	public synchronized boolean updateUserInDB(String email, String password, String firstName, String lastName,
-			String description,
-			String profilePic) {
+			String description, String profilePic) {
 		// Update all fields of the current user except email (primary key)
 		PreparedStatement prepStatement = null;
 		String updateUserStatement = "UPDATE users SET password=?, first_name=?, last_name=?, description=?, profilePic=? WHERE email=?;";

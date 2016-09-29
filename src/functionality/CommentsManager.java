@@ -1,19 +1,18 @@
 package functionality;
 
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import dbModels.CommentDao;
-import exceptions.InvalidAuthorException;
-import exceptions.InvalidDataException;
 import models.Comment;
 
 public class CommentsManager {
-
+	private static final DateTimeFormatter DATE_AND_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 	private static CommentsManager instance; // Singleton
-	private ArrayList<Comment> allComments; // all cached comments
+	private CopyOnWriteArrayList<Comment> allComments; // all cached comments
 
 	private CommentsManager() {
-		allComments = new ArrayList<>();
+		allComments = new CopyOnWriteArrayList<>();
 		for (Comment c : CommentDao.getInstance().getAllComments()) { // adds
 																		// all
 																		// comments
@@ -31,25 +30,26 @@ public class CommentsManager {
 		return instance;
 	}
 
-	public synchronized void saveComment(String userEmail, String placeName, String text) {
-		try {
-			Comment comment = new Comment(userEmail, placeName, text, 0);
-			allComments.add(comment); // adds the new
-										// comment to
-										// the
-										// collection
-			CommentDao.getInstance().saveCommentToDB(comment); // saves comment
-																// to
-																// DB
-			DestinationsManager.getInstance().getDestinationFromCache(placeName).addComment(comment);
-		} catch (InvalidDataException | InvalidAuthorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public synchronized void saveComment(Comment comment) {
+		allComments.add(comment); // adds the new
+									// comment to
+									// the
+									// collection
+		CommentDao.getInstance().saveCommentToDB(comment); // saves comment
+															// to
+															// DB
+		DestinationsManager.getInstance().getDestinationFromCache(comment.getPlaceName()).addComment(comment);
+	}
+
+	public synchronized void deleteComment(Comment comment) {
+		if (comment != null && allComments.contains(comment)) {
+			allComments.remove(comment);
+			CommentDao.getInstance().deleteComment(comment);
 		}
 	}
 
-	public synchronized ArrayList<Comment> getAllComments() {
-		ArrayList<Comment> copy = new ArrayList<>();
+	public synchronized CopyOnWriteArrayList<Comment> getAllComments() {
+		CopyOnWriteArrayList<Comment> copy = new CopyOnWriteArrayList<>();
 		copy.addAll(allComments);
 		return copy;
 	}

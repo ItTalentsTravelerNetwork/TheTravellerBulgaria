@@ -7,11 +7,18 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import exceptions.CannotConnectToDBException;
+import models.Activity;
 import models.Destination;
 import models.Location;
+import models.PlaceToEat;
+import models.PlaceToSleep;
+import models.Sight;
 import models.User;
+import models.Destination.Category;
 
 public class DestinationDAO {
 
@@ -160,16 +167,20 @@ public class DestinationDAO {
 	}
 
 	public synchronized boolean updateDestinationInDB(String name, String description, double longitude,
-			double lattitude,
-			String picture) {
+			double lattitude, String mainPicture, ConcurrentSkipListSet<PlaceToSleep> placesToSleep,
+			ConcurrentSkipListSet<PlaceToEat> placesToEat, Category category, CopyOnWriteArrayList<String> pictures,
+			CopyOnWriteArrayList<String> videos, ConcurrentSkipListSet<Activity> activities,
+			ConcurrentSkipListSet<Sight> sights) {
 		PreparedStatement prepStatement = null;
 		String updateDestinationStatement = "UPDATE destinations SET description=?, longitude=?, lattitude=?, picture=?  WHERE name=?;";
 		try {
+			// TODO update only current fields
+			sda ewfwf
 			prepStatement = DBManager.getInstance().getConnection().prepareStatement(updateDestinationStatement);
 			prepStatement.setString(1, description);
 			prepStatement.setDouble(2, longitude);
 			prepStatement.setDouble(3, lattitude);
-			prepStatement.setString(4, picture);
+			prepStatement.setString(4, mainPicture);
 			prepStatement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
@@ -190,6 +201,22 @@ public class DestinationDAO {
 				}
 			}
 		}
+	}
+
+	public void removeDestination(String destinationName) {
+		// TODO remove from 2 tables
+		sdda
+		
+	}
+
+	public boolean addLike(String userEmail, String destinationName) {
+		// TODO update like (userLiker and number Of likes; +/- userDisliker and number of dislikes)
+		fsdfsdf
+	}
+
+	public boolean removeLike(String userEmail, String destinationName) {
+		// TODO update dislike (userDisliker and number Of dislikes; +/- userLiker and number of likes)
+		fsdfsdf
 	}
 
 }

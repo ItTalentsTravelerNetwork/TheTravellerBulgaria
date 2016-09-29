@@ -5,24 +5,29 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import dbModels.UserDao;
-import exceptions.InvalidAuthorException;
 import exceptions.InvalidCoordinatesException;
 import exceptions.InvalidDataException;
+import models.Activity;
 import models.Comment;
 import models.Destination;
+import models.Destination.Category;
+import models.PlaceToEat;
+import models.PlaceToSleep;
+import models.Sight;
 import models.User;
 
 public class UsersManager {
 
-	// public static final String PATH_TO_BASE =
-	// "jdbc:mysql://localhost/traveler_db?user=root&password=123456";
 	public static final String PATH_TO_LOG = "log.txt";
-
+	private static final DateTimeFormatter DATE_AND_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 	private static UsersManager instance; // Singleton
 	private ConcurrentHashMap<String, User> registerredUsers; // user email and
 																// user
@@ -70,7 +75,9 @@ public class UsersManager {
 
 	public void registerUser(String firstName, String lastName, String email, String password, String description,
 			String profilePic) {
-		User user = new User(firstName, lastName, password, email, description, profilePic);
+		User user = new User(firstName, lastName, password, email, description, profilePic,
+				new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>(),
+				new ConcurrentHashMap<>(), 0, 0);
 		registerredUsers.put(email, user); // adds the new user to the
 											// collection
 		UserDao.getInstance().saveUserToDB(user); // saves user to DB
@@ -80,24 +87,23 @@ public class UsersManager {
 		user.getAddedPlaces().add(destinationName);
 	}
 
-	public boolean addComment(String userEmail, String destinationName, String text) {
+	public boolean addComment(String userEmail, String destinationName, String text, String video)
+			throws InvalidDataException {
 		if (!registerredUsers.containsKey(userEmail)) {
 			return false;
 		}
-		try {
-			Comment comment = new Comment(userEmail, destinationName, text, 0);
-			CommentsManager.getInstance().saveComment(userEmail, destinationName, text);
-			DestinationsManager.getInstance().getDestinationFromCache(destinationName).addComment(comment); // adds
-																											// the
-																											// comment
-																											// to
-																											// the
-																											// destination
-
-		} catch (InvalidDataException | InvalidAuthorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String dateAndTimeString = LocalDateTime.now().format(DATE_AND_TIME_FORMAT); // date&Time
+																						// to
+																						// string
+		Comment comment = new Comment(userEmail, destinationName, text, 0, new CopyOnWriteArrayList<>(),
+				dateAndTimeString, video); // creating a comment
+		CommentsManager.getInstance().saveComment(comment);
+		DestinationsManager.getInstance().getDestinationFromCache(destinationName).addComment(comment); // adds
+																										// the
+																										// comment
+																										// to
+																										// the
+																										// destination
 		return true;
 	}
 
@@ -106,25 +112,22 @@ public class UsersManager {
 		String destDescription = destination.getDescription();
 		double destLattitude = destination.getLocation().getLattitude();
 		double destLongitude = destination.getLocation().getLongitude();
-		String destPicture = destination.getPicture();
+		String destMainPicture = destination.getMainPicture();
+		ConcurrentSkipListSet<PlaceToSleep> placesToSleep = destination.getPlacesToSleep();
+		ConcurrentSkipListSet<PlaceToEat> placesToEat = destination.getPlacesToEat();
+		Category category = destination.getCategory();
+		CopyOnWriteArrayList<String> pictures = destination.getPictures();
+		CopyOnWriteArrayList<String> videos = destination.getVideos();
+		ConcurrentSkipListSet<Activity> activities = destination.getActivities();
+		ConcurrentSkipListSet<Sight> sights = destination.getSights();
 		if (DestinationsManager.getInstance().addDestination(user, destName, destDescription, destLattitude,
-				destLongitude, destPicture)) {
+				destLongitude, destMainPicture, placesToSleep, placesToEat, category, pictures, videos, activities,
+				sights)) {
 			addDestination(user, destName);
 			return true;
 		} else {
 			return false;
 		}
-	}
-
-	public static boolean addHotel(User user, String name, double longtitude, double lattitude, String contact) {
-		return true;
-		// TODO
-	}
-
-	public static boolean addResturant(User user, String name, double longtitude, double lattitude,
-			String workingHours) {
-		return true;
-		// TODO
 	}
 
 	public boolean updateUserInfo(String email, String password, String firstName, String lastName, String description,
@@ -145,6 +148,48 @@ public class UsersManager {
 		// DB
 		// user:
 		return true;
+	}
+
+	public boolean addVidsitedDestination(User user, String destinationName) {
+		if (!DestinationsManager.getInstance().chechDestinationInCache(destinationName)) {
+			user.addVisitedPlace(destinationName);
+			//TODO add in DB
+			dasdasas asdas
+			return true;
+		}
+		return false;
+	}
+
+	public boolean removeVisitedDestination(User user, String destinationName) {
+		if (DestinationsManager.getInstance().chechDestinationInCache(destinationName)) {
+			if (user.getVisitedPlaces().contains(destinationName)) {
+				user.removeVisitedPlace(destinationName);
+				//TODO remove in DB
+				asdsa
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean addToFollowedUsers(User user, String followedUserEmail) {
+		if (!user.getFollowedUsers().contains(followedUserEmail)) {
+			user.follow(followedUserEmail);
+			//TODO add in DB
+			dsadsad
+			return true;
+		}
+		return false;
+	}
+
+	public boolean RemoveFromFollowedUsers(User user, String followedUserEmail) {
+		if (user.getFollowedUsers().contains(followedUserEmail)) {
+			user.unFollow(followedUserEmail);
+			//TODO remove in DB
+			dsadsad
+			return true;
+		}
+		return false;
 	}
 
 	public User logIn(String email, String password) {
@@ -177,13 +222,13 @@ public class UsersManager {
 	}
 
 	public void likeAComment(String userEmail, Comment comment) {
-		ArrayList<String> userLikersOfComment = comment.getUserLikers(); // all
-																			// the
-																			// users
-																			// who
-																			// like
-																			// the
-																			// comment
+		CopyOnWriteArrayList<String> userLikersOfComment = comment.getUserLikers(); // all
+																					// the
+																					// users
+																					// who
+																					// like
+																					// the
+																					// comment
 		for (int i = 0; i < userLikersOfComment.size(); i++) {
 			if (userLikersOfComment.get(i) == userEmail) { // if the current
 															// user
