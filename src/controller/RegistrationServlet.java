@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -50,27 +49,19 @@ public class RegistrationServlet extends HttpServlet {
 					}
 					File profilePicFile = new File(dir,
 							email + "-profilePic." + profilePic.getContentType().split("/")[1]);
-					Files.copy(picStream, profilePicFile.toPath());
-					UsersManager.getInstance().registerUser(firstName, lastName, email, inputPassword, description,
-							profilePicFile.getName());
+					if (!profilePicFile.exists()) {
+						Files.copy(picStream, profilePicFile.toPath());
 
-					System.out.println("User Registration Successful!");
-					response.sendRedirect("SignIn.jsp");
-				} else {
-					System.out.println("Registration failed! Incorrect picture type!");
-					RequestDispatcher view = request.getRequestDispatcher("SignUp.jsp");
-					view.forward(request, response);
+						UsersManager.getInstance().registerUser(firstName, lastName, email, inputPassword, description,
+								profilePicFile.getName());
+
+						response.getWriter().append("User Registration Successful!");
+						return;
+					}
 				}
-			} else {
-				System.out.println("Registration failed! File error!");
-				RequestDispatcher view = request.getRequestDispatcher("SignUp.jsp");
-				view.forward(request, response);
 			}
-		} else {
-			System.out.println("Registration failed! Password is incorrect!");
-			RequestDispatcher view = request.getRequestDispatcher("SignUp.jsp");
-			view.forward(request, response);
 		}
+		response.getWriter().append("Registration failed!");
 	}
 
 	private static boolean validateData(String firstName, String lastName, String email, String password) {

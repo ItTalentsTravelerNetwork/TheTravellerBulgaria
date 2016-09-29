@@ -34,7 +34,7 @@
 	<![endif]-->
 </head>
 
-<body>
+<body onload="showDestinations()">
 	<!-- Fixed navbar -->
 	<%
    		response.addHeader("Cache-Control", "no-cache,no-store,private,must-revalidate,max-stale=0,post-check=0,pre-check=0"); 
@@ -100,31 +100,9 @@
 			<!-- /Sidebar -->
 
 			<!-- Article main content -->
-			<article class="col-md-8 maincontent">
-				<header class="page-header">
-					<h1 class="page-title">All Destinations</h1>
-				</header>
-					<% Map<String,Destination> destinationsAndAuthors = DestinationsManager.getInstance().getAllDestinations(); %>
-						
-					<% Collection<Destination>  destinations = destinationsAndAuthors.values();%>
-					<% int count = 0; %>					
-					<table>
-						<tr>			
-						<%for(Destination dest : destinations){ %>							
-							<%if(count%3==0){ %>
-								</tr>
-								<tr>
-							<%} %>
-							<td>
-								<h5><a href="Destination.jsp?name=<%= dest.getName()%>"><%=dest.getName() %></a></h5>
-								<img src="DestinationPictureServlet?destination=<%= dest.getName()%>" height="150" width="150"/>
-							</td>
-							<%count++; %>
-						<%} %>
-						<%count=0; %>
-						</tr>
-					</table>
-				</article>
+			<article id="allDestinations" class="col-md-8 maincontent">				
+					
+			</article>
 			<!-- /Article -->
 
 		</div>
@@ -212,5 +190,37 @@
 	<script src="assets/js/headroom.min.js"></script>
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </body>
+<script>
+function showDestinations(){
+	$.get(
+		"GetAllDestinationsServlet", 
+		function(data){
+			var json = JSON.parse(data);
+			var html = "<header class=\"page-header\"><h1 class=\"page-title\">All Destinations</h1></header>";
+			html += "<table><tr>";
+			var i = 0;
+			for(var item in json){
+				
+				if(i%3==0){
+					html += "</tr><tr>";					
+				}
+				
+				html+="<td>";
+				var destName = "<h5><a href=\"Destination.jsp?name="+ json[item].name +"\">" + json[item].name + "</a></h5>";
+				html += destName;
+				var imageLocation = "<img src=\"DestinationPictureServlet?destination="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
+				html+=imageLocation;
+				html+="</td>";
+				
+				i++;
+			}
+			html += "</tr></table>";
+			document.getElementById("allDestinations").innerHTML = html;
+		}		
+	)
+}
+</script>
+
 </html>

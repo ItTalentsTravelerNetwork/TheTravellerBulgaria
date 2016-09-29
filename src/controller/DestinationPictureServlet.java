@@ -30,7 +30,7 @@ public class DestinationPictureServlet extends HttpServlet {
 
 		Destination dest = DestinationsManager.getInstance()
 				.getDestinationFromCache(request.getParameter("destination"));
-		File destinationPic = new File("destinationPhotos", dest.getMainPicture());
+		File destinationPic = new File("destinationPhotos", dest.getPicture());
 		response.setContentLength((int) destinationPic.length());
 		String contentType = "image/"
 				+ destinationPic.getName().split("[.]")[destinationPic.getName().split("[.]").length - 1];

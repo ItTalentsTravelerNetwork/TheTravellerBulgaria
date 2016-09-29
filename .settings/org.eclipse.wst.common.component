@@ -2,6 +2,9 @@
     <wb-module deploy-name="TheTravellerBulgaria">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="gson-2.7.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/TheTravellerBulgaria/lib/gson-2.7.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="TheTravellerBulgaria"/>
         <property name="java-output-path" value="/TheTravellerBulgaria/build/classes"/>
     </wb-module>
