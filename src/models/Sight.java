@@ -9,6 +9,7 @@ public class Sight {
 	private String description;
 	private String picture;
 	private double authorRating;
+	private String destinationName;
 
 	public Sight(String name, double lattitude, double longitude, String description, String picture,
 			double authorRating) throws InvalidDataException, InvalidLocationException {

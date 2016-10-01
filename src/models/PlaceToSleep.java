@@ -7,12 +7,13 @@ public class PlaceToSleep {
 
 	private String name;
 	private Location location;
-	private String contact;
 	private String description;
-	private Type type;
-	private double price;
 	private String picture;
 	private double authorRating;
+	private Type type;
+	private String contact;
+	private double price;
+	private String destinationName;
 
 	public PlaceToSleep(String name, double lattitude, double longitude, String contact, String description, Type type,
 			double price, String picture, double authorRating) {

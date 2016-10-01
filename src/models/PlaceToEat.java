@@ -6,6 +6,7 @@ public class PlaceToEat {
 	private String description;
 	private String picture;
 	private double authorRating;
+	private String destinationName;
 
 	public PlaceToEat(String name, double lattitude, double longitude, String description, String picture,
 			double authorRating) {

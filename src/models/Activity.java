@@ -6,11 +6,12 @@ import exceptions.InvalidLocationException;
 public class Activity {
 
 	private String name;
-	private double price;
 	private Location location;
 	private String description;
 	private String picture;
 	private double authorRating;
+	private double price;
+	private String destinationName;
 
 	public Activity(String name, double price, double lattitude, double longitude, String description, String picture,
 			double authorRating) throws InvalidDataException, InvalidLocationException {
