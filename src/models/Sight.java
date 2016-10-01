@@ -1,7 +1,5 @@
 package models;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import exceptions.InvalidDataException;
 import exceptions.InvalidLocationException;
 
@@ -9,17 +7,16 @@ public class Sight {
 	private String name;
 	private Location location;
 	private String description;
-	private CopyOnWriteArrayList<String> pictures;
+	private String picture;
 	private double authorRating;
 
-	public Sight(String name, double lattitude, double longitude, String description,
-			CopyOnWriteArrayList<String> pictures, double authorRating)
-			throws InvalidDataException, InvalidLocationException {
+	public Sight(String name, double lattitude, double longitude, String description, String picture,
+			double authorRating) throws InvalidDataException, InvalidLocationException {
 		super();
 		setName(name);
 		setLocation(new Location(lattitude, longitude));
 		setDescription(description);
-		setPictures(pictures);
+		setPicture(picture);
 		setAuthorRating(authorRating);
 	}
 
@@ -57,13 +54,13 @@ public class Sight {
 		}
 	}
 
-	public synchronized CopyOnWriteArrayList<String> getPictures() {
-		return pictures;
+	public synchronized String getPicture() {
+		return picture;
 	}
 
-	public synchronized void setPictures(CopyOnWriteArrayList<String> pictures) {
-		if (pictures != null && !pictures.isEmpty())
-			this.pictures = pictures;
+	public synchronized void setPicture(String picture) {
+		if (picture != null && !picture.isEmpty())
+			this.picture = picture;
 	}
 
 	public synchronized double getAuthorRating() {
@@ -73,18 +70,6 @@ public class Sight {
 	public synchronized void setAuthorRating(double authorRating) {
 		if (authorRating >= 0)
 			this.authorRating = authorRating;
-	}
-
-	public synchronized void addPicture(String picture) {
-		if (picture != null && !picture.isEmpty()) {
-			this.pictures.add(picture);
-		}
-	}
-
-	public synchronized void removePicture(String picture) {
-		if (picture != null && !picture.isEmpty()) {
-			this.pictures.remove(picture);
-		}
 	}
 
 }

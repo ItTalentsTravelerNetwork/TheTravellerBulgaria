@@ -1,21 +1,19 @@
 package models;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 public class PlaceToEat {
 	private String name;
 	private Location location;
 	private String description;
-	private CopyOnWriteArrayList<String> pictures;
+	private String picture;
 	private double authorRating;
 
-	public PlaceToEat(String name, double lattitude, double longitude, String description,
-			CopyOnWriteArrayList<String> pictures, double authorRating) {
+	public PlaceToEat(String name, double lattitude, double longitude, String description, String picture,
+			double authorRating) {
 		super();
 		setName(name);
 		setLocation(new Location(lattitude, longitude));
 		setDescription(description);
-		setPictures(pictures);
+		setPictures(picture);
 		setAuthorRating(authorRating);
 	}
 
@@ -28,13 +26,13 @@ public class PlaceToEat {
 			this.description = description;
 	}
 
-	public synchronized CopyOnWriteArrayList<String> getPictures() {
-		return pictures;
+	public synchronized String getPicture() {
+		return picture;
 	}
 
-	public synchronized void setPictures(CopyOnWriteArrayList<String> pictures) {
-		if (pictures != null)
-			this.pictures = pictures;
+	public synchronized void setPictures(String picture) {
+		if (picture != null && !picture.isEmpty())
+			this.picture = picture;
 	}
 
 	public synchronized double getAuthorRating() {
@@ -62,18 +60,6 @@ public class PlaceToEat {
 
 	public synchronized Location getLocation() throws CloneNotSupportedException {
 		return location;
-	}
-
-	public synchronized void addPicture(String picture) {
-		if (picture != null && !picture.isEmpty()) {
-			this.pictures.add(picture);
-		}
-	}
-
-	public synchronized void removePicture(String picture) {
-		if (picture != null && !picture.isEmpty()) {
-			this.pictures.remove(picture);
-		}
 	}
 
 }

@@ -5,23 +5,23 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class User {
 
+	private String email;
+	private String password;
 	private String firstName;
 	private String lastName;
-	private String password;
-	private String email;
 	private String description;
 	private String profilePic;
 	private CopyOnWriteArrayList<String> addedPlaces;
 	private CopyOnWriteArrayList<String> visitedPlaces;
 	private CopyOnWriteArrayList<String> followedUsers; // emails of users that
 														// are
-	// followed
+														// followed
 	private ConcurrentHashMap<String, Chat> chatHistory; // name of second user
 															// -> chat object
 	private int timesLiked; // how many times the user is liked
 	private double rating;
 
-	public User(String firstName, String lastName, String password, String email, String description, String profilePic,
+	public User(String email, String password, String firstName, String lastName, String description, String profilePic,
 			CopyOnWriteArrayList<String> addedPlaces, CopyOnWriteArrayList<String> visitedPlaces,
 			CopyOnWriteArrayList<String> followedUsers, ConcurrentHashMap<String, Chat> chatHistory, int timesLiked,
 			double rating) {

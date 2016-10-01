@@ -1,7 +1,5 @@
 package models;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 public class PlaceToSleep {
 	public enum Type {
 		HOTEL, ECOHOTEL, HOSTEL, MOTEL, COTTAGE, MANSION, RESORT, VILLA, APARTMENT, CAMP, TENT, FARMHOUSE, GUESTHOUSE
@@ -13,11 +11,11 @@ public class PlaceToSleep {
 	private String description;
 	private Type type;
 	private double price;
-	private CopyOnWriteArrayList<String> pictures;
+	private String picture;
 	private double authorRating;
 
 	public PlaceToSleep(String name, double lattitude, double longitude, String contact, String description, Type type,
-			double price, CopyOnWriteArrayList<String> pictures, double authorRating) {
+			double price, String picture, double authorRating) {
 		super();
 		setName(name);
 		setLocation(new Location(lattitude, longitude));
@@ -25,7 +23,7 @@ public class PlaceToSleep {
 		setDescription(description);
 		setType(type);
 		setPrice(price);
-		setPictures(pictures);
+		setPicture(picture);
 		setAuthorRating(authorRating);
 	}
 
@@ -57,15 +55,6 @@ public class PlaceToSleep {
 	public synchronized void setPrice(double price) {
 		if (price >= 0)
 			this.price = price;
-	}
-
-	public synchronized CopyOnWriteArrayList<String> getPictures() {
-		return pictures;
-	}
-
-	public synchronized void setPictures(CopyOnWriteArrayList<String> pictures) {
-		if (pictures != null)
-			this.pictures = pictures;
 	}
 
 	public synchronized double getAuthorRating() {
@@ -100,16 +89,13 @@ public class PlaceToSleep {
 		return type;
 	}
 
-	public synchronized void addPicture(String picture) {
-		if (picture != null && !picture.isEmpty()) {
-			this.pictures.add(picture);
-		}
+	public synchronized String getPicture() {
+		return picture;
 	}
 
-	public synchronized void removePicture(String picture) {
-		if (picture != null && !picture.isEmpty()) {
-			this.pictures.remove(picture);
-		}
+	public synchronized void setPicture(String picture) {
+		if (picture != null && !picture.isEmpty())
+			this.picture = picture;
 	}
 
 }

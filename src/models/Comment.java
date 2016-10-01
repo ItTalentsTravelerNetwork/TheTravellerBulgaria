@@ -12,6 +12,7 @@ import exceptions.InvalidDataException;
 public class Comment {
 
 	private static final DateTimeFormatter DATE_AND_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+	private long id;
 	private String authorEmail;
 	private String placeName;
 	private String text;
@@ -23,13 +24,25 @@ public class Comment {
 	private boolean hasVideo;
 	private String video;
 
-	public Comment(String authorEmail, String placeName, String text, int numberOfLikes,
-			CopyOnWriteArrayList<String> userLikers, String dateAndTime, String video) throws InvalidDataException {
+	public Comment(String authorEmail, String placeName, String text, int numberOfLikes, String dateAndTime,
+			String video) throws InvalidDataException { // without id
 		setAuthorEmail(authorEmail);
 		setPlaceName(placeName);
 		this.setText(text);
 		setNumberOfLikes(numberOfLikes);
-		setUserLikers(userLikers);
+		setUserLikers(new CopyOnWriteArrayList<>());
+		LocalDateTime date = LocalDateTime.parse(dateAndTime, DATE_AND_TIME_FORMAT);
+		setDateAndTime(date);
+		setVideo(video); // can be null -> hasVideo=false
+	}
+
+	public Comment(long id, String authorEmail, String placeName, String text, int numberOfLikes, String dateAndTime,
+			String video) throws InvalidDataException { // with id
+		setId(id);
+		setAuthorEmail(authorEmail);
+		setPlaceName(placeName);
+		this.setText(text);
+		setNumberOfLikes(numberOfLikes);
 		LocalDateTime date = LocalDateTime.parse(dateAndTime, DATE_AND_TIME_FORMAT);
 		setDateAndTime(date);
 		setVideo(video); // can be null -> hasVideo=false
@@ -162,6 +175,15 @@ public class Comment {
 		} else {
 			setHasVideo(false);
 		}
+	}
+
+	public synchronized long getId() {
+		return id;
+	}
+
+	public synchronized void setId(long id) {
+		if (id >= 0)
+			this.id = id;
 	}
 
 }

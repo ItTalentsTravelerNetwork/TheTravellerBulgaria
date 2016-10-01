@@ -6,12 +6,24 @@ import java.time.format.DateTimeFormatter;
 public class Message {
 
 	private static final DateTimeFormatter DATE_AND_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+	private long id;
 	private String author;
 	private String recipiant;
 	private String text;
 	private LocalDateTime dateAndTime;
 
-	public Message(String author, String recipiant, String text, String dateAndTime) {
+	public Message(String author, String recipiant, String text, String dateAndTime) { // without
+																						// id
+		setAuthor(author);
+		setRecipiant(recipiant);
+		setText(text);
+		LocalDateTime date = LocalDateTime.parse(dateAndTime, DATE_AND_TIME_FORMAT);
+		setDateAndTime(date);
+	}
+
+	public Message(long id, String author, String recipiant, String text, String dateAndTime) { // with
+																								// id
+		setId(id);
 		setAuthor(author);
 		setRecipiant(recipiant);
 		setText(text);
@@ -57,6 +69,15 @@ public class Message {
 	public synchronized String getDateAndTimeToString() {
 		String dateAndTimeToString = dateAndTime.format(DATE_AND_TIME_FORMAT);
 		return dateAndTimeToString;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		if (id >= 0)
+			this.id = id;
 	}
 
 }

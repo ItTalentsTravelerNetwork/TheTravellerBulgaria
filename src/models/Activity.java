@@ -1,8 +1,5 @@
 package models;
 
-import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import exceptions.InvalidDataException;
 import exceptions.InvalidLocationException;
 
@@ -12,30 +9,27 @@ public class Activity {
 	private double price;
 	private Location location;
 	private String description;
-	private CopyOnWriteArrayList<String> pictures;
+	private String picture;
 	private double authorRating;
 
-	public Activity(String name, double price, double lattitude, double longitude, String description,
-			CopyOnWriteArrayList<String> pictures, double authorRating)
-			throws InvalidDataException, InvalidLocationException {
+	public Activity(String name, double price, double lattitude, double longitude, String description, String picture,
+			double authorRating) throws InvalidDataException, InvalidLocationException {
 		super();
 		this.setName(name);
 		this.setPrice(price);
 		this.setLocation(new Location(lattitude, longitude));
 		this.setDescription(description);
-		this.setPictures(pictures);
+		this.setPicture(picture);
 		this.setAuthorRating(authorRating);
 	}
 
-	public synchronized ArrayList<String> getPictures() {
-		ArrayList<String> copy = new ArrayList<>();
-		copy.addAll(pictures);
-		return copy;
+	public synchronized String getPicture() {
+		return this.picture;
 	}
 
-	public synchronized void setPictures(CopyOnWriteArrayList<String> pictures) {
-		if (pictures != null) {
-			this.pictures = pictures;
+	public synchronized void setPicture(String picture) {
+		if (picture != null && !picture.isEmpty()) {
+			this.picture = picture;
 		}
 	}
 
@@ -90,18 +84,6 @@ public class Activity {
 	public synchronized void setDescription(String description) {
 		if (description != null && !description.isEmpty()) {
 			this.description = description;
-		}
-	}
-
-	public synchronized void addPicture(String picture) {
-		if (picture != null && !picture.isEmpty()) {
-			this.pictures.add(picture);
-		}
-	}
-
-	public synchronized void removePicture(String picture) {
-		if (picture != null && !picture.isEmpty()) {
-			this.pictures.remove(picture);
 		}
 	}
 

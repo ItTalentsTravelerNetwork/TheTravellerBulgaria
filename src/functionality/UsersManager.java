@@ -95,8 +95,9 @@ public class UsersManager {
 		String dateAndTimeString = LocalDateTime.now().format(DATE_AND_TIME_FORMAT); // date&Time
 																						// to
 																						// string
-		Comment comment = new Comment(userEmail, destinationName, text, 0, new CopyOnWriteArrayList<>(),
-				dateAndTimeString, video); // creating a comment
+		Comment comment = new Comment(userEmail, destinationName, text, 0, dateAndTimeString, video); // creating
+																										// a
+																										// comment
 		CommentsManager.getInstance().saveComment(comment);
 		DestinationsManager.getInstance().getDestinationFromCache(destinationName).addComment(comment); // adds
 																										// the

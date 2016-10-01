@@ -33,14 +33,16 @@ public class CommentDao {
 		try {
 			try {
 				statement = DBManager.getInstance().getConnection().createStatement();
-				String selectAllCommentsFromDB = "SELECT author_email, place_name, text, number_of_likes FROM comments;";
+				String selectAllCommentsFromDB = "SELECT id, author_email, place_name, text, number_of_likes, date_and_time, video FROM comments;";
 				result = statement.executeQuery(selectAllCommentsFromDB);
 				while (result.next()) {
 					try {
-						Comment comment = new Comment(result.getString("author_email"), result.getString("place_name"),
-								result.getString("text"), result.getInt("number_of_likes"));
+						Comment comment = new Comment(result.getLong("id"), result.getString("author_email"),
+								result.getString("place_name"), result.getString("text"),
+								result.getInt("number_of_likes"), result.getString("date_and_time"),
+								result.getString("video"));
 						comments.add(comment);
-					} catch (InvalidDataException | InvalidAuthorException e) {
+					} catch (InvalidDataException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -74,15 +76,22 @@ public class CommentDao {
 	}
 
 	public synchronized boolean saveCommentToDB(Comment comment) {
-		String insertCommentIntoDB = "INSERT INTO comments (author_email, place_name, text, number_of_likes) VALUES (?, ?, ?, ?);";
+		String insertCommentIntoDB = "INSERT INTO comments (author_email, place_name, text, number_of_likes, date_and_time, video) VALUES (?, ?, ?, ?, ?, ?);";
 		PreparedStatement statement = null;
+		ResultSet result = null;
 		try {
-			statement = DBManager.getInstance().getConnection().prepareStatement(insertCommentIntoDB);
+			statement = DBManager.getInstance().getConnection().prepareStatement(insertCommentIntoDB,
+					Statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, comment.getAuthorEmail());
 			statement.setString(2, comment.getPlaceName());
 			statement.setString(3, comment.getText());
 			statement.setInt(4, comment.getNumberOfLikes());
-			statement.executeUpdate();
+			statement.setString(5, comment.getDateAndTimeToString());
+			statement.setString(6, comment.getVideo());
+			statement.executeUpdate(); // add comment to DB
+			result = statement.getGeneratedKeys(); // get comment id
+			result.next();
+			comment.setId(result.getLong(1)); // add id to comment
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -94,6 +103,9 @@ public class CommentDao {
 			try {
 				if (statement != null) {
 					statement.close();
+				}
+				if (result != null) {
+					result.close();
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
