@@ -4,8 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -21,9 +23,31 @@ import models.User;
 public class DestinationDAO {
 
 	private static DestinationDAO instance; // Singleton
+	private ConcurrentHashMap<String, ArrayList<String>> destinationPictures;
 
 	private DestinationDAO() {
+		this.destinationPictures = this.getAllDestPictures();
+	}
 
+	private ConcurrentHashMap<String, ArrayList<String>> getAllDestPictures() {
+		ConcurrentHashMap<String, ArrayList<String>> allPics = new ConcurrentHashMap<>();
+		Statement statement = null;
+		ResultSet result = null;
+		try {
+			statement = DBManager.getInstance().getConnection().createStatement();
+			result = statement.executeQuery("SELECT * from destinations_pictures;");
+			String name = result.getString("destination_name");
+			String pic = result.getString("picture");
+			if (!allPics.containsKey(name)) {
+				allPics.put(result.getString("destination_name"), new ArrayList<String>());
+			}
+			allPics.get(name).add(pic);
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return allPics;
 	}
 
 	public static synchronized DestinationDAO getInstance() {
@@ -49,6 +73,7 @@ public class DestinationDAO {
 							result.getString("main_picture"), result.getString("author_email"),
 							Destination.Category.valueOf(result.getString("category")),
 							result.getInt("number_of_likes"), result.getInt("number_of_dislikes"));
+
 					destinations.add(dest);
 				}
 			} catch (CannotConnectToDBException e) {
@@ -160,6 +185,12 @@ public class DestinationDAO {
 				}
 			}
 		}
+	}
+
+	public ConcurrentHashMap<String, ArrayList<String>> getDestinationPictures() {
+		ConcurrentHashMap<String, ArrayList<String>> newCol = new ConcurrentHashMap<>();
+		newCol.putAll(destinationPictures);
+		return newCol;
 	}
 
 	public void removeDestination(String destinationName) {

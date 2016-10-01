@@ -1,5 +1,7 @@
 package functionality;
 
+import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -49,6 +51,18 @@ public class DestinationsManager {
 			this.allDestinationsAndAuthors.put(destination.getName(), destination.getAuthorEmail());
 		}
 		this.fillDestinationsWithPlaces();
+		this.fillDestinationsWithPics();
+
+	}
+
+	private void fillDestinationsWithPics() {
+		for (Entry<String, ArrayList<String>> destPics : DestinationDAO.getInstance().getDestinationPictures()
+				.entrySet()) {
+			String destName = destPics.getKey();
+			for (String pic : destPics.getValue()) {
+				this.allDestinations.get(destName).addPicture(pic);
+			}
+		}
 
 	}
 

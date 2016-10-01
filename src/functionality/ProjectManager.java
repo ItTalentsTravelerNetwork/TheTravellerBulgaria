@@ -13,19 +13,21 @@ public class ProjectManager {
 	private ProjectManager() {
 		// Loading all Managers and the cache
 		// UsersManager
+		DestinationsManager.getInstance(); // DestinationsManager
+		// no comment objects in each //
+		// destination
+
 		UsersManager.getInstance(); // no destination names in each user
-		// DestinationsManager
-		DestinationsManager.getInstance(); // no comment objects in each //
-											// destination
+
 		// CommentsManager
 		CommentsManager.getInstance();
 
-		for (Map.Entry<String, Destination> destinationEntry : DestinationsManager.getInstance()
-				.getAllDestinations().entrySet()) { // for
-													// each
-													// destination
-													// in
-													// cache
+		for (Map.Entry<String, Destination> destinationEntry : DestinationsManager.getInstance().getAllDestinations()
+				.entrySet()) { // for
+								// each
+								// destination
+								// in
+								// cache
 			for (Comment c : CommentsManager.getInstance().getAllComments()) { // for
 																				// each
 																				// comment

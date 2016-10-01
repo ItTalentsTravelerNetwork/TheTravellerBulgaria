@@ -73,7 +73,7 @@ public class UserDao {
 
 	public synchronized boolean saveUserToDB(User user) {
 		// TODO update
-		asdasd sadsad
+
 		String insertUserInfoIntoDB = "INSERT INTO users (first_name, last_name, password, email, description, profilePic) VALUES (?, ?, ?, ?, ?, ?);";
 		PreparedStatement statement = null;
 		try {
