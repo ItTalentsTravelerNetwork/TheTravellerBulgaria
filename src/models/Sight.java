@@ -12,8 +12,9 @@ public class Sight {
 	private String destinationName;
 
 	public Sight(String name, double lattitude, double longitude, String description, String picture,
-			double authorRating) throws InvalidDataException, InvalidLocationException {
+			double authorRating, String destinationName) throws InvalidDataException, InvalidLocationException {
 		super();
+		this.destinationName = destinationName;
 		setName(name);
 		setLocation(new Location(lattitude, longitude));
 		setDescription(description);
@@ -71,6 +72,10 @@ public class Sight {
 	public synchronized void setAuthorRating(double authorRating) {
 		if (authorRating >= 0)
 			this.authorRating = authorRating;
+	}
+
+	public String getDestinationName() {
+		return destinationName;
 	}
 
 }

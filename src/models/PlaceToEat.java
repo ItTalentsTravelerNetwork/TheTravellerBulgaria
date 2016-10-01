@@ -9,8 +9,9 @@ public class PlaceToEat {
 	private String destinationName;
 
 	public PlaceToEat(String name, double lattitude, double longitude, String description, String picture,
-			double authorRating) {
+			double authorRating, String destinationName) {
 		super();
+		this.destinationName = destinationName;
 		setName(name);
 		setLocation(new Location(lattitude, longitude));
 		setDescription(description);
@@ -63,4 +64,7 @@ public class PlaceToEat {
 		return location;
 	}
 
+	public String getDestinationName() {
+		return destinationName;
+	}
 }

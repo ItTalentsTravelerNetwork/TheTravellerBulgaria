@@ -16,7 +16,7 @@ public class PlaceToSleep {
 	private String destinationName;
 
 	public PlaceToSleep(String name, double lattitude, double longitude, String contact, String description, Type type,
-			double price, String picture, double authorRating) {
+			double price, String picture, double authorRating, String destinationName) {
 		super();
 		setName(name);
 		setLocation(new Location(lattitude, longitude));
@@ -26,6 +26,7 @@ public class PlaceToSleep {
 		setPrice(price);
 		setPicture(picture);
 		setAuthorRating(authorRating);
+		this.destinationName = destinationName;
 	}
 
 	public synchronized String getName() {
@@ -97,6 +98,10 @@ public class PlaceToSleep {
 	public synchronized void setPicture(String picture) {
 		if (picture != null && !picture.isEmpty())
 			this.picture = picture;
+	}
+
+	public String getDestinationName() {
+		return destinationName;
 	}
 
 }

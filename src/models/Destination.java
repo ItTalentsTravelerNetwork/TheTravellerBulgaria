@@ -28,29 +28,30 @@ public class Destination {
 	private ConcurrentSkipListSet<Activity> activities;
 	private ConcurrentSkipListSet<Sight> sights;
 
-	public Destination(String name, String description, Location location, String mainPicture, String authorEmail,
-			CopyOnWriteArrayList<Comment> comments, ConcurrentSkipListSet<PlaceToSleep> placesToSleep,
-			ConcurrentSkipListSet<PlaceToEat> placesToEat, Category category, CopyOnWriteArrayList<String> pictures,
-			CopyOnWriteArrayList<String> videos, int numberOfLikes, CopyOnWriteArrayList<String> userLikers,
-			int numberOfDislikes, CopyOnWriteArrayList<String> userDislikers,
-			ConcurrentSkipListSet<Activity> activities, ConcurrentSkipListSet<Sight> sights) {
+	public Destination(String name, Double latitude, Double longitude, String description, String mainPicture,
+			String authorEmail, Category category, int numberOfLikes, int numberOfDislikes) {
+
 		setName(name);
 		setDescription(description);
-		setLocation(location);
+		setLocation(latitude, longitude);
 		setMainPicture(mainPicture);
 		setAuthorEmail(authorEmail);
-		setComments(comments);
-		setPlacesToSleep(placesToSleep);
-		setPlacesToEat(placesToEat);
 		setCategory(category);
-		setPictures(pictures);
-		setVideos(videos);
 		setNumberOfLikes(numberOfLikes);
-		setUserLikers(userLikers);
 		setNumberOfDislikes(numberOfDislikes);
-		setUserDislikers(userDislikers);
-		setActivities(activities);
-		setSights(sights);
+		this.placesToEat = new ConcurrentSkipListSet<>();
+		this.comments = new CopyOnWriteArrayList<>();
+		this.activities = new ConcurrentSkipListSet<>();
+		this.sights = new ConcurrentSkipListSet<>();
+		this.placesToSleep = new ConcurrentSkipListSet<>();
+		this.userLikers = new CopyOnWriteArrayList<>();
+		this.userDislikers = new CopyOnWriteArrayList<>();
+		this.pictures = new CopyOnWriteArrayList<>();
+		this.videos = new CopyOnWriteArrayList<>();
+	}
+
+	private void setLocation(Double latitude, Double longitude) {
+		this.location = new Location(latitude, longitude);
 	}
 
 	public synchronized void addComment(Comment comment) {

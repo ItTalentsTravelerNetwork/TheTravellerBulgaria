@@ -5,7 +5,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import dbModels.ActivityDao;
 import dbModels.DestinationDAO;
+import dbModels.HotelDao;
+import dbModels.PlaceToEatDao;
+import dbModels.SightDao;
 import exceptions.InvalidCoordinatesException;
 import models.Activity;
 import models.Destination;
@@ -30,12 +34,6 @@ public class DestinationsManager {
 
 	private DestinationsManager() {
 
-		allDestinationsAndAuthors = DestinationDAO.getInstance().getAllDestinationsAndAuthors(); // adds
-																									// destinations
-																									// and
-																									// authors
-																									// to
-																									// collection
 		allDestinations = new ConcurrentHashMap<>();
 		Set<Destination> tempAllDest = DestinationDAO.getInstance().getAllDestinations();
 		for (Destination d : tempAllDest) { // adds
@@ -47,6 +45,10 @@ public class DestinationsManager {
 											// collection
 			allDestinations.put(d.getName(), d);
 		}
+		for (Destination destination : allDestinations.values()) {
+			this.allDestinationsAndAuthors.put(destination.getName(), destination.getAuthorEmail());
+		}
+		this.fillDestinationsWithPlaces();
 
 	}
 
@@ -66,19 +68,14 @@ public class DestinationsManager {
 		return false;
 	}
 
-	public boolean addDestination(User user, String name, String description, double lattitude, double longitude,
-			String mainPicture, ConcurrentSkipListSet<PlaceToSleep> placesToSleep,
-			ConcurrentSkipListSet<PlaceToEat> placesToEat, Category category, CopyOnWriteArrayList<String> pictures,
-			CopyOnWriteArrayList<String> videos, ConcurrentSkipListSet<Activity> activities,
-			ConcurrentSkipListSet<Sight> sights) throws InvalidCoordinatesException {
+	public boolean addDestination(User user, String name, String description, double latitude, double longitude,
+			String mainPicture, Category category) throws InvalidCoordinatesException {
 		if (UsersManager.getInstance().validateUser(user.getEmail(), user.getPassword())
 				&& !chechDestinationInCache(name)) { // if the user exists in
 														// the collection and no
 														// such destination yet
-			Destination destination = new Destination(name, description, new Location(lattitude, longitude),
-					mainPicture, user.getEmail(), new CopyOnWriteArrayList<>(), placesToSleep, placesToEat, category,
-					pictures, videos, 0, new CopyOnWriteArrayList<>(), 0, new CopyOnWriteArrayList<>(), activities,
-					sights);
+			Destination destination = new Destination(name, latitude, longitude, description, mainPicture,
+					user.getEmail(), category, 0, 0);
 			allDestinations.put(name, destination); // adds the new destination
 			allDestinationsAndAuthors.put(name, user.getEmail()); // to the
 																	// collection
@@ -193,6 +190,29 @@ public class DestinationsManager {
 		ConcurrentHashMap<String, Destination> copy = new ConcurrentHashMap<>();
 		copy.putAll(allDestinations);
 		return copy;
+	}
+
+	private void fillDestinationsWithPlaces() {
+		Set<Activity> activities = ActivityDao.getInstance().getAllActivities();
+		Set<PlaceToSleep> placesToSleep = HotelDao.getInstance().getAllHotels();
+		Set<PlaceToEat> placesToEat = PlaceToEatDao.getInstance().getAllPlacesToEat();
+		Set<Sight> sights = SightDao.getInstance().getAllSights();
+		for (Sight sight : sights) {
+			String destName = sight.getDestinationName();
+			allDestinations.get(destName).addSight(sight);
+		}
+		for (Activity activity : activities) {
+			String destName = activity.getDestinationName();
+			allDestinations.get(destName).addActivity(activity);
+		}
+		for (PlaceToSleep placeToSleep : placesToSleep) {
+			String destName = placeToSleep.getDestinationName();
+			allDestinations.get(destName).addPlaceToSleep(placeToSleep);
+		}
+		for (PlaceToEat placeToEat : placesToEat) {
+			String destName = placeToEat.getDestinationName();
+			allDestinations.get(destName).addPlaceToEat(placeToEat);
+		}
 	}
 
 }

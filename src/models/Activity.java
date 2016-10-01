@@ -14,7 +14,7 @@ public class Activity {
 	private String destinationName;
 
 	public Activity(String name, double price, double lattitude, double longitude, String description, String picture,
-			double authorRating) throws InvalidDataException, InvalidLocationException {
+			double authorRating, String destinationName) throws InvalidDataException, InvalidLocationException {
 		super();
 		this.setName(name);
 		this.setPrice(price);
@@ -22,6 +22,7 @@ public class Activity {
 		this.setDescription(description);
 		this.setPicture(picture);
 		this.setAuthorRating(authorRating);
+		this.destinationName = destinationName;
 	}
 
 	public synchronized String getPicture() {
@@ -86,6 +87,10 @@ public class Activity {
 		if (description != null && !description.isEmpty()) {
 			this.description = description;
 		}
+	}
+
+	public String getDestinationName() {
+		return destinationName;
 	}
 
 }

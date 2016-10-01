@@ -7,7 +7,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import exceptions.CannotConnectToDBException;
-import exceptions.InvalidAuthorException;
 import exceptions.InvalidDataException;
 import models.Comment;
 
@@ -116,9 +115,9 @@ public class CommentDao {
 	}
 
 	public void deleteComment(Comment comment) {
-		dsfs
-		//TODO
-		
+
+		// TODO
+
 	}
 
 }

@@ -6,27 +6,24 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import exceptions.CannotConnectToDBException;
 import models.Activity;
 import models.Destination;
-import models.Location;
+import models.Destination.Category;
 import models.PlaceToEat;
 import models.PlaceToSleep;
 import models.Sight;
 import models.User;
-import models.Destination.Category;
 
 public class DestinationDAO {
 
 	private static DestinationDAO instance; // Singleton
-	private ConcurrentHashMap<String, String> destinationsAndAuthors;
 
 	private DestinationDAO() {
-		destinationsAndAuthors = this.getAllDestinationsAndAuthors();
+
 	}
 
 	public static synchronized DestinationDAO getInstance() {
@@ -34,45 +31,6 @@ public class DestinationDAO {
 			instance = new DestinationDAO();
 		}
 		return instance;
-	}
-
-	public ConcurrentHashMap<String, String> getAllDestinationsAndAuthors() {
-		if (this.destinationsAndAuthors != null) {
-			return this.destinationsAndAuthors;
-		}
-		ConcurrentHashMap<String, String> destinationsAndAutors = new ConcurrentHashMap<>();
-		Statement statement = null;
-		ResultSet result = null;
-		try {
-			try {
-				statement = DBManager.getInstance().getConnection().createStatement();
-				String selectAllFromDB = "SELECT destination_name, user_email FROM visited_destinations;";
-				result = statement.executeQuery(selectAllFromDB);
-				while (result.next()) {
-					destinationsAndAutors.put(result.getString("destination_name"), result.getString("user_email"));
-				}
-			} catch (CannotConnectToDBException e) {
-				// TODO handle exception - write to log and userFriendly screen
-				e.getMessage();
-				return destinationsAndAutors;
-			}
-		} catch (SQLException e) {
-			// TODO write in the log
-			return destinationsAndAutors;
-		} finally {
-			try {
-				if (statement != null) {
-					statement.close();
-				}
-				if (result != null) {
-					result.close();
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return destinationsAndAutors;
 	}
 
 	public Set<Destination> getAllDestinations() {
@@ -85,11 +43,12 @@ public class DestinationDAO {
 				String selectAllDestinationsFromDB = "SELECT name, description, longitude, lattitude, picture FROM destinations;";
 				result = statement.executeQuery(selectAllDestinationsFromDB);
 				while (result.next()) {
-					String destinationAuthorEmail = this.destinationsAndAuthors.get(result.getString("name"));
-					Destination dest = new Destination(result.getString("name"), result.getString("description"),
-							new Location(Double.parseDouble(result.getString("lattitude")),
-									Double.parseDouble(result.getString("longitude"))),
-							result.getString("picture"), destinationAuthorEmail);
+					Destination dest = new Destination(result.getString("name"),
+							Double.parseDouble(result.getString("lattitude")),
+							Double.parseDouble(result.getString("longitude")), result.getString("description"),
+							result.getString("main_picture"), result.getString("author_email"),
+							Destination.Category.valueOf(result.getString("category")),
+							result.getInt("number_of_likes"), result.getInt("number_of_dislikes"));
 					destinations.add(dest);
 				}
 			} catch (CannotConnectToDBException e) {
@@ -128,7 +87,7 @@ public class DestinationDAO {
 			statement.setString(2, destination.getDescription());
 			statement.setDouble(3, destination.getLocation().getLongitude());
 			statement.setDouble(4, destination.getLocation().getLattitude());
-			statement.setString(5, destination.getPicture());
+			statement.setString(5, destination.getMainPicture());
 			statement.executeUpdate();
 
 			statement2 = DBManager.getInstance().getConnection().prepareStatement(insertIntoVisitedDestinations);
@@ -175,7 +134,7 @@ public class DestinationDAO {
 		String updateDestinationStatement = "UPDATE destinations SET description=?, longitude=?, lattitude=?, picture=?  WHERE name=?;";
 		try {
 			// TODO update only current fields
-			sda ewfwf
+
 			prepStatement = DBManager.getInstance().getConnection().prepareStatement(updateDestinationStatement);
 			prepStatement.setString(1, description);
 			prepStatement.setDouble(2, longitude);
@@ -205,18 +164,19 @@ public class DestinationDAO {
 
 	public void removeDestination(String destinationName) {
 		// TODO remove from 2 tables
-		sdda
-		
+
 	}
 
 	public boolean addLike(String userEmail, String destinationName) {
-		// TODO update like (userLiker and number Of likes; +/- userDisliker and number of dislikes)
-		fsdfsdf
+		// TODO update like (userLiker and number Of likes; +/- userDisliker and
+		// number of dislikes)
+		return false;
 	}
 
 	public boolean removeLike(String userEmail, String destinationName) {
-		// TODO update dislike (userDisliker and number Of dislikes; +/- userLiker and number of likes)
-		fsdfsdf
+		// TODO update dislike (userDisliker and number Of dislikes; +/-
+		// userLiker and number of likes)
+		return false;
 	}
 
 }
