@@ -373,4 +373,8 @@ public class Destination {
 			this.userDislikers = userDislikers;
 	}
 
+	public void addVideo(String video) {
+		this.videos.add(video);
+	}
+
 }

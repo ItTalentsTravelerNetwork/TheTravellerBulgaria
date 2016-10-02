@@ -54,7 +54,7 @@ public class PlaceToEatDao {
 		return resturants;
 	}
 
-	public synchronized void saveActivityToDb(PlaceToEat placeToEat) throws CloneNotSupportedException {
+	public synchronized void savePlaceToEatInDB(PlaceToEat placeToEat) throws CloneNotSupportedException {
 		PreparedStatement ps = null;
 		try {
 			ps = DBManager.getInstance().getConnection().prepareStatement(

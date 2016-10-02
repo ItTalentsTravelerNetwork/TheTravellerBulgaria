@@ -52,6 +52,8 @@ public class DestinationsManager {
 		}
 		this.fillDestinationsWithPlaces();
 		this.fillDestinationsWithPics();
+		this.fillDestinationsWithLikesAndDislikes();
+		this.fillDestinationsWithVideos();
 
 	}
 
@@ -227,6 +229,57 @@ public class DestinationsManager {
 			String destName = placeToEat.getDestinationName();
 			allDestinations.get(destName).addPlaceToEat(placeToEat);
 		}
+	}
+
+	private void fillDestinationsWithLikesAndDislikes() {
+		for (Entry<String, ArrayList<String>> entry : DestinationDAO.getInstance().getLikes().entrySet()) {
+			for (String email : entry.getValue()) {
+				this.allDestinations.get(entry.getKey()).like(email);
+			}
+		}
+		for (Entry<String, ArrayList<String>> entry : DestinationDAO.getInstance().getDisLikes().entrySet()) {
+			for (String email : entry.getValue()) {
+				this.allDestinations.get(entry.getKey()).dislike(email);
+			}
+		}
+	}
+
+	private void fillDestinationsWithVideos() {
+		for (Entry<String, ArrayList<String>> entry : DestinationDAO.getInstance().getVideos().entrySet()) {
+			for (String video : entry.getValue()) {
+				this.allDestinations.get(entry.getKey()).addVideo(video);
+			}
+		}
+	}
+
+	public void addActivity(String destName, Activity a) throws CloneNotSupportedException {
+		this.allDestinations.get(destName).addActivity(a);
+		ActivityDao.getInstance().saveActivityToDb(a);
+	}
+
+	public void addSight(String destName, Sight sight) throws CloneNotSupportedException {
+		this.allDestinations.get(destName).addSight(sight);
+		SightDao.getInstance().saveSightToDB(sight);
+	}
+
+	public void addHotel(String destName, PlaceToSleep p) throws CloneNotSupportedException {
+		this.allDestinations.get(destName).addPlaceToSleep(p);
+		HotelDao.getInstance().saveHotelInDB(p);
+	}
+
+	public void addHotel(String destName, PlaceToEat e) throws CloneNotSupportedException {
+		this.allDestinations.get(destName).addPlaceToEat(e);
+		PlaceToEatDao.getInstance().savePlaceToEatInDB(e);
+	}
+
+	public void addPicture(String destName, String pic) {
+		this.allDestinations.get(destName).addPicture(pic);
+		DestinationDAO.getInstance().addPicture(destName, pic);
+	}
+
+	public void addVideo(String destName, String video) {
+		this.allDestinations.get(destName).addVideo(video);
+		DestinationDAO.getInstance().addVideo(destName, video);
 	}
 
 }
