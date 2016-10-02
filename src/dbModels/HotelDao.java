@@ -55,7 +55,7 @@ public class HotelDao {
 		return hotels;
 	}
 
-	public synchronized void saveActivityToDb(PlaceToSleep hotel) throws CloneNotSupportedException {
+	public synchronized void saveHotelInDB(PlaceToSleep hotel) throws CloneNotSupportedException {
 		PreparedStatement ps = null;
 		try {
 			ps = DBManager.getInstance().getConnection().prepareStatement(

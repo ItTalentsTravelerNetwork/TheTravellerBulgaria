@@ -60,7 +60,7 @@ public class SightDao {
 		return sights;
 	}
 
-	public synchronized void saveActivityToDb(Sight sight) throws CloneNotSupportedException {
+	public synchronized void saveSightToDB(Sight sight) throws CloneNotSupportedException {
 		PreparedStatement ps = null;
 		try {
 			ps = DBManager.getInstance().getConnection().prepareStatement(

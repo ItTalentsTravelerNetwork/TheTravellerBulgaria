@@ -210,4 +210,120 @@ public class DestinationDAO {
 		return false;
 	}
 
+	public ConcurrentHashMap<String, ArrayList<String>> getLikes() {
+		ConcurrentHashMap<String, ArrayList<String>> userLikes = new ConcurrentHashMap<String, ArrayList<String>>();
+		Statement st = null;
+		ResultSet rs = null;
+		try {
+			st = DBManager.getInstance().getConnection().createStatement();
+			rs = st.executeQuery("SELECT * from destination_likes;");
+			while (rs.next()) {
+				if (!userLikes.containsKey(rs.getString("destination_name"))) {
+					userLikes.put(rs.getString("destination_name"), new ArrayList<String>());
+				}
+				userLikes.get(rs.getString("destination_name")).add("user_email");
+			}
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				st.close();
+				rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		return userLikes;
+	}
+
+	public ConcurrentHashMap<String, ArrayList<String>> getDisLikes() {
+		ConcurrentHashMap<String, ArrayList<String>> userDisLikes = new ConcurrentHashMap<String, ArrayList<String>>();
+		Statement st = null;
+		ResultSet rs = null;
+		try {
+			st = DBManager.getInstance().getConnection().createStatement();
+			rs = st.executeQuery("SELECT * from destination_dislikes;");
+			while (rs.next()) {
+				if (!userDisLikes.containsKey(rs.getString("destination_name"))) {
+					userDisLikes.put(rs.getString("destination_name"), new ArrayList<String>());
+				}
+				userDisLikes.get(rs.getString("destination_name")).add("user_email");
+			}
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				st.close();
+				rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		return userDisLikes;
+	}
+
+	public ConcurrentHashMap<String, ArrayList<String>> getVideos() {
+		ConcurrentHashMap<String, ArrayList<String>> videos = new ConcurrentHashMap<String, ArrayList<String>>();
+		Statement st = null;
+		ResultSet rs = null;
+		try {
+			st = DBManager.getInstance().getConnection().createStatement();
+			rs = st.executeQuery("SELECT * from destination_videos;");
+			while (rs.next()) {
+				if (!videos.containsKey(rs.getString("destination_name"))) {
+					videos.put(rs.getString("destination_name"), new ArrayList<String>());
+				}
+				videos.get(rs.getString("destination_name")).add("user_email");
+			}
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				st.close();
+				rs.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return videos;
+	}
+
+	public void addPicture(String destName, String pic) {
+		try {
+			PreparedStatement ps = DBManager.getInstance().getConnection()
+					.prepareStatement("INSERT INTO destination_pictures(destination_name, picture) VALUES(?, ?);");
+			ps.setString(1, destName);
+			ps.setString(2, pic);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void addVideo(String destName, String video) {
+		try {
+			PreparedStatement ps = DBManager.getInstance().getConnection()
+					.prepareStatement("INSERT INTO destination_videos(video, destination_name) VALUES(?, ?);");
+			ps.setString(1, video);
+			ps.setString(2, destName);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
