@@ -4,8 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import exceptions.CannotConnectToDBException;
 import models.User;
@@ -24,7 +26,7 @@ public class UserDao {
 		return instance;
 	}
 
-	public Set<User> getAllUsers() {
+	public synchronized Set<User> getAllUsers() {
 		System.out.println("Getting all users from DB!!!!");
 		Set<User> users = new HashSet<User>();
 		Statement statement = null;
@@ -146,11 +148,34 @@ public class UserDao {
 		}
 	}
 
-	public synchronized boolean removeUserFromDB(User user) {
-		// TODO implement
+	public synchronized boolean deleteUserFromDB(User user) {
+		// delete user from DB
+		String deleteUserFromDB = "DELETE FROM users where email=?;";
+		PreparedStatement prepStatement = null;
+		try {
+			prepStatement = DBManager.getInstance().getConnection().prepareStatement(deleteUserFromDB);
+			prepStatement.setString(1, user.getEmail());
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (prepStatement != null) {
+				try {
+					prepStatement.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return false;
 	}
 
-	public boolean addToFollowedUsers(User user, String followedUserEmail) {
+	public synchronized boolean addToFollowedUsers(User user, String followedUserEmail) {
 		// adds the data into followers DB table
 		String insertFollowedUserIntoDB = "INSERT INTO followers (follower_email, followed_email) VALUES (?, ?);";
 		PreparedStatement statement = null;
@@ -166,11 +191,20 @@ public class UserDao {
 		} catch (CannotConnectToDBException e) {
 			// TODO handle exception
 			e.printStackTrace();
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 		return false;
 	}
 
-	public boolean removeFromFollowedUsers(User user, String followedUserEmail) {
+	public synchronized boolean removeFromFollowedUsers(User user, String followedUserEmail) {
 		// delete the following relationship between the two users
 		String deleteFollowedUserFromDB = "DELETE FROM followers where follower_email=? AND followed_email=?;";
 		PreparedStatement statement = null;
@@ -186,11 +220,121 @@ public class UserDao {
 		} catch (CannotConnectToDBException e) {
 			// TODO handle exception
 			e.printStackTrace();
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 		return false;
 	}
 
-	private void displaySqlErrors(SQLException e) {
+	public synchronized ConcurrentHashMap<String, ArrayList<String>> getAllVisitedPlacesFromDB() {
+		// retrieve all users' emails and the places' names they visited
+		ConcurrentHashMap<String, ArrayList<String>> allVisitedDestinationsAndUsers = new ConcurrentHashMap<>(); // destination
+																													// name->all
+																													// users
+																													// who
+																													// visited
+																													// it
+		String selectAllVisitedPlacesFromDB = "SELECT destination_name, user_email FROM visited_destinations ORDER BY destination_name;";
+		Statement statement = null;
+		ResultSet result = null;
+		try {
+			statement = DBManager.getInstance().getConnection().createStatement();
+			result = statement.executeQuery(selectAllVisitedPlacesFromDB);
+			while (result.next()) {
+				if (!(allVisitedDestinationsAndUsers.containsKey(result.getString("destination_name")))) {
+					allVisitedDestinationsAndUsers.put(result.getString("destination_name"), new ArrayList<>());
+				}
+				allVisitedDestinationsAndUsers.get(result.getString("destination_name"))
+						.add(result.getString("user_email"));
+			}
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return allVisitedDestinationsAndUsers;
+	}
+
+	public synchronized boolean addVisitedDestinationToDB(User user, String destinationName) {
+		String insertVisitedDestinationAndUserEmailIntoDB = "INSERT INTO visited_destinations (destination_name, user_email) VALUES (?, ?);";
+		PreparedStatement statement = null;
+		try {
+			statement = DBManager.getInstance().getConnection()
+					.prepareStatement(insertVisitedDestinationAndUserEmailIntoDB);
+			statement.setString(1, destinationName);
+			statement.setString(2, user.getEmail());
+			statement.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return false;
+	}
+
+	public synchronized boolean removeVisitedDestinationFromDB(User user, String destinationName) {
+		String deleteVisitedDestinationAndUserEmailFromDB = "DELETE FROM visited_destinations WHERE destination_name=? AND user_email=?;";
+		PreparedStatement statement = null;
+		try {
+			statement = DBManager.getInstance().getConnection()
+					.prepareStatement(deleteVisitedDestinationAndUserEmailFromDB);
+			statement.setString(1, destinationName);
+			statement.setString(2, user.getEmail());
+			statement.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return false;
+	}
+
+	private synchronized void displaySqlErrors(SQLException e) {
 		System.out.println("SQLException: " + e.getMessage());
 		System.out.println("SQLState: " + e.getSQLState());
 		System.out.println("Vendor error: " + e.getErrorCode());
