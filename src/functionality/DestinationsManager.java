@@ -282,4 +282,48 @@ public class DestinationsManager {
 		DestinationDAO.getInstance().addVideo(destName, video);
 	}
 
+	public void addLike(String userEmail, String destinationName) {
+		Destination dest = this.allDestinations.get(destinationName);
+		if (dest.getUserLikers().contains(userEmail)) {
+			return;
+		}
+		if (dest.getUserDislikers().contains(userEmail)) {
+			dest.getUserDislikers().remove(userEmail);
+			DestinationDAO.getInstance().removeDislike(userEmail, destinationName);
+		}
+		dest.like(userEmail);
+		DestinationDAO.getInstance().addLike(userEmail, destinationName);
+	}
+
+	public void addDislike(String userEmail, String destinationName) {
+		Destination dest = this.allDestinations.get(destinationName);
+		if (dest.getUserDislikers().contains(userEmail)) {
+			return;
+		}
+		if (dest.getUserLikers().contains(userEmail)) {
+			dest.getUserLikers().remove(userEmail);
+			DestinationDAO.getInstance().removeLike(userEmail, destinationName);
+		}
+		dest.dislike(userEmail);
+		DestinationDAO.getInstance().addDislike(userEmail, destinationName);
+	}
+
+	public void removeLike(String userEmail, String destinationName) {
+		Destination dest = this.allDestinations.get(destinationName);
+		if (!dest.getUserLikers().contains(userEmail)) {
+			return;
+		}
+		dest.unlike(userEmail);
+		DestinationDAO.getInstance().removeLike(userEmail, destinationName);
+	}
+
+	public void removeDisike(String userEmail, String destinationName) {
+		Destination dest = this.allDestinations.get(destinationName);
+		if (!dest.getUserDislikers().contains(userEmail)) {
+			return;
+		}
+		dest.removeDislike(userEmail);
+		DestinationDAO.getInstance().removeDislike(userEmail, destinationName);
+	}
+
 }
