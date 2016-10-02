@@ -15,6 +15,7 @@ import javax.servlet.http.Part;
 
 import exceptions.InvalidCoordinatesException;
 import functionality.DestinationsManager;
+import models.Destination.Category;
 import models.Location;
 import models.User;
 
@@ -37,6 +38,7 @@ public class AddDestinationServlet extends HttpServlet {
 		String longitude = request.getParameter("long");
 		String lattitude = request.getParameter("lat");
 		String description = request.getParameter("description");
+		String category = request.getParameter("category");
 		Location location = null;
 		try {
 			location = new Location(Double.parseDouble(longitude), Double.parseDouble(lattitude));
@@ -64,7 +66,13 @@ public class AddDestinationServlet extends HttpServlet {
 							DestinationsManager.getInstance().addDestination(
 									((User) request.getSession().getAttribute("user")), name, description,
 									Double.parseDouble(lattitude), Double.parseDouble(longitude),
-									destinationPicFile.getName(), >> ); //TODO add the rest of the fields!!!!!!!!!!
+									destinationPicFile.getName(), Category.valueOf(category)); // ***
+																								// added
+																								// the
+																								// rest
+																								// of
+																								// the
+																								// fields
 						} catch (NumberFormatException | InvalidCoordinatesException e) {
 							System.out.println("Invalid destination Data");
 						}

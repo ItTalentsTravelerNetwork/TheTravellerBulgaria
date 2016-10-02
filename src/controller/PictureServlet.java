@@ -23,7 +23,7 @@ public class PictureServlet extends HttpServlet {
 
 	public static void returnProfilePic(User u, HttpServletResponse response) throws IOException {
 
-		File profilePicFile = new File("userPics", u.getProfilePic());
+		File profilePicFile = new File("userPics", u.getProfilePicture());
 		response.setContentLength((int) profilePicFile.length());
 		String contentType = "image/"
 				+ profilePicFile.getName().split("[.]")[profilePicFile.getName().split("[.]").length - 1];
