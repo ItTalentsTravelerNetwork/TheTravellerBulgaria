@@ -14,6 +14,7 @@ import dbModels.PlaceToEatDao;
 import dbModels.SightDao;
 import exceptions.InvalidCoordinatesException;
 import models.Activity;
+import models.Comment;
 import models.Destination;
 import models.Destination.Category;
 import models.Location;
@@ -267,7 +268,7 @@ public class DestinationsManager {
 		HotelDao.getInstance().saveHotelInDB(p);
 	}
 
-	public void addHotel(String destName, PlaceToEat e) throws CloneNotSupportedException {
+	public void addPlaceToEat(String destName, PlaceToEat e) throws CloneNotSupportedException {
 		this.allDestinations.get(destName).addPlaceToEat(e);
 		PlaceToEatDao.getInstance().savePlaceToEatInDB(e);
 	}
@@ -324,6 +325,48 @@ public class DestinationsManager {
 		}
 		dest.removeDislike(userEmail);
 		DestinationDAO.getInstance().removeDislike(userEmail, destinationName);
+	}
+
+	public boolean deleteAllUserData(User user) {
+		String userEmail = user.getEmail();
+		ArrayList<Destination> destinationsToRemove = new ArrayList<>();
+		for (Entry<String, String> authorDestination : this.allDestinationsAndAuthors.entrySet()) {
+			if (authorDestination.getValue().equals(userEmail)) {
+				destinationsToRemove.add(this.allDestinations.get(authorDestination.getKey()));
+			}
+		}
+		for (Destination dest : destinationsToRemove) {
+			this.allDestinations.remove(dest.getName());
+			this.allDestinationsAndAuthors.remove(dest.getName());
+			return true;
+		}
+
+		for (Destination dest : this.allDestinations.values()) {
+
+			for (Comment comment : dest.getComments()) {
+				if (comment.getAuthorEmail().equals(userEmail)) {
+					dest.removeComment(comment);
+				} else {
+					for (String email : comment.getUserLikers()) {
+						if (email.equals(userEmail)) {
+							comment.unlike(userEmail);
+						}
+					}
+				}
+			}
+			for (String email : dest.getUserLikers()) {
+				if (email.equals(userEmail)) {
+					dest.unlike(userEmail);
+				}
+			}
+			for (String email : dest.getUserDislikers()) {
+				if (email.equals(userEmail)) {
+					dest.removeDislike(userEmail);
+				}
+			}
+		}
+		CommentsManager.getInstance().deleteUserComments(userEmail);
+		return true;
 	}
 
 }
