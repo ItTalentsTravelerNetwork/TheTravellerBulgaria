@@ -1,6 +1,7 @@
 package functionality;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import dbModels.CommentDao;
@@ -52,6 +53,18 @@ public class CommentsManager {
 		CopyOnWriteArrayList<Comment> copy = new CopyOnWriteArrayList<>();
 		copy.addAll(allComments);
 		return copy;
+	}
+
+	public synchronized void deleteUserComments(String userEmail) {
+		ArrayList<Comment> commentsToRemove = new ArrayList<>();
+		for (Comment comment : allComments) {
+			if (comment.getAuthorEmail().equals(userEmail)) {
+				commentsToRemove.add(comment);
+			}
+		}
+		for (Comment comment : commentsToRemove) {
+			this.allComments.remove(comment);
+		}
 	}
 
 }
