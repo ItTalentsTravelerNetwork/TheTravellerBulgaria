@@ -201,13 +201,68 @@ public class DestinationDAO {
 	public boolean addLike(String userEmail, String destinationName) {
 		// TODO update like (userLiker and number Of likes; +/- userDisliker and
 		// number of dislikes)
-		return false;
+		try {
+			PreparedStatement ps = DBManager.getInstance().getConnection()
+					.prepareStatement("INSERT INTO destination_likes(user_email, destination_name) VALUES (?,?);");
+			ps.setString(1, userEmail);
+			ps.setString(2, destinationName);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
+	public boolean addDislike(String userEmail, String destinationName) {
+		try {
+			PreparedStatement ps = DBManager.getInstance().getConnection()
+					.prepareStatement("INSERT INTO destination_dislikes(user_email, destination_name) VALUES (?,?);");
+			ps.setString(1, userEmail);
+			ps.setString(2, destinationName);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	public boolean removeLike(String userEmail, String destinationName) {
 		// TODO update dislike (userDisliker and number Of dislikes; +/-
 		// userLiker and number of likes)
-		return false;
+		try {
+			PreparedStatement ps = DBManager.getInstance().getConnection()
+					.prepareStatement("DELETE FROM destination_likes WHERE user_email=? AND destination_name=?;");
+			ps.setString(1, userEmail);
+			ps.setString(2, destinationName);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public boolean removeDislike(String userEmail, String destinationName) {
+		// TODO update dislike (userDisliker and number Of dislikes; +/-
+		// userLiker and number of likes)
+		try {
+			PreparedStatement ps = DBManager.getInstance().getConnection()
+					.prepareStatement("DELETE FROM destination_dislikes WHERE user_email=? AND destination_name=?;");
+			ps.setString(1, userEmail);
+			ps.setString(2, destinationName);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	public ConcurrentHashMap<String, ArrayList<String>> getLikes() {
