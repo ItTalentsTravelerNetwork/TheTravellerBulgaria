@@ -107,9 +107,9 @@ public class UsersManager {
 
 	public synchronized boolean deleteUser(User user) {
 		if (registerredUsers.containsKey(user.getEmail())) {
-			// Remove from cache:
-			// TODO call methods from DestinationsManager and CommentsManager to
-			// clean up the user data in the site
+			// Delete from cache:
+			// Removing all user data from destinations and comments cache:
+			DestinationsManager.getInstance().deleteAllUserData(user);
 			// Removing from other users' following list:
 			for (Map.Entry<String, User> entry : registerredUsers.entrySet()) { // going
 																				// through
