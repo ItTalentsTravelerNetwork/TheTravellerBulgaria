@@ -10,7 +10,7 @@ public class User {
 	private String firstName;
 	private String lastName;
 	private String description;
-	private String profilePic;
+	private String profilePicture;
 	private CopyOnWriteArrayList<String> addedPlaces;
 	private CopyOnWriteArrayList<String> visitedPlaces;
 	private CopyOnWriteArrayList<String> followedUsers; // emails of users that
@@ -18,25 +18,38 @@ public class User {
 														// followed
 	private ConcurrentHashMap<String, Chat> chatHistory; // name of second user
 															// -> chat object
-	private int timesLiked; // how many times the user is liked
 	private double rating;
+	private int timesLiked; // how many times the user is liked
 
-	public User(String email, String password, String firstName, String lastName, String description, String profilePic,
-			CopyOnWriteArrayList<String> addedPlaces, CopyOnWriteArrayList<String> visitedPlaces,
-			CopyOnWriteArrayList<String> followedUsers, ConcurrentHashMap<String, Chat> chatHistory, int timesLiked,
-			double rating) {
+	public User(String email, String password, String firstName, String lastName, String description,
+			String profilePicture, double rating, int timesLiked) { // basic; no
+																	// collections
+		setEmail(email);
+		setPassword(password);
+		setFirstName(firstName);
+		setLastName(lastName);
+		setDescription(description);
+		setProfilePicture(profilePicture);
+		setRating(rating);
+		setTimesLiked(timesLiked);
+	}
+
+	public User(String email, String password, String firstName, String lastName, String description,
+			String profilePicture, CopyOnWriteArrayList<String> addedPlaces, CopyOnWriteArrayList<String> visitedPlaces,
+			CopyOnWriteArrayList<String> followedUsers, ConcurrentHashMap<String, Chat> chatHistory, double rating,
+			int timesLiked) { // extended creation; with collections
 		setFirstName(firstName);
 		setLastName(lastName);
 		setPassword(password);
 		setEmail(email);
 		setDescription(description);
-		setProfilePic(profilePic);
+		setProfilePicture(profilePicture);
 		setAddedPlaces(addedPlaces);
 		setVisitedPlaces(visitedPlaces);
 		setFollowedUsers(followedUsers);
 		setChatHistory(chatHistory);
-		setTimesLiked(timesLiked);
 		setRating(rating);
+		setTimesLiked(timesLiked);
 	}
 
 	public synchronized void addPlace(String destinationName) {
@@ -79,13 +92,13 @@ public class User {
 			chatHistory.remove(chat);
 	}
 
-	public synchronized String getProfilePic() {
-		return profilePic;
+	public synchronized String getProfilePicture() {
+		return profilePicture;
 	}
 
-	public synchronized void setProfilePic(String profilePic) {
-		if (profilePic != null && !profilePic.isEmpty())
-			this.profilePic = profilePic;
+	public synchronized void setProfilePicture(String profilePicture) {
+		if (profilePicture != null && !profilePicture.isEmpty())
+			this.profilePicture = profilePicture;
 	}
 
 	public synchronized CopyOnWriteArrayList<String> getVisitedPlaces() {

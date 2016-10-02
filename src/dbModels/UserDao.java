@@ -32,15 +32,20 @@ public class UserDao {
 		try {
 			try {
 				statement = DBManager.getInstance().getConnection().createStatement();
-				String selectAllUsersFromDB = "SELECT first_name, last_name, password, email, description, profilePic FROM users;";
+				String selectAllUsersFromDB = "SELECT email, password, first_name, last_name, description, profile_picture, rating, times_liked FROM users;";
 				result = statement.executeQuery(selectAllUsersFromDB);
 				while (result.next()) {
-					User user = new User(result.getString("first_name"), result.getString("last_name"),
-							result.getString("password"), result.getString("email"), result.getString("description"),
-							result.getString("profilePic")); // creating a new
-																// user with
-																// info from DB
-
+					User user = new User(result.getString("email"), result.getString("password"),
+							result.getString("first_name"), result.getString("last_name"),
+							result.getString("description"), result.getString("profile_picture"),
+							result.getDouble("rating"), result.getInt("times_liked")); // creating
+																						// a
+																						// new
+																						// user
+																						// with
+																						// info
+																						// from
+																						// DB
 					users.add(user); // add user to allUsers cache
 				}
 				System.out.println("All users returned from DB.");
@@ -72,18 +77,19 @@ public class UserDao {
 	}
 
 	public synchronized boolean saveUserToDB(User user) {
-		// TODO update
-
-		String insertUserInfoIntoDB = "INSERT INTO users (first_name, last_name, password, email, description, profilePic) VALUES (?, ?, ?, ?, ?, ?);";
+		// save user
+		String insertUserInfoIntoDB = "INSERT INTO users (email, password, first_name, last_name, description, profile_picture, rating, times_liked) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 		PreparedStatement statement = null;
 		try {
 			statement = DBManager.getInstance().getConnection().prepareStatement(insertUserInfoIntoDB);
-			statement.setString(1, user.getFirstName());
-			statement.setString(2, user.getLastName());
-			statement.setString(3, user.getPassword());
-			statement.setString(4, user.getEmail());
+			statement.setString(1, user.getEmail());
+			statement.setString(2, user.getPassword());
+			statement.setString(3, user.getFirstName());
+			statement.setString(4, user.getLastName());
 			statement.setString(5, user.getDescription());
-			statement.setString(6, user.getProfilePic());
+			statement.setString(6, user.getProfilePicture());
+			statement.setDouble(7, user.getRating());
+			statement.setInt(8, user.getTimesLiked());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -106,18 +112,18 @@ public class UserDao {
 	}
 
 	public synchronized boolean updateUserInDB(String email, String password, String firstName, String lastName,
-			String description, String profilePic) {
-		// Update all fields of the current user except email (primary key)
+			String description, String profilePicture) {
+		// The user updates all their fields except email (primary key)
 		PreparedStatement prepStatement = null;
-		String updateUserStatement = "UPDATE users SET password=?, first_name=?, last_name=?, description=?, profilePic=? WHERE email=?;";
+		String updateUserStatement = "UPDATE users SET password=?, first_name=?, last_name=?, description=?, profile_picture=? WHERE email=?;";
 		try {
 			prepStatement = DBManager.getInstance().getConnection().prepareStatement(updateUserStatement);
 			prepStatement.setString(1, password);
 			prepStatement.setString(2, firstName);
 			prepStatement.setString(3, lastName);
 			prepStatement.setString(4, description);
-			prepStatement.setString(5, email);
-			prepStatement.setString(6, profilePic);
+			prepStatement.setString(5, profilePicture);
+			prepStatement.setString(6, email);
 			prepStatement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
@@ -138,6 +144,50 @@ public class UserDao {
 				}
 			}
 		}
+	}
+
+	public synchronized boolean removeUserFromDB(User user) {
+		// TODO implement
+	}
+
+	public boolean addToFollowedUsers(User user, String followedUserEmail) {
+		// adds the data into followers DB table
+		String insertFollowedUserIntoDB = "INSERT INTO followers (follower_email, followed_email) VALUES (?, ?);";
+		PreparedStatement statement = null;
+		try {
+			statement = DBManager.getInstance().getConnection().prepareStatement(insertFollowedUserIntoDB);
+			statement.setString(1, user.getEmail());
+			statement.setString(2, followedUserEmail);
+			statement.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public boolean removeFromFollowedUsers(User user, String followedUserEmail) {
+		// delete the following relationship between the two users
+		String deleteFollowedUserFromDB = "DELETE FROM followers where follower_email=? AND followed_email=?;";
+		PreparedStatement statement = null;
+		try {
+			statement = DBManager.getInstance().getConnection().prepareStatement(deleteFollowedUserFromDB);
+			statement.setString(1, user.getEmail());
+			statement.setString(2, followedUserEmail);
+			statement.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	private void displaySqlErrors(SQLException e) {

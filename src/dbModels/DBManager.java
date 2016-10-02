@@ -100,72 +100,83 @@ class DBManager {
 					+ "password VARCHAR(64) NOT NULL,\r\n" + "first_name VARCHAR(64) NOT NULL,\r\n"
 					+ "last_name VARCHAR(64) NOT NULL,\r\n" + "description VARCHAR(500) NOT NULL,\r\n"
 					+ "profile_picture VARCHAR(100) NOT NULL,\r\n" + "rating DOUBLE NOT NULL,\r\n"
-					+ "times_liked INT NOT NULL\r\n" + ");\r\n" + "";
+					+ "times_liked INT NOT NULL\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createDestinationsTable = "CREATE TABLE destinations (\r\n"
 					+ "name VARCHAR(64) NOT NULL PRIMARY KEY,\r\n" + "description VARCHAR(500) NOT NULL,\r\n"
 					+ "lattitude DOUBLE NOT NULL,\r\n" + "longitude DOUBLE NOT NULL,\r\n"
 					+ "main_picture VARCHAR(100) NOT NULL, \r\n" + "author_email VARCHAR(64) NOT NULL,\r\n"
-					+ "CONSTRAINT FK_author_email FOREIGN KEY (author_email)\r\n" + "REFERENCES users (email),\r\n"
-					+ "category VARCHAR(50) NOT NULL,\r\n" + "number_if_likes INT NOT NULL,\r\n"
-					+ "number_if_dislikes INT NOT NULL\r\n" + ");\r\n" + "";
+					+ "CONSTRAINT FK_author_email FOREIGN KEY (author_email)\r\n" + "REFERENCES users (email)\r\n"
+					+ "ON DELETE CASCADE,\r\n" + "category VARCHAR(50) NOT NULL,\r\n"
+					+ "number_of_likes INT NOT NULL,\r\n" + "number_of_dislikes INT NOT NULL\r\n"
+					+ ") ENGINE=InnoDB;\r\n" + "";
 
 			String createVisitedDestinationsTable = "CREATE TABLE visited_destinations (\r\n"
 					+ "destination_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_destination_name FOREIGN KEY (destination_name)\r\n"
-					+ "REFERENCES destinations (name),\r\n" + "user_email VARCHAR(64) NOT NULL,\r\n"
-					+ "CONSTRAINT FK_user_email FOREIGN KEY (user_email)\r\n" + "REFERENCES users (email),\r\n"
-					+ "PRIMARY KEY (destination_name, user_email)\r\n" + ");\r\n" + "";
+					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE,\r\n"
+					+ "user_email VARCHAR(64) NOT NULL,\r\n" + "CONSTRAINT FK_user_email FOREIGN KEY (user_email)\r\n"
+					+ "REFERENCES users (email)\r\n" + "ON DELETE CASCADE,\r\n"
+					+ "PRIMARY KEY (destination_name, user_email)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createCommentsTable = "CREATE TABLE comments (\r\n"
 					+ "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\r\n" + "author_email VARCHAR(64) NOT NULL,\r\n"
-					+ "CONSTRAINT FK_userauthor_email FOREIGN KEY (author_email)\r\n" + "REFERENCES users (email),\r\n"
-					+ "place_name VARCHAR(64) NOT NULL,\r\n" + "CONSTRAINT FK_place_name FOREIGN KEY (place_name)\r\n"
-					+ "REFERENCES destinations (name),\r\n" + "text VARCHAR(500) NOT NULL,\r\n"
-					+ "number_of_likes INT NOT NULL,\r\n" + "date_and_time VARCHAR(20) NOT NULL,\r\n"
-					+ "video VARCHAR(100)\r\n" + ");\r\n" + "";
+					+ "CONSTRAINT FK_userauthor_email FOREIGN KEY (author_email)\r\n" + "REFERENCES users (email)\r\n"
+					+ "ON DELETE CASCADE,\r\n" + "place_name VARCHAR(64) NOT NULL,\r\n"
+					+ "CONSTRAINT FK_place_name FOREIGN KEY (place_name)\r\n" + "REFERENCES destinations (name)\r\n"
+					+ "ON DELETE CASCADE,\r\n" + "text VARCHAR(500) NOT NULL,\r\n" + "number_of_likes INT NOT NULL,\r\n"
+					+ "date_and_time VARCHAR(20) NOT NULL,\r\n" + "video VARCHAR(100)\r\n" + ") ENGINE=InnoDB;\r\n"
+					+ "";
 
 			String createCommentLikesTable = "CREATE TABLE comment_likes (\r\n"
 					+ "commenter_email VARCHAR(64) NOT NULL,\r\n" + "comment_id INT NOT NULL,\r\n"
-					+ "CONSTRAINT FK_commenter_email FOREIGN KEY (commenter_email)\r\n"
-					+ "REFERENCES users (email),\r\n" + "CONSTRAINT FK_comment_id FOREIGN KEY (comment_id)\r\n"
-					+ "REFERENCES comments (id),\r\n" + "PRIMARY KEY (commenter_email, comment_id)\r\n" + ");\r\n" + "";
+					+ "CONSTRAINT FK_commenter_email FOREIGN KEY (commenter_email)\r\n" + "REFERENCES users (email)\r\n"
+					+ "ON DELETE CASCADE,\r\n" + "CONSTRAINT FK_comment_id FOREIGN KEY (comment_id)\r\n"
+					+ "REFERENCES comments (id)\r\n" + "ON DELETE CASCADE,\r\n"
+					+ "PRIMARY KEY (commenter_email, comment_id)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createCommentDislikesTable = "CREATE TABLE comment_dislikes (\r\n"
 					+ "commenter_email VARCHAR(64) NOT NULL,\r\n" + "comment_id INT NOT NULL,\r\n"
 					+ "CONSTRAINT FK_usercommenter_email FOREIGN KEY (commenter_email)\r\n"
-					+ "REFERENCES users (email),\r\n" + "CONSTRAINT FK_comment_id_number FOREIGN KEY (comment_id)\r\n"
-					+ "REFERENCES comments (id),\r\n" + "PRIMARY KEY (commenter_email, comment_id)\r\n" + ");\r\n" + "";
+					+ "REFERENCES users (email)\r\n" + "ON DELETE CASCADE,\r\n"
+					+ "CONSTRAINT FK_comment_id_number FOREIGN KEY (comment_id)\r\n" + "REFERENCES comments (id)\r\n"
+					+ "ON DELETE CASCADE,\r\n" + "PRIMARY KEY (commenter_email, comment_id)\r\n"
+					+ ") ENGINE=InnoDB;\r\n" + "";
 
 			String createDestinationLikesTable = "CREATE TABLE destination_likes (\r\n"
 					+ "user_email VARCHAR(64) NOT NULL,\r\n" + "destination_name VARCHAR(64) NOT NULL,\r\n"
-					+ "CONSTRAINT FK_userliker_email FOREIGN KEY (user_email)\r\n" + "REFERENCES users (email),\r\n"
+					+ "CONSTRAINT FK_userliker_email FOREIGN KEY (user_email)\r\n" + "REFERENCES users (email)\r\n"
+					+ "ON DELETE CASCADE,\r\n"
 					+ "CONSTRAINT FK_liked_destination_name FOREIGN KEY (destination_name)\r\n"
-					+ "REFERENCES destinations (name),\r\n" + "PRIMARY KEY (user_email, destination_name)\r\n"
-					+ ");\r\n" + "";
+					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE,\r\n"
+					+ "PRIMARY KEY (user_email, destination_name)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createDestinationDislikesTable = "CREATE TABLE destination_dislikes (\r\n"
 					+ "user_email VARCHAR(64) NOT NULL,\r\n" + "destination_name VARCHAR(64) NOT NULL,\r\n"
-					+ "CONSTRAINT FK_userdisliker_email FOREIGN KEY (user_email)\r\n" + "REFERENCES users (email),\r\n"
+					+ "CONSTRAINT FK_userdisliker_email FOREIGN KEY (user_email)\r\n" + "REFERENCES users (email)\r\n"
+					+ "ON DELETE CASCADE,\r\n"
 					+ "CONSTRAINT FK_disliked_destination_name FOREIGN KEY (destination_name)\r\n"
-					+ "REFERENCES destinations (name),\r\n" + "PRIMARY KEY (user_email, destination_name)\r\n"
-					+ ");\r\n" + "";
+					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE,\r\n"
+					+ "PRIMARY KEY (user_email, destination_name)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createFollowersTable = "CREATE TABLE followers (\r\n" + "follower_email VARCHAR(64) NOT NULL,\r\n"
 					+ "followed_email VARCHAR(64) NOT NULL,\r\n"
-					+ "CONSTRAINT FK_follower_email FOREIGN KEY (follower_email)\r\n" + "REFERENCES users (email),\r\n"
-					+ "CONSTRAINT FK_followed_email FOREIGN KEY (followed_email)\r\n" + "REFERENCES users (email),\r\n"
-					+ "PRIMARY KEY (follower_email, followed_email)\r\n" + ");\r\n" + "";
+					+ "CONSTRAINT FK_follower_email FOREIGN KEY (follower_email)\r\n" + "REFERENCES users (email)\r\n"
+					+ "ON DELETE CASCADE,\r\n" + "CONSTRAINT FK_followed_email FOREIGN KEY (followed_email)\r\n"
+					+ "REFERENCES users (email)\r\n" + "ON DELETE CASCADE,\r\n"
+					+ "PRIMARY KEY (follower_email, followed_email)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createDestinationsVideosTable = "CREATE TABLE destinations_videos (\r\n"
 					+ "video VARCHAR(100) NOT NULL,\r\n" + "destination_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_destination_with_video_name FOREIGN KEY (destination_name)\r\n"
-					+ "REFERENCES destinations (name),\r\n" + "PRIMARY KEY (video)\r\n" + ");\r\n" + "";
+					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE,\r\n" + "PRIMARY KEY (video)\r\n"
+					+ ") ENGINE=InnoDB;\r\n" + "";
 
 			String createDestinationsPicturesTable = "CREATE TABLE destinations_pictures (\r\n"
 					+ "picture VARCHAR(100) NOT NULL,\r\n" + "destination_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_destination_with_picture_name FOREIGN KEY (destination_name)\r\n"
-					+ "REFERENCES destinations (name),\r\n" + "PRIMARY KEY (picture)\r\n" + ");\r\n" + "";
+					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE,\r\n" + "PRIMARY KEY (picture)\r\n"
+					+ ") ENGINE=InnoDB;\r\n" + "";
 
 			String createPlacesToEatTable = "CREATE TABLE places_to_eat (\r\n"
 					+ "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\r\n" + "name VARCHAR(64) NOT NULL,\r\n"
@@ -173,7 +184,7 @@ class DBManager {
 					+ "description VARCHAR(500) NOT NULL,\r\n" + "picture VARCHAR(100) NOT NULL, \r\n"
 					+ "author_rating DOUBLE NOT NULL,\r\n" + "place_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_added_place_name FOREIGN KEY (place_name)\r\n"
-					+ "REFERENCES destinations (name)\r\n" + ");\r\n" + "";
+					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createActivitiesTable = "CREATE TABLE activities (\r\n"
 					+ "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\r\n" + "name VARCHAR(64) NOT NULL,\r\n"
@@ -182,7 +193,7 @@ class DBManager {
 					+ "author_rating DOUBLE NOT NULL,\r\n" + "price DOUBLE NOT NULL,\r\n"
 					+ "place_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_added_user_place_name FOREIGN KEY (place_name)\r\n"
-					+ "REFERENCES destinations (name)\r\n" + ");\r\n" + "";
+					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createSightsTable = "CREATE TABLE sights (\r\n" + "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\r\n"
 					+ "name VARCHAR(64) NOT NULL,\r\n" + "lattitude DOUBLE NOT NULL,\r\n"
@@ -190,7 +201,7 @@ class DBManager {
 					+ "picture VARCHAR(100) NOT NULL, \r\n" + "author_rating DOUBLE NOT NULL,\r\n"
 					+ "place_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_user_added_place_name FOREIGN KEY (place_name)\r\n"
-					+ "REFERENCES destinations (name)\r\n" + ");\r\n" + "";
+					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createPlacesToSleepTable = "CREATE TABLE places_to_sleep (\r\n"
 					+ "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\r\n" + "name VARCHAR(64) NOT NULL,\r\n"
@@ -200,7 +211,7 @@ class DBManager {
 					+ "contact VARCHAR(50) NOT NULL,\r\n" + "price DOUBLE NOT NULL,\r\n"
 					+ "place_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_current_place_name FOREIGN KEY (place_name)\r\n"
-					+ "REFERENCES destinations (name)\r\n" + ");\r\n" + "";
+					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			st = this.getConnection().createStatement();
 			st.executeUpdate(createSchema);

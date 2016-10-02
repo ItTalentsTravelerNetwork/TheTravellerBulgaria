@@ -73,9 +73,9 @@ public class UsersManager {
 																			// collection
 	}
 
-	public void registerUser(String firstName, String lastName, String email, String password, String description,
-			String profilePic) {
-		User user = new User(firstName, lastName, password, email, description, profilePic,
+	public void registerUser(String email, String password, String firstName, String lastName, String description,
+			String profilePicture) {
+		User user = new User(firstName, lastName, password, email, description, profilePicture,
 				new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>(),
 				new ConcurrentHashMap<>(), 0, 0);
 		registerredUsers.put(email, user); // adds the new user to the
@@ -83,7 +83,23 @@ public class UsersManager {
 		UserDao.getInstance().saveUserToDB(user); // saves user to DB
 	}
 
-	public void addDestination(User user, String destinationName) {
+	public boolean addDestination(User user, Destination destination) throws InvalidCoordinatesException {
+		String destName = destination.getName();
+		String destDescription = destination.getDescription();
+		double destLattitude = destination.getLocation().getLattitude();
+		double destLongitude = destination.getLocation().getLongitude();
+		String destMainPicture = destination.getMainPicture();
+		Category category = destination.getCategory();
+		if (DestinationsManager.getInstance().addDestination(user, destName, destDescription, destLattitude,
+				destLongitude, destMainPicture, category)) {
+			addDestinationToUser(user, destName);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private void addDestinationToUser(User user, String destinationName) {
 		user.getAddedPlaces().add(destinationName);
 	}
 
@@ -108,54 +124,34 @@ public class UsersManager {
 		return true;
 	}
 
-	public boolean addDestination(User user, Destination destination) throws InvalidCoordinatesException {
-		String destName = destination.getName();
-		String destDescription = destination.getDescription();
-		double destLattitude = destination.getLocation().getLattitude();
-		double destLongitude = destination.getLocation().getLongitude();
-		String destMainPicture = destination.getMainPicture();
-		ConcurrentSkipListSet<PlaceToSleep> placesToSleep = destination.getPlacesToSleep();
-		ConcurrentSkipListSet<PlaceToEat> placesToEat = destination.getPlacesToEat();
-		Category category = destination.getCategory();
-		CopyOnWriteArrayList<String> pictures = destination.getPictures();
-		CopyOnWriteArrayList<String> videos = destination.getVideos();
-		ConcurrentSkipListSet<Activity> activities = destination.getActivities();
-		ConcurrentSkipListSet<Sight> sights = destination.getSights();
-		if (DestinationsManager.getInstance().addDestination(user, destName, destDescription, destLattitude,
-				destLongitude, destMainPicture, placesToSleep, placesToEat, category, pictures, videos, activities,
-				sights)) {
-			addDestination(user, destName);
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	public boolean updateUserInfo(String email, String password, String firstName, String lastName, String description,
-			String profilePic) {
-		if (!registerredUsers.containsKey(email)) { // no such user
-			return false;
+			String profilePicture) {
+		if (registerredUsers.containsKey(email)) { // the user exists
+			User user = registerredUsers.get(email); // takes the user with the
+														// input email and
+														// updates
+														// their fields
+			user.setPassword(password);
+			user.setFirstName(firstName);
+			user.setLastName(lastName);
+			user.setDescription(description);
+			user.setProfilePicture(profilePicture);
+			if (UserDao.getInstance().updateUserInDB(email, password, firstName, lastName, description,
+					profilePicture)) { // updates
+										// the
+										// DB
+										// user
+				return true;
+			}
 		}
-		User user = registerredUsers.get(email); // takes the user with the
-													// input email and updates
-													// their fields
-		user.setPassword(password);
-		user.setFirstName(firstName);
-		user.setLastName(lastName);
-		user.setDescription(description);
-		user.setProfilePic(profilePic);
-		UserDao.getInstance().updateUserInDB(email, password, firstName, lastName, description, profilePic); // updates
-		// the
-		// DB
-		// user:
-		return true;
+		return false;
 	}
 
 	public boolean addVidsitedDestination(User user, String destinationName) {
 		if (!DestinationsManager.getInstance().chechDestinationInCache(destinationName)) {
 			user.addVisitedPlace(destinationName);
 			//TODO add in DB
-			dasdasas asdas
+			dsfdsfds sdfsdf
 			return true;
 		}
 		return false;
@@ -166,7 +162,7 @@ public class UsersManager {
 			if (user.getVisitedPlaces().contains(destinationName)) {
 				user.removeVisitedPlace(destinationName);
 				//TODO remove in DB
-				asdsa
+				dasdas sadasd
 				return true;
 			}
 		}
@@ -174,21 +170,27 @@ public class UsersManager {
 	}
 
 	public boolean addToFollowedUsers(User user, String followedUserEmail) {
-		if (!user.getFollowedUsers().contains(followedUserEmail)) {
-			user.follow(followedUserEmail);
-			//TODO add in DB
-			dsadsad
-			return true;
+		if (registerredUsers.contains(user) && registerredUsers.containsKey(followedUserEmail)) {
+			if (!user.getFollowedUsers().contains(followedUserEmail)) {
+				user.follow(followedUserEmail);
+				// add in DB
+				if (UserDao.getInstance().addToFollowedUsers(user, followedUserEmail)) {
+					return true;
+				}
+			}
 		}
 		return false;
 	}
 
 	public boolean RemoveFromFollowedUsers(User user, String followedUserEmail) {
-		if (user.getFollowedUsers().contains(followedUserEmail)) {
-			user.unFollow(followedUserEmail);
-			//TODO remove in DB
-			dsadsad
-			return true;
+		if (registerredUsers.contains(user) && registerredUsers.containsKey(followedUserEmail)) {
+			if (user.getFollowedUsers().contains(followedUserEmail)) {
+				user.unFollow(followedUserEmail);
+				// remove in DB
+				if (UserDao.getInstance().removeFromFollowedUsers(user, followedUserEmail)) {
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -223,23 +225,25 @@ public class UsersManager {
 	}
 
 	public void likeAComment(String userEmail, Comment comment) {
-		CopyOnWriteArrayList<String> userLikersOfComment = comment.getUserLikers(); // all
-																					// the
-																					// users
-																					// who
-																					// like
-																					// the
-																					// comment
-		for (int i = 0; i < userLikersOfComment.size(); i++) {
-			if (userLikersOfComment.get(i) == userEmail) { // if the current
-															// user
-															// has already liked
-															// the comment
-				return; // do nothing
+		if (registerredUsers.containsKey(userEmail)) { // if user exists
+			CopyOnWriteArrayList<String> userLikersOfComment = comment.getUserLikers(); // all
+																						// the
+																						// users
+																						// who
+																						// like
+																						// the
+																						// comment
+			for (int i = 0; i < userLikersOfComment.size(); i++) {
+				if (userLikersOfComment.get(i) == userEmail) { // if the current
+																// user
+																// has already
+																// liked
+																// the comment
+					return; // do nothing
+				}
 			}
+			comment.like(userEmail); // the comment is liked
 		}
-		comment.like(userEmail); // the comment is liked
-
 	}
 
 	private static void printToLog(String message) {
