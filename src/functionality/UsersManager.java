@@ -82,11 +82,53 @@ public class UsersManager {
 		UserDao.getInstance().saveUserToDB(user); // saves user to DB
 	}
 
+	public synchronized boolean updateUserInfo(String email, String password, String firstName, String lastName,
+			String description, String profilePicture) {
+		if (registerredUsers.containsKey(email)) { // the user exists
+			User user = registerredUsers.get(email); // takes the user with the
+														// input email and
+														// updates
+														// their fields
+			user.setPassword(password);
+			user.setFirstName(firstName);
+			user.setLastName(lastName);
+			user.setDescription(description);
+			user.setProfilePicture(profilePicture);
+			if (UserDao.getInstance().updateUserInDB(email, password, firstName, lastName, description,
+					profilePicture)) { // updates
+										// the
+										// DB
+										// user
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public synchronized boolean deleteUser(User user) {
 		if (registerredUsers.containsKey(user.getEmail())) {
 			// Remove from cache:
 			// TODO call methods from DestinationsManager and CommentsManager to
 			// clean up the user data in the site
+			// Removing from other users' following list:
+			for (Map.Entry<String, User> entry : registerredUsers.entrySet()) { // going
+																				// through
+																				// all
+																				// the
+																				// registerred
+																				// users
+				User currentUser = entry.getValue();
+				removeFromFollowedUsers(currentUser, user.getEmail()); // if
+																		// current
+																		// user
+																		// has
+																		// followed
+																		// first
+																		// user
+																		// the
+																		// action
+																		// undone
+			}
 			// Remove from DB:
 			if (UserDao.getInstance().deleteUserFromDB(user)) {
 				return true;
@@ -136,29 +178,6 @@ public class UsersManager {
 		return true;
 	}
 
-	public synchronized boolean updateUserInfo(String email, String password, String firstName, String lastName,
-			String description, String profilePicture) {
-		if (registerredUsers.containsKey(email)) { // the user exists
-			User user = registerredUsers.get(email); // takes the user with the
-														// input email and
-														// updates
-														// their fields
-			user.setPassword(password);
-			user.setFirstName(firstName);
-			user.setLastName(lastName);
-			user.setDescription(description);
-			user.setProfilePicture(profilePicture);
-			if (UserDao.getInstance().updateUserInDB(email, password, firstName, lastName, description,
-					profilePicture)) { // updates
-										// the
-										// DB
-										// user
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public synchronized boolean addVidsitedDestination(User user, String destinationName) {
 		if (!DestinationsManager.getInstance().chechDestinationInCache(destinationName)) {
 			user.addVisitedPlace(destinationName);
@@ -196,7 +215,7 @@ public class UsersManager {
 		return false;
 	}
 
-	public synchronized boolean RemoveFromFollowedUsers(User user, String followedUserEmail) {
+	public synchronized boolean removeFromFollowedUsers(User user, String followedUserEmail) {
 		if (registerredUsers.contains(user) && registerredUsers.containsKey(followedUserEmail)) {
 			if (user.getFollowedUsers().contains(followedUserEmail)) {
 				user.unFollow(followedUserEmail);
