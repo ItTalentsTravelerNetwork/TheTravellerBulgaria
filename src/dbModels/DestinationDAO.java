@@ -36,15 +36,29 @@ public class DestinationDAO {
 		try {
 			statement = DBManager.getInstance().getConnection().createStatement();
 			result = statement.executeQuery("SELECT * from destinations_pictures;");
-			String name = result.getString("destination_name");
-			String pic = result.getString("picture");
-			if (!allPics.containsKey(name)) {
-				allPics.put(result.getString("destination_name"), new ArrayList<String>());
+			if (result != null) {
+				while (result.next()) {
+					String name = result.getString("destination_name");
+					String pic = result.getString("picture");
+					if (!allPics.containsKey(name)) {
+						allPics.put(result.getString("destination_name"), new ArrayList<String>());
+					}
+					allPics.get(name).add(pic);
+				}
 			}
-			allPics.get(name).add(pic);
+
 		} catch (SQLException | CannotConnectToDBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try {
+				result.close();
+				statement.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 
 		return allPics;

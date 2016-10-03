@@ -338,7 +338,7 @@ public class DestinationsManager {
 		for (Destination dest : destinationsToRemove) {
 			this.allDestinations.remove(dest.getName());
 			this.allDestinationsAndAuthors.remove(dest.getName());
-			return true;
+
 		}
 
 		for (Destination dest : this.allDestinations.values()) {

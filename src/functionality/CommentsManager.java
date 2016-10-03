@@ -55,6 +55,30 @@ public class CommentsManager {
 		return copy;
 	}
 
+	public synchronized void likeComment(long commentId, String userEmail) {
+		for (Comment comment : allComments) {
+			if (comment.getId() == commentId) {
+				if (!comment.getUserLikers().contains(comment)) {
+					comment.like(userEmail);
+					CommentDao.getInstance().addLike(commentId, userEmail);
+					return;
+				}
+			}
+		}
+	}
+
+	public synchronized void removeLikeComment(long commentId, String userEmail) {
+		for (Comment comment : allComments) {
+			if (comment.getId() == commentId) {
+				if (comment.getUserLikers().contains(comment)) {
+					comment.unlike(userEmail);
+					CommentDao.getInstance().removeLike(commentId, userEmail);
+					return;
+				}
+			}
+		}
+	}
+
 	public synchronized void deleteUserComments(String userEmail) {
 		ArrayList<Comment> commentsToRemove = new ArrayList<>();
 		for (Comment comment : allComments) {

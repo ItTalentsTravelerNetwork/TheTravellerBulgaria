@@ -114,9 +114,44 @@ public class CommentDao {
 		return true;
 	}
 
-	public void deleteComment(Comment comment) {
+	public synchronized void addLike(long commentId, String userEmail) {
+		try {
+			PreparedStatement ps = DBManager.getInstance().getConnection()
+					.prepareStatement("INSERT INTO comment_likes(commenter_email, comment_id) VALUES (?,?)");
+			ps.setString(1, userEmail);
+			ps.setLong(2, commentId);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		// TODO
+	}
+
+	public synchronized void removeLike(long commentId, String userEmail) {
+		try {
+			PreparedStatement ps = DBManager.getInstance().getConnection()
+					.prepareStatement("DELETE FROM comment_likes WHERE commenter_email=? AND comment_id=?");
+			ps.setString(1, userEmail);
+			ps.setLong(2, commentId);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	public void deleteComment(Comment comment) {
+		try {
+			PreparedStatement ps = DBManager.getInstance().getConnection()
+					.prepareStatement("DELETE FROM comments WHERE comment_id=?");
+			ps.setLong(1, comment.getId());
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
