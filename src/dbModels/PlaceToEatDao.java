@@ -30,10 +30,12 @@ public class PlaceToEatDao {
 
 		try {
 			st = DBManager.getInstance().getConnection().createStatement();
-			rs = st.executeQuery("SELECT * from places_to_eat");
+			rs = st.executeQuery(
+					"SELECT name, lattitude, longitude, description, picture, author_rating, place_name from places_to_eat");
 			while (rs.next()) {
-				PlaceToEat pte = new PlaceToEat(rs.getString(2), rs.getDouble(3), rs.getDouble(4), rs.getString(5),
-						rs.getString(6), rs.getDouble(7), rs.getString(8));
+				PlaceToEat pte = new PlaceToEat(rs.getString("name"), rs.getDouble("lattitude"),
+						rs.getDouble("longitude"), rs.getString("description"), rs.getString("picture"),
+						rs.getDouble("author_rating"), rs.getString("place_name"));
 				if (pte != null) {
 					resturants.add(pte);
 				}
@@ -58,7 +60,7 @@ public class PlaceToEatDao {
 		PreparedStatement ps = null;
 		try {
 			ps = DBManager.getInstance().getConnection().prepareStatement(
-					"INSERT INTO places_to_sleep(name, lattitude, longitude, description, picture, author_rating, place_name) VALUES(?,?,?,?,?,?,?);");
+					"INSERT INTO places_to_eat(name, lattitude, longitude, description, picture, author_rating, place_name) VALUES(?,?,?,?,?,?,?);");
 			ps.setString(1, placeToEat.getName());
 			ps.setDouble(2, placeToEat.getLocation().getLattitude());
 			ps.setDouble(3, placeToEat.getLocation().getLongitude());

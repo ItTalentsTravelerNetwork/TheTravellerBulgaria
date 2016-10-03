@@ -13,8 +13,9 @@ public class Activity {
 	private double price;
 	private String destinationName;
 
-	public Activity(String name, double price, double lattitude, double longitude, String description, String picture,
-			double authorRating, String destinationName) throws InvalidDataException, InvalidLocationException {
+	public Activity(String name, double lattitude, double longitude, String description, String picture,
+			double authorRating, double price, String destinationName)
+			throws InvalidDataException, InvalidLocationException {
 		super();
 		this.setName(name);
 		this.setPrice(price);

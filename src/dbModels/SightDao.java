@@ -32,10 +32,12 @@ public class SightDao {
 
 		try {
 			st = DBManager.getInstance().getConnection().createStatement();
-			rs = st.executeQuery("SELECT * from sights");
+			rs = st.executeQuery(
+					"SELECT name, lattitude, longitude, description, picture, author_rating, place_name from sights");
 			while (rs.next()) {
-				Sight sight = new Sight(rs.getString(2), rs.getDouble(3), rs.getDouble(4), rs.getString(5),
-						rs.getString(6), rs.getDouble(7), rs.getString(8));
+				Sight sight = new Sight(rs.getString("name"), rs.getDouble("lattitude"), rs.getDouble("longitude"),
+						rs.getString("description"), rs.getString("picture"), rs.getDouble("author_rating"),
+						rs.getString("place_name"));
 				sights.add(sight);
 			}
 		} catch (SQLException | CannotConnectToDBException e) {
@@ -64,7 +66,7 @@ public class SightDao {
 		PreparedStatement ps = null;
 		try {
 			ps = DBManager.getInstance().getConnection().prepareStatement(
-					"INSERT INTO places_to_sleep(name, lattitude, longitude, description, picture, author_rating, place_name) VALUES(?,?,?,?,?,?,?);");
+					"INSERT INTO sights(name, lattitude, longitude, description, picture, author_rating, place_name) VALUES(?,?,?,?,?,?,?);");
 			ps.setString(1, sight.getName());
 			ps.setDouble(2, sight.getLocation().getLattitude());
 			ps.setDouble(3, sight.getLocation().getLongitude());

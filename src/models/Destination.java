@@ -28,12 +28,12 @@ public class Destination {
 	private ConcurrentSkipListSet<Activity> activities;
 	private ConcurrentSkipListSet<Sight> sights;
 
-	public Destination(String name, Double latitude, Double longitude, String description, String mainPicture,
+	public Destination(String name, String description, double lattitude, double longitude, String mainPicture,
 			String authorEmail, Category category, int numberOfLikes, int numberOfDislikes) {
 
 		setName(name);
 		setDescription(description);
-		setLocation(latitude, longitude);
+		setLocation(lattitude, longitude);
 		setMainPicture(mainPicture);
 		setAuthorEmail(authorEmail);
 		setCategory(category);
@@ -50,8 +50,8 @@ public class Destination {
 		this.videos = new CopyOnWriteArrayList<>();
 	}
 
-	private void setLocation(Double latitude, Double longitude) {
-		this.location = new Location(latitude, longitude);
+	private void setLocation(double lattitude, double longitude) {
+		this.location = new Location(lattitude, longitude);
 	}
 
 	public synchronized void addComment(Comment comment) {

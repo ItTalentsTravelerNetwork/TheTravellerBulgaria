@@ -35,7 +35,7 @@ public class DestinationDAO {
 		ResultSet result = null;
 		try {
 			statement = DBManager.getInstance().getConnection().createStatement();
-			result = statement.executeQuery("SELECT * from destinations_pictures;");
+			result = statement.executeQuery("SELECT * from destination_pictures;");
 			if (result != null) {
 				while (result.next()) {
 					String name = result.getString("destination_name");
@@ -78,13 +78,13 @@ public class DestinationDAO {
 		try {
 			try {
 				statement = DBManager.getInstance().getConnection().createStatement();
-				String selectAllDestinationsFromDB = "SELECT name, description, longitude, lattitude, picture FROM destinations;";
+				String selectAllDestinationsFromDB = "SELECT name, description, lattitude, longitude, main_picture, author_email, category, number_of_likes, number_of_dislikes FROM destinations;";
 				result = statement.executeQuery(selectAllDestinationsFromDB);
 				while (result.next()) {
-					Destination dest = new Destination(result.getString("name"),
+					Destination dest = new Destination(result.getString("name"), result.getString("description"),
 							Double.parseDouble(result.getString("lattitude")),
-							Double.parseDouble(result.getString("longitude")), result.getString("description"),
-							result.getString("main_picture"), result.getString("author_email"),
+							Double.parseDouble(result.getString("longitude")), result.getString("main_picture"),
+							result.getString("author_email"),
 							Destination.Category.valueOf(result.getString("category")),
 							result.getInt("number_of_likes"), result.getInt("number_of_dislikes"));
 
@@ -115,7 +115,7 @@ public class DestinationDAO {
 	}
 
 	public synchronized boolean saveDestinationToDB(User u, Destination destination) {
-		String insertDestinationInfoIntoDB = "INSERT INTO destinations (name, description, longitude, lattitude, picture) VALUES (?, ?, ?, ?, ?);";
+		String insertDestinationInfoIntoDB = "INSERT INTO destinations (name, description, lattitude, longitude, main_picture, author_email, category, number_of_likes, number_of_dislikes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		String insertIntoVisitedDestinations = "INSERT INTO visited_destinations (destination_name, user_email) VALUES (?, ?);";
 		PreparedStatement statement = null;
 		PreparedStatement statement2 = null;
@@ -124,9 +124,13 @@ public class DestinationDAO {
 			statement = DBManager.getInstance().getConnection().prepareStatement(insertDestinationInfoIntoDB);
 			statement.setString(1, destination.getName());
 			statement.setString(2, destination.getDescription());
-			statement.setDouble(3, destination.getLocation().getLongitude());
-			statement.setDouble(4, destination.getLocation().getLattitude());
+			statement.setDouble(3, destination.getLocation().getLattitude());
+			statement.setDouble(4, destination.getLocation().getLongitude());
 			statement.setString(5, destination.getMainPicture());
+			statement.setString(6, destination.getAuthorEmail());
+			statement.setString(7, destination.getCategory().toString());
+			statement.setInt(8, destination.getNumberOfLikes());
+			statement.setInt(9, destination.getNumberOfDislikes());
 			statement.executeUpdate();
 
 			statement2 = DBManager.getInstance().getConnection().prepareStatement(insertIntoVisitedDestinations);
@@ -164,8 +168,8 @@ public class DestinationDAO {
 		}
 	}
 
-	public synchronized boolean updateDestinationInDB(String name, String description, double longitude,
-			double lattitude, String mainPicture, ConcurrentSkipListSet<PlaceToSleep> placesToSleep,
+	public synchronized boolean updateDestinationInDB(String name, String description, double lattitude,
+			double longitude, String mainPicture, ConcurrentSkipListSet<PlaceToSleep> placesToSleep,
 			ConcurrentSkipListSet<PlaceToEat> placesToEat, Category category, CopyOnWriteArrayList<String> pictures,
 			CopyOnWriteArrayList<String> videos, ConcurrentSkipListSet<Activity> activities,
 			ConcurrentSkipListSet<Sight> sights) {
@@ -179,6 +183,7 @@ public class DestinationDAO {
 			prepStatement.setDouble(2, longitude);
 			prepStatement.setDouble(3, lattitude);
 			prepStatement.setString(4, mainPicture);
+			prepStatement.setString(5, name);
 			prepStatement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
@@ -285,7 +290,7 @@ public class DestinationDAO {
 		ResultSet rs = null;
 		try {
 			st = DBManager.getInstance().getConnection().createStatement();
-			rs = st.executeQuery("SELECT * from destination_likes;");
+			rs = st.executeQuery("SELECT user_email, destination_name from destination_likes;");
 			while (rs.next()) {
 				if (!userLikes.containsKey(rs.getString("destination_name"))) {
 					userLikes.put(rs.getString("destination_name"), new ArrayList<String>());
@@ -315,7 +320,7 @@ public class DestinationDAO {
 		ResultSet rs = null;
 		try {
 			st = DBManager.getInstance().getConnection().createStatement();
-			rs = st.executeQuery("SELECT * from destination_dislikes;");
+			rs = st.executeQuery("SELECT user_email, destination_name from destination_dislikes;");
 			while (rs.next()) {
 				if (!userDisLikes.containsKey(rs.getString("destination_name"))) {
 					userDisLikes.put(rs.getString("destination_name"), new ArrayList<String>());
@@ -345,12 +350,12 @@ public class DestinationDAO {
 		ResultSet rs = null;
 		try {
 			st = DBManager.getInstance().getConnection().createStatement();
-			rs = st.executeQuery("SELECT * from destination_videos;");
+			rs = st.executeQuery("SELECT video, destination_name from destination_videos;");
 			while (rs.next()) {
 				if (!videos.containsKey(rs.getString("destination_name"))) {
 					videos.put(rs.getString("destination_name"), new ArrayList<String>());
 				}
-				videos.get(rs.getString("destination_name")).add("user_email");
+				videos.get(rs.getString("destination_name")).add("video");
 			}
 		} catch (SQLException | CannotConnectToDBException e) {
 			// TODO Auto-generated catch block

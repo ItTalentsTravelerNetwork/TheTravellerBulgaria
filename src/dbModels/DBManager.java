@@ -166,13 +166,13 @@ class DBManager {
 					+ "REFERENCES users (email)\r\n" + "ON DELETE CASCADE,\r\n"
 					+ "PRIMARY KEY (follower_email, followed_email)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
-			String createDestinationsVideosTable = "CREATE TABLE destinations_videos (\r\n"
+			String createDestinationsVideosTable = "CREATE TABLE destination_videos (\r\n"
 					+ "video VARCHAR(100) NOT NULL,\r\n" + "destination_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_destination_with_video_name FOREIGN KEY (destination_name)\r\n"
 					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE,\r\n" + "PRIMARY KEY (video)\r\n"
 					+ ") ENGINE=InnoDB;\r\n" + "";
 
-			String createDestinationsPicturesTable = "CREATE TABLE destinations_pictures (\r\n"
+			String createDestinationsPicturesTable = "CREATE TABLE destination_pictures (\r\n"
 					+ "picture VARCHAR(100) NOT NULL,\r\n" + "destination_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_destination_with_picture_name FOREIGN KEY (destination_name)\r\n"
 					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE,\r\n" + "PRIMARY KEY (picture)\r\n"

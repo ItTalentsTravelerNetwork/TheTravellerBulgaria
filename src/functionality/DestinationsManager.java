@@ -85,13 +85,13 @@ public class DestinationsManager {
 		return false;
 	}
 
-	public boolean addDestination(User user, String name, String description, double latitude, double longitude,
+	public boolean addDestination(User user, String name, String description, double lattitude, double longitude,
 			String mainPicture, Category category) throws InvalidCoordinatesException {
 		if (UsersManager.getInstance().validateUser(user.getEmail(), user.getPassword())
 				&& !chechDestinationInCache(name)) { // if the user exists in
 														// the collection and no
 														// such destination yet
-			Destination destination = new Destination(name, latitude, longitude, description, mainPicture,
+			Destination destination = new Destination(name, description, lattitude, longitude, mainPicture,
 					user.getEmail(), category, 0, 0);
 			allDestinations.put(name, destination); // adds the new destination
 			allDestinationsAndAuthors.put(name, user.getEmail()); // to the

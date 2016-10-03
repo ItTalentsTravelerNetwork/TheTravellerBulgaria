@@ -15,8 +15,8 @@ public class PlaceToSleep {
 	private double price;
 	private String destinationName;
 
-	public PlaceToSleep(String name, double lattitude, double longitude, String contact, String description, Type type,
-			double price, String picture, double authorRating, String destinationName) {
+	public PlaceToSleep(String name, double lattitude, double longitude, String description, String picture,
+			double authorRating, Type type, String contact, double price, String destinationName) {
 		super();
 		setName(name);
 		setLocation(new Location(lattitude, longitude));

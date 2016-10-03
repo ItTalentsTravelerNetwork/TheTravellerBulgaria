@@ -30,11 +30,13 @@ public class HotelDao {
 
 		try {
 			st = DBManager.getInstance().getConnection().createStatement();
-			rs = st.executeQuery("SELECT * from places_to_sleep");
+			rs = st.executeQuery(
+					"SELECT name, lattitude, longitude, description, picture, author_rating, type, contact, price, place_name from places_to_sleep");
 			while (rs.next()) {
-				PlaceToSleep hotel = new PlaceToSleep(rs.getString(2), rs.getDouble(3), rs.getDouble(4),
-						rs.getString(9), rs.getString(5), PlaceToSleep.Type.valueOf(rs.getString(8)), rs.getDouble(10),
-						rs.getString(6), rs.getDouble(7), rs.getString(11));
+				PlaceToSleep hotel = new PlaceToSleep(rs.getString("name"), rs.getDouble("lattitude"),
+						rs.getDouble("longitude"), rs.getString("description"), rs.getString("picture"),
+						rs.getDouble("author_rating"), PlaceToSleep.Type.valueOf(rs.getString("type")),
+						rs.getString("contact"), rs.getDouble("price"), rs.getString("place_name"));
 				if (hotel != null) {
 					hotels.add(hotel);
 				}
@@ -59,7 +61,7 @@ public class HotelDao {
 		PreparedStatement ps = null;
 		try {
 			ps = DBManager.getInstance().getConnection().prepareStatement(
-					"INSERT INTO places_to_sleep(name, lattitude, longitude, description, picture, author_rating, type, contact ,price place_name) VALUES(?,?,?,?,?,?,?,?,?,?);");
+					"INSERT INTO places_to_sleep(name, lattitude, longitude, description, picture, author_rating, type, contact, price, place_name) VALUES(?,?,?,?,?,?,?,?,?,?);");
 			ps.setString(1, hotel.getName());
 			ps.setDouble(2, hotel.getLocation().getLattitude());
 			ps.setDouble(3, hotel.getLocation().getLongitude());

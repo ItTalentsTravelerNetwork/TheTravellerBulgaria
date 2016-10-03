@@ -33,10 +33,12 @@ public class ActivityDao {
 
 		try {
 			st = DBManager.getInstance().getConnection().createStatement();
-			rs = st.executeQuery("SELECT * from activities");
+			rs = st.executeQuery(
+					"SELECT name, lattitude, longitude, description, picture, author_rating, price, place_name from activities");
 			while (rs.next()) {
-				Activity act = new Activity(rs.getString(2), rs.getDouble(8), rs.getDouble(3), rs.getDouble(4),
-						rs.getString(5), rs.getString(6), rs.getDouble(7), rs.getString(9));
+				Activity act = new Activity(rs.getString("name"), rs.getDouble("lattitude"), rs.getDouble("longitude"),
+						rs.getString("description"), rs.getString("picture"), rs.getDouble("author_rating"),
+						rs.getDouble("price"), rs.getString("place_name"));
 				if (act != null) {
 					activities.add(act);
 				}
@@ -67,7 +69,7 @@ public class ActivityDao {
 		PreparedStatement ps = null;
 		try {
 			ps = DBManager.getInstance().getConnection().prepareStatement(
-					"INSERT INTO activities(name, lattitude, longitude, description, picture, author_rating, price place_name) VALUES(?,?,?,?,?,?,?,?);");
+					"INSERT INTO activities(name, lattitude, longitude, description, picture, author_rating, price, place_name) VALUES(?,?,?,?,?,?,?,?);");
 			ps.setString(1, activity.getName());
 			ps.setDouble(2, activity.getLocation().getLattitude());
 			ps.setDouble(3, activity.getLocation().getLongitude());
