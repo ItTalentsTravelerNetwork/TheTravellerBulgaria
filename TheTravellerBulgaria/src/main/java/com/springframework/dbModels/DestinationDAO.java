@@ -35,7 +35,7 @@ public class DestinationDAO {
 		ResultSet result = null;
 		try {
 			statement = DBManager.getInstance().getConnection().createStatement();
-			result = statement.executeQuery("SELECT * from destination_pictures;");
+			result = statement.executeQuery("SELECT picture, destination_name from destination_pictures;");
 			if (result != null) {
 				while (result.next()) {
 					String name = result.getString("destination_name");

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.model.User;
@@ -332,6 +333,44 @@ public class UserDao {
 			}
 		}
 		return false;
+	}
+	
+	public synchronized ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getAllFollowersFromDB() {
+		// retrieve all users' emails and the places' names they visited
+		ConcurrentHashMap<String, CopyOnWriteArrayList<String>> allFollowers = new ConcurrentHashMap<>(); // follower->followed
+		String selectAllFollowersFromDB = "SELECT follower_email, followed_email FROM followers ORDER BY follower_email;";
+		Statement statement = null;
+		ResultSet result = null;
+		try {
+			statement = DBManager.getInstance().getConnection().createStatement();
+			result = statement.executeQuery(selectAllFollowersFromDB);
+			while (result.next()) {
+				if (!(allFollowers.containsKey(result.getString("follower_email")))) {
+					allFollowers.put(result.getString("follower_email"), new CopyOnWriteArrayList<>());
+				}
+				allFollowers.get(result.getString("follower_email"))
+						.add(result.getString("followed_email"));
+			}
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return allFollowers;
 	}
 
 	private synchronized void displaySqlErrors(SQLException e) {

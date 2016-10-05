@@ -38,6 +38,7 @@ public class UsersManager {
 			registerredUsers.put(u.getEmail(), u); // add user to cache
 		}
 		fillVisitedPlacesToUsers(); // fill visited destinations to users
+		fillFollowedToUsers(); // fill followed to the users' lists
 	}
 
 	public static synchronized UsersManager getInstance() {
@@ -289,6 +290,19 @@ public class UsersManager {
 																						// place
 																						// to
 																						// user
+				}
+			}
+		}
+	}
+	
+	private synchronized void fillFollowedToUsers() {
+		if (UserDao.getInstance().getAllFollowersFromDB() != null) {
+			for (Map.Entry<String, CopyOnWriteArrayList<String>> entry : UserDao.getInstance().getAllFollowersFromDB()
+					.entrySet()) { // for each (follower->list of followed)
+				for (User user : registerredUsers.values()) { // for each user in cache
+					if (entry.getKey().contains(user.getEmail())) { // if present
+						user.setFollowedUsers(entry.getValue()); // add followed users
+					}
 				}
 			}
 		}

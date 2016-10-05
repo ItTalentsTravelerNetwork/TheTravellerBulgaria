@@ -12,16 +12,20 @@ public class ProjectManager {
 
 	private ProjectManager() {
 		// Loading all Managers and the cache
+		
 		// UsersManager
-		DestinationsManager.getInstance(); // DestinationsManager
-		// no comment objects in each //
-		// destination
-
-		UsersManager.getInstance(); // no destination names in each user
-
+		UsersManager.getInstance(); // with visited destinations and followed users; no added destinations
+		
+	
+		// DestinationsManager
+		DestinationsManager.getInstance(); // no comment objects in each destination (*TODO add fillUserLikers, fillActivities, fillSights, fillHotels, fillRestaurants, fill pictures, fill videos)
+		
+		
 		// CommentsManager
-		CommentsManager.getInstance();
+		CommentsManager.getInstance(); // all comments (*TODO add fillUserLikers)
 
+		
+		// adds all comments to destinations
 		for (Map.Entry<String, Destination> destinationEntry : DestinationsManager.getInstance().getAllDestinations()
 				.entrySet()) { // for
 								// each
@@ -52,6 +56,8 @@ public class ProjectManager {
 			}
 		}
 
+		
+		// adds all destinations to authors (users fill added places)
 		for (Map.Entry<String, Destination> destinationEntry : DestinationsManager.getInstance().getAllDestinations()
 				.entrySet()) { // for each destination
 			for (Map.Entry<String, User> userEntry : UsersManager.getInstance().getRegisterredUsers().entrySet()) { // for
@@ -74,6 +80,9 @@ public class ProjectManager {
 				}
 			}
 		}
+		
+		
+		
 
 	}
 
