@@ -75,7 +75,7 @@ public class UsersManager {
 
 	public synchronized void registerUser(String email, String password, String firstName, String lastName,
 			String description, String profilePicture) {
-		User user = new User(firstName, lastName, password, email, description, profilePicture,
+		User user = new User(email, password, firstName, lastName, description, profilePicture,
 				new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>(),
 				new ConcurrentHashMap<>(), 0, 0);
 		registerredUsers.put(email, user); // adds the new user to the
@@ -294,14 +294,17 @@ public class UsersManager {
 			}
 		}
 	}
-	
+
 	private synchronized void fillFollowedToUsers() {
 		if (UserDao.getInstance().getAllFollowersFromDB() != null) {
 			for (Map.Entry<String, CopyOnWriteArrayList<String>> entry : UserDao.getInstance().getAllFollowersFromDB()
 					.entrySet()) { // for each (follower->list of followed)
-				for (User user : registerredUsers.values()) { // for each user in cache
-					if (entry.getKey().contains(user.getEmail())) { // if present
-						user.setFollowedUsers(entry.getValue()); // add followed users
+				for (User user : registerredUsers.values()) { // for each user
+																// in cache
+					if (entry.getKey().contains(user.getEmail())) { // if
+																	// present
+						user.setFollowedUsers(entry.getValue()); // add followed
+																	// users
 					}
 				}
 			}
