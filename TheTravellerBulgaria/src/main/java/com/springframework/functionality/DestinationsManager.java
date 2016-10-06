@@ -8,11 +8,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.springframework.SpringContextProvider;
 import com.springframework.dbModels.ActivityDao;
 import com.springframework.dbModels.DestinationDAO;
 import com.springframework.dbModels.HotelDao;
 import com.springframework.dbModels.PlaceToEatDao;
 import com.springframework.dbModels.SightDao;
+import com.springframework.dbModels.UserDao;
 import com.springframework.exceptions.InvalidCoordinatesException;
 import com.springframework.exceptions.InvalidDataException;
 import com.springframework.exceptions.InvalidLocationException;
@@ -26,6 +31,8 @@ import com.springframework.model.PlaceToSleep;
 import com.springframework.model.Sight;
 import com.springframework.model.User;
 
+@Component
+@Scope("Singleton")
 public class DestinationsManager {
 
 	private static DestinationsManager instance; // Singleton
@@ -42,7 +49,7 @@ public class DestinationsManager {
 	private DestinationsManager() {
 
 		allDestinations = new ConcurrentHashMap<>();
-		Set<Destination> tempAllDest = DestinationDAO.getInstance().getAllDestinations();
+		Set<Destination> tempAllDest = SpringContextProvider.getContext().getBean(DestinationDAO.class).getAllDestinations();
 		for (Destination d : tempAllDest) { // adds
 											// all
 											// destinations
@@ -62,8 +69,8 @@ public class DestinationsManager {
 	}
 
 	private void fillDestinationsWithPics() {
-		for (Entry<String, ArrayList<String>> destPics : DestinationDAO.getInstance().getDestinationPictures()
-				.entrySet()) {
+		for (Entry<String, ArrayList<String>> destPics : SpringContextProvider.getContext().getBean(DestinationDAO.class)
+				.getDestinationPictures().entrySet()) {
 			String destName = destPics.getKey();
 			for (String pic : destPics.getValue()) {
 				this.allDestinations.get(destName).addPicture(pic);
@@ -90,7 +97,7 @@ public class DestinationsManager {
 
 	public boolean addDestination(User user, String name, String description, double lattitude, double longitude,
 			String mainPicture, Category category) throws InvalidCoordinatesException {
-		if (UsersManager.getInstance().validateUser(user.getEmail(), user.getPassword())
+		if (SpringContextProvider.getContext().getBean(UsersManager.class).validateUser(user.getEmail(), user.getPassword())
 				&& !chechDestinationInCache(name)) { // if the user exists in
 														// the collection and no
 														// such destination yet
@@ -100,10 +107,10 @@ public class DestinationsManager {
 			allDestinationsAndAuthors.put(name, user.getEmail()); // to the
 																	// collection
 			user.addPlace(name);
-			DestinationDAO.getInstance().saveDestinationToDB(user, destination); // saves
-																					// destination
-																					// to
-																					// DB
+			SpringContextProvider.getContext().getBean(DestinationDAO.class).saveDestinationToDB(user, destination); // saves
+																													// destination
+																													// to
+																													// DB
 			return true;
 		}
 		return false; // no such user
@@ -114,10 +121,10 @@ public class DestinationsManager {
 														// destination
 			allDestinations.remove(destinationName);
 			allDestinationsAndAuthors.remove(destinationName);
-			UsersManager.getInstance().getUserFromCache(allDestinationsAndAuthors.get(destinationName))
+			SpringContextProvider.getContext().getBean(UsersManager.class).getUserFromCache(allDestinationsAndAuthors.get(destinationName))
 					.removePlace(destinationName); // removes place from user's
 													// added places
-			DestinationDAO.getInstance().removeDestination(destinationName);
+			SpringContextProvider.getContext().getBean(DestinationDAO.class).removeDestination(destinationName);
 			return true;
 		}
 		return false;
@@ -152,11 +159,12 @@ public class DestinationsManager {
 			destination.setVideos(videos);
 			destination.setActivities(activities);
 			destination.setSights(sights);
-			boolean updateInDB = DestinationDAO.getInstance().updateDestinationInDB(name, description, longitude,
-					lattitude, mainPicture, placesToSleep, placesToEat, category, pictures, videos, activities, sights); // updates
-			// the
-			// DB
-			// destination
+			boolean updateInDB = SpringContextProvider.getContext().getBean(DestinationDAO.class)
+					.updateDestinationInDB(name, description, longitude,lattitude, mainPicture, placesToSleep, placesToEat, 
+							category, pictures, videos, activities, sights); // updates
+																			// the
+																			// DB
+																			// destination
 			if (updateInDB) { // if DB is updated
 				return true;
 			}
@@ -166,13 +174,12 @@ public class DestinationsManager {
 
 	public boolean like(String userEmail, String destinationName) {
 		if (allDestinations.containsKey(destinationName)
-				&& UsersManager.getInstance().getUserFromCache(userEmail) != null) {
+				&& SpringContextProvider.getContext().getBean(UsersManager.class).getUserFromCache(userEmail) != null) {
 			if (allDestinations.get(destinationName).like(userEmail)) { // if
 																		// destination
 																		// updated
-				if (DestinationDAO.getInstance().addLike(userEmail, destinationName)) { // if
-																						// DB
-																						// updated
+				if (SpringContextProvider.getContext().getBean(DestinationDAO.class).addLike(userEmail, destinationName)) { 
+																						// if the DB is updated
 					return true;
 				}
 			}
@@ -182,13 +189,12 @@ public class DestinationsManager {
 
 	public boolean dislike(String userEmail, String destinationName) {
 		if (allDestinations.containsKey(destinationName)
-				&& UsersManager.getInstance().getUserFromCache(userEmail) != null) {
+				&& SpringContextProvider.getContext().getBean(UsersManager.class).getUserFromCache(userEmail) != null) {
 			if (allDestinations.get(destinationName).dislike(userEmail)) { // if
 																			// destination
 																			// updated
-				if (DestinationDAO.getInstance().removeLike(userEmail, destinationName)) { // if
-																							// DB
-																							// updated
+				if (SpringContextProvider.getContext().getBean(DestinationDAO.class).removeLike(userEmail, destinationName)) { 
+																									// if the DB is updated
 					return true;
 				}
 			}
@@ -213,10 +219,10 @@ public class DestinationsManager {
 	}
 
 	private void fillDestinationsWithPlaces() {
-		Set<Activity> activities = ActivityDao.getInstance().getAllActivities();
-		Set<PlaceToSleep> placesToSleep = HotelDao.getInstance().getAllHotels();
-		Set<PlaceToEat> placesToEat = PlaceToEatDao.getInstance().getAllPlacesToEat();
-		Set<Sight> sights = SightDao.getInstance().getAllSights();
+		Set<Activity> activities = SpringContextProvider.getContext().getBean(ActivityDao.class).getAllActivities();
+		Set<PlaceToSleep> placesToSleep = SpringContextProvider.getContext().getBean(HotelDao.class).getAllHotels();
+		Set<PlaceToEat> placesToEat = SpringContextProvider.getContext().getBean(PlaceToEatDao.class).getAllPlacesToEat();
+		Set<Sight> sights = SpringContextProvider.getContext().getBean(SightDao.class).getAllSights();
 		for (Sight sight : sights) {
 			String destName = sight.getDestinationName();
 			allDestinations.get(destName).addSight(sight);
@@ -236,12 +242,14 @@ public class DestinationsManager {
 	}
 
 	private void fillDestinationsWithLikesAndDislikes() {
-		for (Entry<String, ArrayList<String>> entry : DestinationDAO.getInstance().getLikes().entrySet()) {
+		for (Entry<String, ArrayList<String>> entry : SpringContextProvider.getContext().getBean(DestinationDAO.class)
+																								.getLikes().entrySet()) {
 			for (String email : entry.getValue()) {
 				this.allDestinations.get(entry.getKey()).like(email);
 			}
 		}
-		for (Entry<String, ArrayList<String>> entry : DestinationDAO.getInstance().getDisLikes().entrySet()) {
+		for (Entry<String, ArrayList<String>> entry : SpringContextProvider.getContext().getBean(DestinationDAO.class)
+																								.getDisLikes().entrySet()) {
 			for (String email : entry.getValue()) {
 				this.allDestinations.get(entry.getKey()).dislike(email);
 			}
@@ -249,7 +257,8 @@ public class DestinationsManager {
 	}
 
 	private void fillDestinationsWithVideos() {
-		for (Entry<String, ArrayList<String>> entry : DestinationDAO.getInstance().getVideos().entrySet()) {
+		for (Entry<String, ArrayList<String>> entry : SpringContextProvider.getContext().getBean(DestinationDAO.class)
+																								.getVideos().entrySet()) {
 			for (String video : entry.getValue()) {
 				this.allDestinations.get(entry.getKey()).addVideo(video);
 			}
@@ -258,32 +267,32 @@ public class DestinationsManager {
 
 	public void addActivity(String destName, Activity a) throws CloneNotSupportedException {
 		this.allDestinations.get(destName).addActivity(a);
-		ActivityDao.getInstance().saveActivityToDb(a);
+		SpringContextProvider.getContext().getBean(ActivityDao.class).saveActivityToDb(a);
 	}
 
 	public void addSight(String destName, Sight sight) throws CloneNotSupportedException {
 		this.allDestinations.get(destName).addSight(sight);
-		SightDao.getInstance().saveSightToDB(sight);
+		SpringContextProvider.getContext().getBean(SightDao.class).saveSightToDB(sight);
 	}
 
 	public void addHotel(String destName, PlaceToSleep p) throws CloneNotSupportedException {
 		this.allDestinations.get(destName).addPlaceToSleep(p);
-		HotelDao.getInstance().saveHotelInDB(p);
+		SpringContextProvider.getContext().getBean(HotelDao.class).saveHotelInDB(p);
 	}
 
 	public void addPlaceToEat(String destName, PlaceToEat e) throws CloneNotSupportedException {
 		this.allDestinations.get(destName).addPlaceToEat(e);
-		PlaceToEatDao.getInstance().savePlaceToEatInDB(e);
+		SpringContextProvider.getContext().getBean(PlaceToEatDao.class).savePlaceToEatInDB(e);
 	}
 
 	public void addPicture(String destName, String pic) {
 		this.allDestinations.get(destName).addPicture(pic);
-		DestinationDAO.getInstance().addPicture(destName, pic);
+		SpringContextProvider.getContext().getBean(DestinationDAO.class).addPicture(destName, pic);
 	}
 
 	public void addVideo(String destName, String video) {
 		this.allDestinations.get(destName).addVideo(video);
-		DestinationDAO.getInstance().addVideo(destName, video);
+		SpringContextProvider.getContext().getBean(DestinationDAO.class).addVideo(destName, video);
 	}
 
 	public void addLike(String userEmail, String destinationName) {
@@ -293,10 +302,10 @@ public class DestinationsManager {
 		}
 		if (dest.getUserDislikers().contains(userEmail)) {
 			dest.getUserDislikers().remove(userEmail);
-			DestinationDAO.getInstance().removeDislike(userEmail, destinationName);
+			SpringContextProvider.getContext().getBean(DestinationDAO.class).removeDislike(userEmail, destinationName);
 		}
 		dest.like(userEmail);
-		DestinationDAO.getInstance().addLike(userEmail, destinationName);
+		SpringContextProvider.getContext().getBean(DestinationDAO.class).addLike(userEmail, destinationName);
 	}
 
 	public void addDislike(String userEmail, String destinationName) {
@@ -306,10 +315,10 @@ public class DestinationsManager {
 		}
 		if (dest.getUserLikers().contains(userEmail)) {
 			dest.getUserLikers().remove(userEmail);
-			DestinationDAO.getInstance().removeLike(userEmail, destinationName);
+			SpringContextProvider.getContext().getBean(DestinationDAO.class).removeLike(userEmail, destinationName);
 		}
 		dest.dislike(userEmail);
-		DestinationDAO.getInstance().addDislike(userEmail, destinationName);
+		SpringContextProvider.getContext().getBean(DestinationDAO.class).addDislike(userEmail, destinationName);
 	}
 
 	public void removeLike(String userEmail, String destinationName) {
@@ -318,7 +327,7 @@ public class DestinationsManager {
 			return;
 		}
 		dest.unlike(userEmail);
-		DestinationDAO.getInstance().removeLike(userEmail, destinationName);
+		SpringContextProvider.getContext().getBean(DestinationDAO.class).removeLike(userEmail, destinationName);
 	}
 
 	public void removeDisike(String userEmail, String destinationName) {
@@ -327,7 +336,7 @@ public class DestinationsManager {
 			return;
 		}
 		dest.removeDislike(userEmail);
-		DestinationDAO.getInstance().removeDislike(userEmail, destinationName);
+		SpringContextProvider.getContext().getBean(DestinationDAO.class).removeDislike(userEmail, destinationName);
 	}
 
 	public boolean deleteAllUserData(User user) {
@@ -368,7 +377,7 @@ public class DestinationsManager {
 				}
 			}
 		}
-		CommentsManager.getInstance().deleteUserComments(userEmail);
+		SpringContextProvider.getContext().getBean(CommentsManager.class).deleteUserComments(userEmail);
 		return true;
 	}
 	

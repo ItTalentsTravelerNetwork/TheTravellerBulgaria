@@ -74,7 +74,7 @@
 					<h1 class="page-title">Comment</h1>
 				</header>
 				
-				<%Destination dest = DestinationsManager.getInstance().getDestinationFromCache(request.getParameter("name")); %>
+				<%Destination dest = DestinationsManager.getDestinationFromCache(request.getParameter("name")); %>
 				
 				<p>
 					 Share your experience in <%= dest.getName() %>

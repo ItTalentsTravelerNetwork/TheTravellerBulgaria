@@ -2,10 +2,16 @@ package com.springframework.functionality;
 
 import java.util.Map;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.springframework.SpringContextProvider;
 import com.springframework.model.Comment;
 import com.springframework.model.Destination;
 import com.springframework.model.User;
 
+@Component
+@Scope("Singleton")
 public class ProjectManager {
 
 	private static ProjectManager instance = new ProjectManager(); // Singleton
@@ -14,28 +20,28 @@ public class ProjectManager {
 		// Loading all Managers and the cache
 		
 		// UsersManager
-		UsersManager.getInstance(); // with visited destinations and followed users; no added destinations
+		SpringContextProvider.getContext().getBean(UsersManager.class); // with visited destinations and followed users; no added destinations
 		
 	
 		// DestinationsManager
-		DestinationsManager.getInstance(); // no comment objects in each destination
+		SpringContextProvider.getContext().getBean(DestinationsManager.class); // no comment objects in each destination
 		
 		
 		// CommentsManager
-		CommentsManager.getInstance(); // all comments + all user likers
+		SpringContextProvider.getContext().getBean(CommentsManager.class); // all comments + all user likers
 
 		
 		// adding all comments to destinations
-		for (Map.Entry<String, Destination> destinationEntry : DestinationsManager.getInstance().getAllDestinations()
-				.entrySet()) { // for
-								// each
-								// destination
-								// in
-								// cache
-			for (Comment c : CommentsManager.getInstance().getAllComments()) { // for
-																				// each
-																				// comment
-																				// in cache
+		for (Map.Entry<String, Destination> destinationEntry : SpringContextProvider.getContext()
+				.getBean(DestinationsManager.class).getAllDestinations().entrySet()) { // for
+																						// each
+																						// destination
+																						// in
+																						// cache
+			for (Comment c : SpringContextProvider.getContext().getBean(CommentsManager.class).getAllComments()) { // for
+																													// each
+																													// comment
+																													// in cache
 				if (c.getPlaceName().equals(destinationEntry.getKey())) { // if
 																			// name
 																			// of
@@ -58,11 +64,10 @@ public class ProjectManager {
 
 		
 		// adding all destinations to authors (filling added places to users)
-		for (Map.Entry<String, Destination> destinationEntry : DestinationsManager.getInstance().getAllDestinations()
-				.entrySet()) { // for each destination
-			for (Map.Entry<String, User> userEntry : UsersManager.getInstance().getRegisterredUsers().entrySet()) { // for
-																													// each
-																													// user
+		for (Map.Entry<String, Destination> destinationEntry : SpringContextProvider.getContext()
+				.getBean(DestinationsManager.class).getAllDestinations().entrySet()) { // for each destination
+			for (Map.Entry<String, User> userEntry : SpringContextProvider.getContext().getBean(UsersManager.class)
+					.getRegisterredUsers().entrySet()) { // for each user
 				if (destinationEntry.getValue().getAuthorEmail().equals(userEntry.getKey())) { // if
 																								// destination
 																								// author's

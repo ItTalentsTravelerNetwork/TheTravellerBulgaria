@@ -13,6 +13,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.springframework.SpringContextProvider;
+import com.springframework.dbModels.DestinationDAO;
 import com.springframework.dbModels.UserDao;
 import com.springframework.exceptions.InvalidCoordinatesException;
 import com.springframework.exceptions.InvalidDataException;
@@ -21,6 +26,8 @@ import com.springframework.model.Destination;
 import com.springframework.model.Destination.Category;
 import com.springframework.model.User;
 
+@Component
+@Scope("Singleton")
 public class UsersManager {
 
 	public static final String PATH_TO_LOG = "log.txt";
@@ -31,7 +38,7 @@ public class UsersManager {
 
 	private UsersManager() {
 		registerredUsers = new ConcurrentHashMap<>();
-		Set<User> tempAllUsers = UserDao.getInstance().getAllUsers();
+		Set<User> tempAllUsers = SpringContextProvider.getContext().getBean(UserDao.class).getAllUsers();
 		for (User u : tempAllUsers) { // adds all users
 										// from DB to
 										// collection
@@ -80,7 +87,7 @@ public class UsersManager {
 				new ConcurrentHashMap<>(), 0, 0);
 		registerredUsers.put(email, user); // adds the new user to the
 											// collection
-		UserDao.getInstance().saveUserToDB(user); // saves user to DB
+		SpringContextProvider.getContext().getBean(UserDao.class).saveUserToDB(user); // saves user to DB
 	}
 
 	public synchronized boolean updateUserInfo(String email, String password, String firstName, String lastName,
@@ -95,11 +102,11 @@ public class UsersManager {
 			user.setLastName(lastName);
 			user.setDescription(description);
 			user.setProfilePicture(profilePicture);
-			if (UserDao.getInstance().updateUserInDB(email, password, firstName, lastName, description,
-					profilePicture)) { // updates
-										// the
-										// DB
-										// user
+			if (SpringContextProvider.getContext().getBean(UserDao.class)
+					.updateUserInDB(email, password, firstName, lastName, description,profilePicture)) { // updates
+																											// the
+																											// DB
+																											// user
 				return true;
 			}
 		}
@@ -110,7 +117,7 @@ public class UsersManager {
 		if (registerredUsers.containsKey(user.getEmail())) {
 			// Delete from cache:
 			// Removing all user data from destinations and comments cache:
-			DestinationsManager.getInstance().deleteAllUserData(user);
+			SpringContextProvider.getContext().getBean(DestinationsManager.class).deleteAllUserData(user);
 			// Removing from other users' following list:
 			for (Map.Entry<String, User> entry : registerredUsers.entrySet()) { // going
 																				// through
@@ -131,7 +138,7 @@ public class UsersManager {
 																		// undone
 			}
 			// Remove from DB:
-			if (UserDao.getInstance().deleteUserFromDB(user)) {
+			if (SpringContextProvider.getContext().getBean(UserDao.class).deleteUserFromDB(user)) {
 				return true;
 			}
 		}
@@ -145,7 +152,7 @@ public class UsersManager {
 		double destLongitude = destination.getLocation().getLongitude();
 		String destMainPicture = destination.getMainPicture();
 		Category category = destination.getCategory();
-		if (DestinationsManager.getInstance().addDestination(user, destName, destDescription, destLattitude,
+		if (SpringContextProvider.getContext().getBean(DestinationsManager.class).addDestination(user, destName, destDescription, destLattitude,
 				destLongitude, destMainPicture, category)) {
 			addDestinationToUser(user, destName);
 			return true;
@@ -169,21 +176,22 @@ public class UsersManager {
 		Comment comment = new Comment(userEmail, destinationName, text, 0, dateAndTimeString, video); // creating
 																										// a
 																										// comment
-		CommentsManager.getInstance().saveComment(comment);
-		DestinationsManager.getInstance().getDestinationFromCache(destinationName).addComment(comment); // adds
-																										// the
-																										// comment
-																										// to
-																										// the
-																										// destination
+		SpringContextProvider.getContext().getBean(CommentsManager.class).saveComment(comment);
+		SpringContextProvider.getContext().getBean(DestinationsManager.class).getDestinationFromCache(destinationName)
+																					.addComment(comment); // adds
+																											// the
+																											// comment
+																											// to
+																											// the
+																											// destination
 		return true;
 	}
 
 	public synchronized boolean addVidsitedDestination(User user, String destinationName) {
-		if (!DestinationsManager.getInstance().chechDestinationInCache(destinationName)) {
+		if (!SpringContextProvider.getContext().getBean(DestinationsManager.class).chechDestinationInCache(destinationName)) {
 			user.addVisitedPlace(destinationName);
 			// add in DB
-			if (UserDao.getInstance().addVisitedDestinationToDB(user, destinationName)) {
+			if (SpringContextProvider.getContext().getBean(UserDao.class).addVisitedDestinationToDB(user, destinationName)) {
 				return true;
 			}
 		}
@@ -191,11 +199,11 @@ public class UsersManager {
 	}
 
 	public synchronized boolean removeVisitedDestination(User user, String destinationName) {
-		if (DestinationsManager.getInstance().chechDestinationInCache(destinationName)) {
+		if (SpringContextProvider.getContext().getBean(DestinationsManager.class).chechDestinationInCache(destinationName)) {
 			if (user.getVisitedPlaces().contains(destinationName)) {
 				user.removeVisitedPlace(destinationName);
 				// remove in DB
-				if (UserDao.getInstance().removeVisitedDestinationFromDB(user, destinationName)) {
+				if (SpringContextProvider.getContext().getBean(UserDao.class).removeVisitedDestinationFromDB(user, destinationName)) {
 					return true;
 				}
 			}
@@ -208,7 +216,7 @@ public class UsersManager {
 			if (!user.getFollowedUsers().contains(followedUserEmail)) {
 				user.follow(followedUserEmail);
 				// add in DB
-				if (UserDao.getInstance().addToFollowedUsers(user, followedUserEmail)) {
+				if (SpringContextProvider.getContext().getBean(UserDao.class).addToFollowedUsers(user, followedUserEmail)) {
 					return true;
 				}
 			}
@@ -221,7 +229,7 @@ public class UsersManager {
 			if (user.getFollowedUsers().contains(followedUserEmail)) {
 				user.unFollow(followedUserEmail);
 				// remove in DB
-				if (UserDao.getInstance().removeFromFollowedUsers(user, followedUserEmail)) {
+				if (SpringContextProvider.getContext().getBean(UserDao.class).removeFromFollowedUsers(user, followedUserEmail)) {
 					return true;
 				}
 			}
@@ -281,9 +289,9 @@ public class UsersManager {
 	}
 
 	private synchronized void fillVisitedPlacesToUsers() {
-		if (UserDao.getInstance().getAllVisitedPlacesFromDB() != null) {
-			for (Map.Entry<String, ArrayList<String>> entry : UserDao.getInstance().getAllVisitedPlacesFromDB()
-					.entrySet()) { // for each (destination name->list of users)
+		if (SpringContextProvider.getContext().getBean(UserDao.class).getAllVisitedPlacesFromDB() != null) {
+			for (Map.Entry<String, ArrayList<String>> entry : SpringContextProvider.getContext().getBean(UserDao.class)
+					.getAllVisitedPlacesFromDB().entrySet()) { // for each (destination name->list of users)
 				for (String userEmail : entry.getValue()) { // for each user
 					registerredUsers.get(userEmail).addVisitedPlace(entry.getKey()); // add
 																						// visited
@@ -296,8 +304,8 @@ public class UsersManager {
 	}
 
 	private synchronized void fillFollowedToUsers() {
-		if (UserDao.getInstance().getAllFollowersFromDB() != null) {
-			for (Map.Entry<String, CopyOnWriteArrayList<String>> entry : UserDao.getInstance().getAllFollowersFromDB()
+		if (SpringContextProvider.getContext().getBean(UserDao.class).getAllFollowersFromDB() != null) {
+			for (Map.Entry<String, CopyOnWriteArrayList<String>> entry : SpringContextProvider.getContext().getBean(UserDao.class).getAllFollowersFromDB()
 					.entrySet()) { // for each (follower->list of followed)
 				if (registerredUsers.containsKey(entry.getKey())) { // if user is in cache
 					registerredUsers.get(entry.getKey()).setFollowedUsers(entry.getValue()); // adds followed users to current user

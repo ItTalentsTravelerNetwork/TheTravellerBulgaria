@@ -81,7 +81,7 @@
 			<% Destination dest = null; %>
 			<%if (request.getParameter("name") != null){ %>
 			<aside class="col-md-4 sidebar sidebar-left">
-						<% dest = DestinationsManager.getInstance().getDestinationFromCache(request.getParameter("name")); %>
+						<% dest = DestinationsManager.getDestinationFromCache(request.getParameter("name")); %>
 						<%if(dest == null){ %>
 							<%request.getRequestDispatcher("AllDestinations.jsp").forward(request, response); %>
 							
@@ -125,7 +125,7 @@
 							<tr>	
 								<%for(Comment comment : dest.getComments()){ %>				
 										<td>
-										<% User user = UsersManager.getInstance().getUserFromCache(comment.getAuthorEmail()); %>
+										<% User user = UsersManager.getUserFromCache(comment.getAuthorEmail()); %>
 											<h6><%= (user.getFirstName()+ " " + user.getLastName()) %></h6>
 											<img src="PictureServlet?user=<%= user.getEmail()%>" height="60" width="60"/>
 										</td>

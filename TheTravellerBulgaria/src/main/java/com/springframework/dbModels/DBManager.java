@@ -6,11 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.springframework.exceptions.CannotConnectToDBException;
 
+@Component
+@Scope("Singleton")
 class DBManager {
 
-	private static DBManager instance; // Singleton
 	private static final String DB_IP = "localhost";
 	private static final String DB_PORT = "3306";
 	private static final String DB_NAME = "traveler_db";
@@ -18,6 +23,8 @@ class DBManager {
 	private static final String DB_PASSWORD = "123456";
 	private static final String commonURL = "jdbc:mysql://" + DB_IP + ":" + DB_PORT + "/";
 	private static final String URL = "jdbc:mysql://" + DB_IP + ":" + DB_PORT + "/" + DB_NAME;
+	
+
 	private Connection connection;
 
 	private DBManager() {
@@ -38,13 +45,6 @@ class DBManager {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	static synchronized DBManager getInstance() {
-		if (instance == null) {
-			instance = new DBManager();
-		}
-		return instance;
 	}
 
 	Connection getConnection() throws CannotConnectToDBException {
