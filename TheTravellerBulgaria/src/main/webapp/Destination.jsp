@@ -54,7 +54,7 @@
 					<li><a href="index.jsp">Home</a></li>					
 					<li><a href="AllDestinations.jsp">Destinations</a></li>
 					<%if(request.getSession().getAttribute("user") == null){ %>
-						<li><a class="btn" href="SignIn.jsp">SIGN IN / SIGN UP</a></li>
+						<li><a class="btn" href="SignIn.html">SIGN IN / SIGN UP</a></li>
 					<%}else{ %>
 						<li><a class="btn" href="LogoutServlet">Logout</a></li>
 						<li><a class="btn" href="profile.jsp">PROFILE</a></li>
@@ -207,7 +207,7 @@
                                 <a href="SectionUnderConstructionPage.html">About</a> |
                                 <a href="SectionUnderConstructionPage.html">Sidebar</a> |
                                 <a href="SectionUnderConstructionPage.html">Contact</a> |
-                                <b><a href="SignUp.jsp">Sign up</a></b>
+                                <b><a href="SignUp.html">Sign up</a></b>
                             </p>
                         </div>
                     </div>
