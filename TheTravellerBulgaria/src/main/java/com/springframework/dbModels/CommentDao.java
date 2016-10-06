@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.exceptions.InvalidDataException;
@@ -153,6 +155,43 @@ public class CommentDao {
 			e.printStackTrace();
 		}
 
+	}
+
+	public  synchronized ConcurrentHashMap<Long, CopyOnWriteArrayList<String>> getAllCommentUserLikersFromDB() {
+		ConcurrentHashMap<Long, CopyOnWriteArrayList<String>> allComentLikers = new ConcurrentHashMap<>(); // comment->user likers
+		String selectAllComentLikersFromDB = "SELECT commenter_email, comment_id FROM comment_likes ORDER BY comment_id;";
+		Statement statement = null;
+		ResultSet result = null;
+		try {
+			statement = DBManager.getInstance().getConnection().createStatement();
+			result = statement.executeQuery(selectAllComentLikersFromDB);
+			while (result.next()) {
+				if (!(allComentLikers.containsKey(result.getLong("comment_id")))) {
+					allComentLikers.put(result.getLong("comment_id"), new CopyOnWriteArrayList<>());
+				}
+				allComentLikers.get(result.getLong("comment_id"))
+						.add(result.getString("commenter_email"));
+			}
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return allComentLikers;
 	}
 
 }

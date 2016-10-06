@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.springframework.exceptions.CannotConnectToDBException;
+import com.springframework.exceptions.InvalidDataException;
+import com.springframework.exceptions.InvalidLocationException;
 import com.springframework.model.Activity;
 import com.springframework.model.Destination;
 import com.springframework.model.Destination.Category;
@@ -398,6 +400,162 @@ public class DestinationDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public synchronized ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getAllDestinationLikers() {
+		ConcurrentHashMap<String, CopyOnWriteArrayList<String>> allDestinationLikers = new ConcurrentHashMap<>(); // destination name-> user likers
+		String selectAllDestinationLikersFromDB = "SELECT user_email, destination_name FROM destination_likes ORDER BY destination_name;";
+		Statement statement = null;
+		ResultSet result = null;
+		try {
+			statement = DBManager.getInstance().getConnection().createStatement();
+			result = statement.executeQuery(selectAllDestinationLikersFromDB);
+			while (result.next()) {
+				if (!(allDestinationLikers.containsKey(result.getString("destination_name")))) {
+					allDestinationLikers.put(result.getString("destination_name"), new CopyOnWriteArrayList<>());
+				}
+				allDestinationLikers.get(result.getString("destination_name"))
+						.add(result.getString("user_email"));
+			}
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return allDestinationLikers;
+	}
+	
+	public synchronized ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getAllDestinationDislikers() {
+		ConcurrentHashMap<String, CopyOnWriteArrayList<String>> allDestinationDislikers = new ConcurrentHashMap<>(); // destination name-> user dislikers
+		String selectAllDestinationDislikersFromDB = "SELECT user_email, destination_name FROM destination_dislikes ORDER BY destination_name;";
+		Statement statement = null;
+		ResultSet result = null;
+		try {
+			statement = DBManager.getInstance().getConnection().createStatement();
+			result = statement.executeQuery(selectAllDestinationDislikersFromDB);
+			while (result.next()) {
+				if (!(allDestinationDislikers.containsKey(result.getString("destination_name")))) {
+					allDestinationDislikers.put(result.getString("destination_name"), new CopyOnWriteArrayList<>());
+				}
+				allDestinationDislikers.get(result.getString("destination_name"))
+						.add(result.getString("user_email"));
+			}
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return allDestinationDislikers;
+	}
+	
+	public synchronized ConcurrentHashMap<String, ConcurrentSkipListSet<Activity>> getAllDestinationActivities() throws InvalidDataException, InvalidLocationException {
+		ConcurrentHashMap<String, ConcurrentSkipListSet<Activity>> allDestinationActivities = new ConcurrentHashMap<>(); // destination name -> activities
+		String selectAllDestinationActivitiesFromDB = "SELECT name, lattitude, longitude, description, picture, author_rating, price, place_name FROM activities ORDER BY place_name;";
+		Statement statement = null;
+		ResultSet result = null;
+		try {
+			statement = DBManager.getInstance().getConnection().createStatement();
+			result = statement.executeQuery(selectAllDestinationActivitiesFromDB);
+			while (result.next()) {
+				if (!(allDestinationActivities.containsKey(result.getString("place_name")))) {
+					allDestinationActivities.put(result.getString("place_name"), new ConcurrentSkipListSet<>());
+				}
+				Activity activity = new Activity(result.getString("name"), result.getDouble("lattitude"), 
+												result.getDouble("longitude"), result.getString("description"), 
+												result.getString("picture"), result.getDouble("author_rating"), 
+												result.getDouble("price"), result.getString("place_name"));
+				allDestinationActivities.get(result.getString("place_name"))
+						.add(activity);
+			}
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return allDestinationActivities;
+	}
+	
+	public synchronized ConcurrentHashMap<String, ConcurrentSkipListSet<Sight>> getAllDestinationSights() throws InvalidDataException, InvalidLocationException {
+		ConcurrentHashMap<String, ConcurrentSkipListSet<Sight>> allDestinationSights = new ConcurrentHashMap<>(); // destination name -> sights
+		String selectAllDestinationSightsFromDB = "SELECT name, lattitude, longitude, description, picture, author_rating, place_name FROM sights ORDER BY place_name;";
+		Statement statement = null;
+		ResultSet result = null;
+		try {
+			statement = DBManager.getInstance().getConnection().createStatement();
+			result = statement.executeQuery(selectAllDestinationSightsFromDB);
+			while (result.next()) {
+				if (!(allDestinationSights.containsKey(result.getString("place_name")))) {
+					allDestinationSights.put(result.getString("place_name"), new ConcurrentSkipListSet<>());
+				}
+				Sight sight = new Sight(result.getString("name"), result.getDouble("lattitude"), 
+												result.getDouble("longitude"), result.getString("description"), 
+												result.getString("picture"), result.getDouble("author_rating"), 
+												result.getString("place_name"));
+				allDestinationSights.get(result.getString("place_name"))
+						.add(sight);
+			}
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return allDestinationSights;
 	}
 
 }

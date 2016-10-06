@@ -1,6 +1,7 @@
 package com.springframework.functionality;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,6 +14,8 @@ import com.springframework.dbModels.HotelDao;
 import com.springframework.dbModels.PlaceToEatDao;
 import com.springframework.dbModels.SightDao;
 import com.springframework.exceptions.InvalidCoordinatesException;
+import com.springframework.exceptions.InvalidDataException;
+import com.springframework.exceptions.InvalidLocationException;
 import com.springframework.model.Activity;
 import com.springframework.model.Comment;
 import com.springframework.model.Destination;
@@ -34,6 +37,7 @@ public class DestinationsManager {
 																			// and
 																			// author
 																			// email
+	
 
 	private DestinationsManager() {
 
@@ -55,7 +59,6 @@ public class DestinationsManager {
 		this.fillDestinationsWithPics();
 		this.fillDestinationsWithLikesAndDislikes();
 		this.fillDestinationsWithVideos();
-
 	}
 
 	private void fillDestinationsWithPics() {
@@ -368,5 +371,8 @@ public class DestinationsManager {
 		CommentsManager.getInstance().deleteUserComments(userEmail);
 		return true;
 	}
+	
+	
+	
 
 }

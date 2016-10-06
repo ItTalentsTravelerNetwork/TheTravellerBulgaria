@@ -18,14 +18,14 @@ public class ProjectManager {
 		
 	
 		// DestinationsManager
-		DestinationsManager.getInstance(); // no comment objects in each destination (*TODO add fillUserLikers, fillActivities, fillSights, fillHotels, fillRestaurants, fill pictures, fill videos)
+		DestinationsManager.getInstance(); // no comment objects in each destination
 		
 		
 		// CommentsManager
-		CommentsManager.getInstance(); // all comments (*TODO add fillUserLikers)
+		CommentsManager.getInstance(); // all comments + all user likers
 
 		
-		// adds all comments to destinations
+		// adding all comments to destinations
 		for (Map.Entry<String, Destination> destinationEntry : DestinationsManager.getInstance().getAllDestinations()
 				.entrySet()) { // for
 								// each
@@ -35,7 +35,7 @@ public class ProjectManager {
 			for (Comment c : CommentsManager.getInstance().getAllComments()) { // for
 																				// each
 																				// comment
-				// in cache
+																				// in cache
 				if (c.getPlaceName().equals(destinationEntry.getKey())) { // if
 																			// name
 																			// of
@@ -57,7 +57,7 @@ public class ProjectManager {
 		}
 
 		
-		// adds all destinations to authors (users fill added places)
+		// adding all destinations to authors (filling added places to users)
 		for (Map.Entry<String, Destination> destinationEntry : DestinationsManager.getInstance().getAllDestinations()
 				.entrySet()) { // for each destination
 			for (Map.Entry<String, User> userEntry : UsersManager.getInstance().getRegisterredUsers().entrySet()) { // for
@@ -80,10 +80,6 @@ public class ProjectManager {
 				}
 			}
 		}
-		
-		
-		
-
 	}
 
 	public static synchronized ProjectManager getInstance() {

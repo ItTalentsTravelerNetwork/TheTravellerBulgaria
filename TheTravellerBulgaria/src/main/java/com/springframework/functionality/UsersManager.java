@@ -299,10 +299,8 @@ public class UsersManager {
 		if (UserDao.getInstance().getAllFollowersFromDB() != null) {
 			for (Map.Entry<String, CopyOnWriteArrayList<String>> entry : UserDao.getInstance().getAllFollowersFromDB()
 					.entrySet()) { // for each (follower->list of followed)
-				for (User user : registerredUsers.values()) { // for each user in cache
-					if (entry.getKey().contains(user.getEmail())) { // if present
-						user.setFollowedUsers(entry.getValue()); // add followed users
-					}
+				if (registerredUsers.containsKey(entry.getKey())) {
+					registerredUsers.get(entry.getKey()).setFollowedUsers(entry.getValue());
 				}
 			}
 		}

@@ -2,9 +2,11 @@ package com.springframework.functionality;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.springframework.dbModels.CommentDao;
+import com.springframework.dbModels.UserDao;
 import com.springframework.model.Comment;
 
 public class CommentsManager {
@@ -22,6 +24,7 @@ public class CommentsManager {
 																		// collection
 			allComments.add(c);
 		}
+		fillUserLikersToComments(); // fills all users who like the comments
 	}
 
 	public static synchronized CommentsManager getInstance() {
@@ -89,6 +92,26 @@ public class CommentsManager {
 		for (Comment comment : commentsToRemove) {
 			this.allComments.remove(comment);
 		}
+	}
+	
+	private synchronized void fillUserLikersToComments() {
+		if (CommentDao.getInstance().getAllCommentUserLikersFromDB() != null) {
+			for (Map.Entry<Long, CopyOnWriteArrayList<String>> entry : CommentDao.getInstance().getAllCommentUserLikersFromDB()
+					.entrySet()) { // for each (comment id->list of user likers)
+				if (getCommentById(entry.getKey())!=null) { // if there is such a comment in cache
+					getCommentById(entry.getKey()).setUserLikers(entry.getValue()); // add user likers to comment
+				}																		
+			}
+		}
+	}
+	
+	public synchronized Comment getCommentById(long commentId) {
+		for (Comment comment: allComments) {
+			if (comment.getId()==commentId) {
+				return comment;
+			}
+		}
+		return null;
 	}
 
 }
