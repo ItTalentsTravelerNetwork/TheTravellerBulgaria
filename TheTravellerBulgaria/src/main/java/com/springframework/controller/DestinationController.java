@@ -50,9 +50,9 @@ public class DestinationController {
 				e.printStackTrace();
 				return "Destination registration failed!";
 			}
-			return "Destination Registration Successful!";
+			return "Destination added successfully!";
 		}
-		return "Destination registration failed!";
+		return "Adding destination failed!";
 	}
 	
 	private static boolean validateData(String name, String lattitude, String longitude, String description, String category) {

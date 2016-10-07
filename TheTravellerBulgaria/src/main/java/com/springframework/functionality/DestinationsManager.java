@@ -40,6 +40,7 @@ public class DestinationsManager {
 	private DestinationsManager() {
 
 		allDestinations = new ConcurrentHashMap<>();
+		allDestinationsAndAuthors = new ConcurrentHashMap<>();
 		Set<Destination> tempAllDest = DestinationDao.getInstance().getAllDestinations();
 		for (Destination d : tempAllDest) { // adds
 											// all
