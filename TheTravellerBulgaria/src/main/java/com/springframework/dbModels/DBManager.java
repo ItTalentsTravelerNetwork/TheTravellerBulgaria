@@ -6,15 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.springframework.exceptions.CannotConnectToDBException;
 
 @Component
-@Scope("Singleton")
-class DBManager {
+public class DBManager {
 
 	private static final String DB_IP = "localhost";
 	private static final String DB_PORT = "3306";
@@ -23,11 +20,10 @@ class DBManager {
 	private static final String DB_PASSWORD = "123456";
 	private static final String commonURL = "jdbc:mysql://" + DB_IP + ":" + DB_PORT + "/";
 	private static final String URL = "jdbc:mysql://" + DB_IP + ":" + DB_PORT + "/" + DB_NAME;
-	
 
 	private Connection connection;
 
-	private DBManager() {
+	public DBManager() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver"); // DriverManager
 			setConnection(DriverManager.getConnection(commonURL, DB_USERNAME, DB_PASSWORD));

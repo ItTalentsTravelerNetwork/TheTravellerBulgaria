@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.springframework.SpringContextProvider;
@@ -17,11 +16,9 @@ import com.springframework.exceptions.InvalidDataException;
 import com.springframework.model.Comment;
 
 @Component
-@Scope("Singleton")
 public class CommentDao {
 
-
-	private CommentDao() {
+	public CommentDao() {
 	}
 
 	public synchronized ArrayList<Comment> getAllComments() {
@@ -31,7 +28,7 @@ public class CommentDao {
 		ResultSet result = null;
 		try {
 			try {
-				statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+				statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 				String selectAllCommentsFromDB = "SELECT id, author_email, place_name, text, number_of_likes, date_and_time, video FROM comments;";
 				result = statement.executeQuery(selectAllCommentsFromDB);
 				while (result.next()) {
@@ -79,8 +76,8 @@ public class CommentDao {
 		PreparedStatement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(insertCommentIntoDB,
-					Statement.RETURN_GENERATED_KEYS);
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+					.prepareStatement(insertCommentIntoDB, Statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, comment.getAuthorEmail());
 			statement.setString(2, comment.getPlaceName());
 			statement.setString(3, comment.getText());
@@ -116,7 +113,7 @@ public class CommentDao {
 
 	public synchronized void addLike(long commentId, String userEmail) {
 		try {
-			PreparedStatement ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			PreparedStatement ps = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement("INSERT INTO comment_likes(commenter_email, comment_id) VALUES (?,?)");
 			ps.setString(1, userEmail);
 			ps.setLong(2, commentId);
@@ -130,7 +127,7 @@ public class CommentDao {
 
 	public synchronized void removeLike(long commentId, String userEmail) {
 		try {
-			PreparedStatement ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			PreparedStatement ps = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement("DELETE FROM comment_likes WHERE commenter_email=? AND comment_id=?");
 			ps.setString(1, userEmail);
 			ps.setLong(2, commentId);
@@ -144,7 +141,7 @@ public class CommentDao {
 
 	public void deleteComment(Comment comment) {
 		try {
-			PreparedStatement ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			PreparedStatement ps = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement("DELETE FROM comments WHERE comment_id=?");
 			ps.setLong(1, comment.getId());
 			ps.executeUpdate();
@@ -155,20 +152,20 @@ public class CommentDao {
 
 	}
 
-	public  synchronized ConcurrentHashMap<Long, CopyOnWriteArrayList<String>> getAllCommentUserLikersFromDB() {
-		ConcurrentHashMap<Long, CopyOnWriteArrayList<String>> allComentLikers = new ConcurrentHashMap<>(); // comment->user likers
+	public synchronized ConcurrentHashMap<Long, CopyOnWriteArrayList<String>> getAllCommentUserLikersFromDB() {
+		ConcurrentHashMap<Long, CopyOnWriteArrayList<String>> allComentLikers = new ConcurrentHashMap<>(); // comment->user
+																											// likers
 		String selectAllComentLikersFromDB = "SELECT commenter_email, comment_id FROM comment_likes ORDER BY comment_id;";
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			result = statement.executeQuery(selectAllComentLikersFromDB);
 			while (result.next()) {
 				if (!(allComentLikers.containsKey(result.getLong("comment_id")))) {
 					allComentLikers.put(result.getLong("comment_id"), new CopyOnWriteArrayList<>());
 				}
-				allComentLikers.get(result.getLong("comment_id"))
-						.add(result.getString("commenter_email"));
+				allComentLikers.get(result.getLong("comment_id")).add(result.getString("commenter_email"));
 			}
 		} catch (SQLException e) {
 			// TODO handle exception

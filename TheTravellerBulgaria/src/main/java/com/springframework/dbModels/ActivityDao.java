@@ -7,7 +7,6 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.springframework.SpringContextProvider;
@@ -16,13 +15,10 @@ import com.springframework.exceptions.InvalidDataException;
 import com.springframework.exceptions.InvalidLocationException;
 import com.springframework.model.Activity;
 
-
 @Component
-@Scope("Singleton")
 public class ActivityDao {
 
-	
-	private ActivityDao() {
+	public ActivityDao() {
 	}
 
 	public Set<Activity> getAllActivities() {
@@ -31,7 +27,7 @@ public class ActivityDao {
 		ResultSet rs = null;
 
 		try {
-			st = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			st = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			rs = st.executeQuery(
 					"SELECT name, lattitude, longitude, description, picture, author_rating, price, place_name from activities");
 			while (rs.next()) {
@@ -67,7 +63,7 @@ public class ActivityDao {
 	public synchronized void saveActivityToDb(Activity activity) throws CloneNotSupportedException {
 		PreparedStatement ps = null;
 		try {
-			ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(
+			ps = SpringContextProvider.context.getBean(DBManager.class).getConnection().prepareStatement(
 					"INSERT INTO activities(name, lattitude, longitude, description, picture, author_rating, price, place_name) VALUES(?,?,?,?,?,?,?,?);");
 			ps.setString(1, activity.getName());
 			ps.setDouble(2, activity.getLocation().getLattitude());

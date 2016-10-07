@@ -1,19 +1,15 @@
 package com.springframework;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class SpringContextProvider {
 
-	
-	private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfigurationFile.class);
+	@Autowired
+	public static AnnotationConfigApplicationContext context;
 
-	
-	private SpringContextProvider() {}
-	
-	
-	public synchronized static AnnotationConfigApplicationContext getContext() {
-		return context;
+	private SpringContextProvider() {
+
 	}
-	
-	
+
 }

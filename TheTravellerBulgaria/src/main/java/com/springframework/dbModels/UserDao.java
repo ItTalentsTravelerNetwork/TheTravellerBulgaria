@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.springframework.SpringContextProvider;
@@ -18,12 +17,7 @@ import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.model.User;
 
 @Component
-@Scope("Singleton")
 public class UserDao {
-
-
-	private UserDao() {
-	}
 
 	public synchronized Set<User> getAllUsers() {
 		System.out.println("Getting all users from DB!!!!");
@@ -32,7 +26,7 @@ public class UserDao {
 		ResultSet result = null;
 		try {
 			try {
-				statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+				statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 				String selectAllUsersFromDB = "SELECT email, password, first_name, last_name, description, profile_picture, rating, times_liked FROM users;";
 				result = statement.executeQuery(selectAllUsersFromDB);
 				while (result.next()) {
@@ -82,7 +76,8 @@ public class UserDao {
 		String insertUserInfoIntoDB = "INSERT INTO users (email, password, first_name, last_name, description, profile_picture, rating, times_liked) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(insertUserInfoIntoDB);
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+					.prepareStatement(insertUserInfoIntoDB);
 			statement.setString(1, user.getEmail());
 			statement.setString(2, user.getPassword());
 			statement.setString(3, user.getFirstName());
@@ -118,7 +113,8 @@ public class UserDao {
 		PreparedStatement prepStatement = null;
 		String updateUserStatement = "UPDATE users SET password=?, first_name=?, last_name=?, description=?, profile_picture=? WHERE email=?;";
 		try {
-			prepStatement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(updateUserStatement);
+			prepStatement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+					.prepareStatement(updateUserStatement);
 			prepStatement.setString(1, password);
 			prepStatement.setString(2, firstName);
 			prepStatement.setString(3, lastName);
@@ -152,7 +148,8 @@ public class UserDao {
 		String deleteUserFromDB = "DELETE FROM users where email=?;";
 		PreparedStatement prepStatement = null;
 		try {
-			prepStatement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(deleteUserFromDB);
+			prepStatement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+					.prepareStatement(deleteUserFromDB);
 			prepStatement.setString(1, user.getEmail());
 			return true;
 		} catch (SQLException e) {
@@ -179,7 +176,8 @@ public class UserDao {
 		String insertFollowedUserIntoDB = "INSERT INTO followers (follower_email, followed_email) VALUES (?, ?);";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(insertFollowedUserIntoDB);
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+					.prepareStatement(insertFollowedUserIntoDB);
 			statement.setString(1, user.getEmail());
 			statement.setString(2, followedUserEmail);
 			statement.executeUpdate();
@@ -208,7 +206,8 @@ public class UserDao {
 		String deleteFollowedUserFromDB = "DELETE FROM followers where follower_email=? AND followed_email=?;";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(deleteFollowedUserFromDB);
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+					.prepareStatement(deleteFollowedUserFromDB);
 			statement.setString(1, user.getEmail());
 			statement.setString(2, followedUserEmail);
 			statement.executeUpdate();
@@ -244,7 +243,7 @@ public class UserDao {
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			result = statement.executeQuery(selectAllVisitedPlacesFromDB);
 			while (result.next()) {
 				if (!(allVisitedDestinationsAndUsers.containsKey(result.getString("destination_name")))) {
@@ -279,7 +278,7 @@ public class UserDao {
 		String insertVisitedDestinationAndUserEmailIntoDB = "INSERT INTO visited_destinations (destination_name, user_email) VALUES (?, ?);";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement(insertVisitedDestinationAndUserEmailIntoDB);
 			statement.setString(1, destinationName);
 			statement.setString(2, user.getEmail());
@@ -308,7 +307,7 @@ public class UserDao {
 		String deleteVisitedDestinationAndUserEmailFromDB = "DELETE FROM visited_destinations WHERE destination_name=? AND user_email=?;";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement(deleteVisitedDestinationAndUserEmailFromDB);
 			statement.setString(1, destinationName);
 			statement.setString(2, user.getEmail());
@@ -332,7 +331,7 @@ public class UserDao {
 		}
 		return false;
 	}
-	
+
 	public synchronized ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getAllFollowersFromDB() {
 		// retrieve all users' emails and the places' names they visited
 		ConcurrentHashMap<String, CopyOnWriteArrayList<String>> allFollowers = new ConcurrentHashMap<>(); // follower->followed
@@ -340,14 +339,13 @@ public class UserDao {
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			result = statement.executeQuery(selectAllFollowersFromDB);
 			while (result.next()) {
 				if (!(allFollowers.containsKey(result.getString("follower_email")))) {
 					allFollowers.put(result.getString("follower_email"), new CopyOnWriteArrayList<>());
 				}
-				allFollowers.get(result.getString("follower_email"))
-						.add(result.getString("followed_email"));
+				allFollowers.get(result.getString("follower_email")).add(result.getString("followed_email"));
 			}
 		} catch (SQLException e) {
 			// TODO handle exception

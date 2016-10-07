@@ -11,12 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.springframework.SpringConfigurationFile;
 import com.springframework.SpringContextProvider;
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.exceptions.InvalidDataException;
@@ -30,22 +26,21 @@ import com.springframework.model.Sight;
 import com.springframework.model.User;
 
 @Component
-@Scope("Singleton")
 public class DestinationDAO {
 
 	private ConcurrentHashMap<String, ArrayList<String>> destinationPictures;
 
-	private DestinationDAO() {
+	public DestinationDAO() {
 		this.destinationPictures = this.getAllDestPictures();
 	}
 
 	private ConcurrentHashMap<String, ArrayList<String>> getAllDestPictures() {
-		
+
 		ConcurrentHashMap<String, ArrayList<String>> allPics = new ConcurrentHashMap<>();
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			result = statement.executeQuery("SELECT picture, destination_name from destination_pictures;");
 			if (result != null) {
 				while (result.next()) {
@@ -61,15 +56,6 @@ public class DestinationDAO {
 		} catch (SQLException | CannotConnectToDBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			try {
-				result.close();
-				statement.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
 		}
 
 		return allPics;
@@ -81,7 +67,7 @@ public class DestinationDAO {
 		ResultSet result = null;
 		try {
 			try {
-				statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+				statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 				String selectAllDestinationsFromDB = "SELECT name, description, lattitude, longitude, main_picture, author_email, category, number_of_likes, number_of_dislikes FROM destinations;";
 				result = statement.executeQuery(selectAllDestinationsFromDB);
 				while (result.next()) {
@@ -124,8 +110,9 @@ public class DestinationDAO {
 		PreparedStatement statement = null;
 		PreparedStatement statement2 = null;
 		try {
-			SpringContextProvider.getContext().getBean(DBManager.class).getConnection().setAutoCommit(false);
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(insertDestinationInfoIntoDB);
+			SpringContextProvider.context.getBean(DBManager.class).getConnection().setAutoCommit(false);
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+					.prepareStatement(insertDestinationInfoIntoDB);
 			statement.setString(1, destination.getName());
 			statement.setString(2, destination.getDescription());
 			statement.setDouble(3, destination.getLocation().getLattitude());
@@ -137,15 +124,16 @@ public class DestinationDAO {
 			statement.setInt(9, destination.getNumberOfDislikes());
 			statement.executeUpdate();
 
-			statement2 = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(insertIntoVisitedDestinations);
+			statement2 = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+					.prepareStatement(insertIntoVisitedDestinations);
 			statement2.setString(1, destination.getName());
 			statement2.setString(2, u.getEmail());
 			statement2.executeUpdate();
-			SpringContextProvider.getContext().getBean(DBManager.class).getConnection().commit();
+			SpringContextProvider.context.getBean(DBManager.class).getConnection().commit();
 			return true;
 		} catch (SQLException e) {
 			try {
-				SpringContextProvider.getContext().getBean(DBManager.class).getConnection().rollback();
+				SpringContextProvider.context.getBean(DBManager.class).getConnection().rollback();
 			} catch (SQLException | CannotConnectToDBException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -158,7 +146,7 @@ public class DestinationDAO {
 			return false;
 		} finally {
 			try {
-				SpringContextProvider.getContext().getBean(DBManager.class).getConnection().setAutoCommit(true);
+				SpringContextProvider.context.getBean(DBManager.class).getConnection().setAutoCommit(true);
 				if (statement != null) {
 					statement.close();
 				}
@@ -182,7 +170,8 @@ public class DestinationDAO {
 		try {
 			// TODO update only current fields
 
-			prepStatement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(updateDestinationStatement);
+			prepStatement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+					.prepareStatement(updateDestinationStatement);
 			prepStatement.setString(1, description);
 			prepStatement.setDouble(2, longitude);
 			prepStatement.setDouble(3, lattitude);
@@ -225,7 +214,7 @@ public class DestinationDAO {
 		// TODO update like (userLiker and number Of likes; +/- userDisliker and
 		// number of dislikes)
 		try {
-			PreparedStatement ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			PreparedStatement ps = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement("INSERT INTO destination_likes(user_email, destination_name) VALUES (?,?);");
 			ps.setString(1, userEmail);
 			ps.setString(2, destinationName);
@@ -241,7 +230,7 @@ public class DestinationDAO {
 
 	public boolean addDislike(String userEmail, String destinationName) {
 		try {
-			PreparedStatement ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			PreparedStatement ps = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement("INSERT INTO destination_dislikes(user_email, destination_name) VALUES (?,?);");
 			ps.setString(1, userEmail);
 			ps.setString(2, destinationName);
@@ -258,7 +247,7 @@ public class DestinationDAO {
 		// TODO update dislike (userDisliker and number Of dislikes; +/-
 		// userLiker and number of likes)
 		try {
-			PreparedStatement ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			PreparedStatement ps = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement("DELETE FROM destination_likes WHERE user_email=? AND destination_name=?;");
 			ps.setString(1, userEmail);
 			ps.setString(2, destinationName);
@@ -275,7 +264,7 @@ public class DestinationDAO {
 		// TODO update dislike (userDisliker and number Of dislikes; +/-
 		// userLiker and number of likes)
 		try {
-			PreparedStatement ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			PreparedStatement ps = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement("DELETE FROM destination_dislikes WHERE user_email=? AND destination_name=?;");
 			ps.setString(1, userEmail);
 			ps.setString(2, destinationName);
@@ -293,7 +282,7 @@ public class DestinationDAO {
 		Statement st = null;
 		ResultSet rs = null;
 		try {
-			st = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			st = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			rs = st.executeQuery("SELECT user_email, destination_name from destination_likes;");
 			while (rs.next()) {
 				if (!userLikes.containsKey(rs.getString("destination_name"))) {
@@ -323,7 +312,7 @@ public class DestinationDAO {
 		Statement st = null;
 		ResultSet rs = null;
 		try {
-			st = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			st = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			rs = st.executeQuery("SELECT user_email, destination_name from destination_dislikes;");
 			while (rs.next()) {
 				if (!userDisLikes.containsKey(rs.getString("destination_name"))) {
@@ -353,7 +342,7 @@ public class DestinationDAO {
 		Statement st = null;
 		ResultSet rs = null;
 		try {
-			st = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			st = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			rs = st.executeQuery("SELECT video, destination_name from destination_videos;");
 			while (rs.next()) {
 				if (!videos.containsKey(rs.getString("destination_name"))) {
@@ -379,7 +368,7 @@ public class DestinationDAO {
 
 	public void addPicture(String destName, String pic) {
 		try {
-			PreparedStatement ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			PreparedStatement ps = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement("INSERT INTO destination_pictures(destination_name, picture) VALUES(?, ?);");
 			ps.setString(1, destName);
 			ps.setString(2, pic);
@@ -393,7 +382,7 @@ public class DestinationDAO {
 
 	public void addVideo(String destName, String video) {
 		try {
-			PreparedStatement ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection()
+			PreparedStatement ps = SpringContextProvider.context.getBean(DBManager.class).getConnection()
 					.prepareStatement("INSERT INTO destination_videos(video, destination_name) VALUES(?, ?);");
 			ps.setString(1, video);
 			ps.setString(2, destName);
@@ -405,19 +394,21 @@ public class DestinationDAO {
 	}
 
 	public synchronized ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getAllDestinationLikers() {
-		ConcurrentHashMap<String, CopyOnWriteArrayList<String>> allDestinationLikers = new ConcurrentHashMap<>(); // destination name-> user likers
+		ConcurrentHashMap<String, CopyOnWriteArrayList<String>> allDestinationLikers = new ConcurrentHashMap<>(); // destination
+																													// name->
+																													// user
+																													// likers
 		String selectAllDestinationLikersFromDB = "SELECT user_email, destination_name FROM destination_likes ORDER BY destination_name;";
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			result = statement.executeQuery(selectAllDestinationLikersFromDB);
 			while (result.next()) {
 				if (!(allDestinationLikers.containsKey(result.getString("destination_name")))) {
 					allDestinationLikers.put(result.getString("destination_name"), new CopyOnWriteArrayList<>());
 				}
-				allDestinationLikers.get(result.getString("destination_name"))
-						.add(result.getString("user_email"));
+				allDestinationLikers.get(result.getString("destination_name")).add(result.getString("user_email"));
 			}
 		} catch (SQLException e) {
 			// TODO handle exception
@@ -440,21 +431,23 @@ public class DestinationDAO {
 		}
 		return allDestinationLikers;
 	}
-	
+
 	public synchronized ConcurrentHashMap<String, CopyOnWriteArrayList<String>> getAllDestinationDislikers() {
-		ConcurrentHashMap<String, CopyOnWriteArrayList<String>> allDestinationDislikers = new ConcurrentHashMap<>(); // destination name-> user dislikers
+		ConcurrentHashMap<String, CopyOnWriteArrayList<String>> allDestinationDislikers = new ConcurrentHashMap<>(); // destination
+																														// name->
+																														// user
+																														// dislikers
 		String selectAllDestinationDislikersFromDB = "SELECT user_email, destination_name FROM destination_dislikes ORDER BY destination_name;";
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			result = statement.executeQuery(selectAllDestinationDislikersFromDB);
 			while (result.next()) {
 				if (!(allDestinationDislikers.containsKey(result.getString("destination_name")))) {
 					allDestinationDislikers.put(result.getString("destination_name"), new CopyOnWriteArrayList<>());
 				}
-				allDestinationDislikers.get(result.getString("destination_name"))
-						.add(result.getString("user_email"));
+				allDestinationDislikers.get(result.getString("destination_name")).add(result.getString("user_email"));
 			}
 		} catch (SQLException e) {
 			// TODO handle exception
@@ -477,25 +470,27 @@ public class DestinationDAO {
 		}
 		return allDestinationDislikers;
 	}
-	
-	public synchronized ConcurrentHashMap<String, ConcurrentSkipListSet<Activity>> getAllDestinationActivities() throws InvalidDataException, InvalidLocationException {
-		ConcurrentHashMap<String, ConcurrentSkipListSet<Activity>> allDestinationActivities = new ConcurrentHashMap<>(); // destination name -> activities
+
+	public synchronized ConcurrentHashMap<String, ConcurrentSkipListSet<Activity>> getAllDestinationActivities()
+			throws InvalidDataException, InvalidLocationException {
+		ConcurrentHashMap<String, ConcurrentSkipListSet<Activity>> allDestinationActivities = new ConcurrentHashMap<>(); // destination
+																															// name
+																															// ->
+																															// activities
 		String selectAllDestinationActivitiesFromDB = "SELECT name, lattitude, longitude, description, picture, author_rating, price, place_name FROM activities ORDER BY place_name;";
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			result = statement.executeQuery(selectAllDestinationActivitiesFromDB);
 			while (result.next()) {
 				if (!(allDestinationActivities.containsKey(result.getString("place_name")))) {
 					allDestinationActivities.put(result.getString("place_name"), new ConcurrentSkipListSet<>());
 				}
-				Activity activity = new Activity(result.getString("name"), result.getDouble("lattitude"), 
-												result.getDouble("longitude"), result.getString("description"), 
-												result.getString("picture"), result.getDouble("author_rating"), 
-												result.getDouble("price"), result.getString("place_name"));
-				allDestinationActivities.get(result.getString("place_name"))
-						.add(activity);
+				Activity activity = new Activity(result.getString("name"), result.getDouble("lattitude"),
+						result.getDouble("longitude"), result.getString("description"), result.getString("picture"),
+						result.getDouble("author_rating"), result.getDouble("price"), result.getString("place_name"));
+				allDestinationActivities.get(result.getString("place_name")).add(activity);
 			}
 		} catch (SQLException e) {
 			// TODO handle exception
@@ -518,25 +513,27 @@ public class DestinationDAO {
 		}
 		return allDestinationActivities;
 	}
-	
-	public synchronized ConcurrentHashMap<String, ConcurrentSkipListSet<Sight>> getAllDestinationSights() throws InvalidDataException, InvalidLocationException {
-		ConcurrentHashMap<String, ConcurrentSkipListSet<Sight>> allDestinationSights = new ConcurrentHashMap<>(); // destination name -> sights
+
+	public synchronized ConcurrentHashMap<String, ConcurrentSkipListSet<Sight>> getAllDestinationSights()
+			throws InvalidDataException, InvalidLocationException {
+		ConcurrentHashMap<String, ConcurrentSkipListSet<Sight>> allDestinationSights = new ConcurrentHashMap<>(); // destination
+																													// name
+																													// ->
+																													// sights
 		String selectAllDestinationSightsFromDB = "SELECT name, lattitude, longitude, description, picture, author_rating, place_name FROM sights ORDER BY place_name;";
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			result = statement.executeQuery(selectAllDestinationSightsFromDB);
 			while (result.next()) {
 				if (!(allDestinationSights.containsKey(result.getString("place_name")))) {
 					allDestinationSights.put(result.getString("place_name"), new ConcurrentSkipListSet<>());
 				}
-				Sight sight = new Sight(result.getString("name"), result.getDouble("lattitude"), 
-												result.getDouble("longitude"), result.getString("description"), 
-												result.getString("picture"), result.getDouble("author_rating"), 
-												result.getString("place_name"));
-				allDestinationSights.get(result.getString("place_name"))
-						.add(sight);
+				Sight sight = new Sight(result.getString("name"), result.getDouble("lattitude"),
+						result.getDouble("longitude"), result.getString("description"), result.getString("picture"),
+						result.getDouble("author_rating"), result.getString("place_name"));
+				allDestinationSights.get(result.getString("place_name")).add(sight);
 			}
 		} catch (SQLException e) {
 			// TODO handle exception

@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.springframework.SpringContextProvider;
-import com.springframework.dbModels.PlaceToEatDao;
 import com.springframework.functionality.UsersManager;
 import com.springframework.model.User;
 
@@ -46,8 +46,8 @@ public class UserController {
 			}
 			File profilePicFile = new File(dir, email + "-profilePic." + multipartFile.getOriginalFilename());
 			Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			SpringContextProvider.getContext().getBean(UsersManager.class)
-			.registerUser(email, inputPassword, firstName, lastName, description, profilePicFile.getName());
+			SpringContextProvider.context.getBean(UsersManager.class).registerUser(email, inputPassword, firstName,
+					lastName, description, profilePicFile.getName());
 			return "User Registration Successful!";
 		}
 
@@ -57,12 +57,30 @@ public class UserController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login(@RequestParam("userEmail") String email, @RequestParam("userPassword") String password,
 			HttpSession session) {
-		User user = SpringContextProvider.getContext().getBean(UsersManager.class).logIn(email, password);
+		User user = SpringContextProvider.context.getBean(UsersManager.class).logIn(email, password);
 		if (user != null) {
 			session.setAttribute("user", user);
 			return "SUCCESS";
 		}
 		return "FAILURE";
+	}
+
+	@RequestMapping(value = "/GetUserInfo", method = RequestMethod.GET)
+	@ResponseBody
+	public User checkForUser(HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute("user");
+		return user;
+	}
+
+	@RequestMapping(value = "/GetProfilePicture", method = RequestMethod.GET)
+	@ResponseBody
+	public String getPicture(HttpServletRequest request, HttpServletResponse response) {
+		String email = request.getParameter("email");
+		User user = SpringContextProvider.context.getBean(UsersManager.class).getUserFromCache(email);
+		File profilePicFile = new File("userPics", user.getProfilePicture());
+		String path = profilePicFile.getAbsolutePath();
+		return path;
+
 	}
 
 	private static boolean validateData(String firstName, String lastName, String email, String password) {
@@ -73,4 +91,5 @@ public class UserController {
 		return false;
 
 	}
+
 }

@@ -32,6 +32,9 @@ public class User {
 		setProfilePicture(profilePicture);
 		setRating(rating);
 		setTimesLiked(timesLiked);
+		this.addedPlaces = new CopyOnWriteArrayList<>();
+		this.visitedPlaces = new CopyOnWriteArrayList<>();
+		this.followedUsers = new CopyOnWriteArrayList<>();
 	}
 
 	public User(String email, String password, String firstName, String lastName, String description,

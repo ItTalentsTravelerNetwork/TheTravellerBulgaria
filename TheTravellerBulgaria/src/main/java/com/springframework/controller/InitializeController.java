@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springframework.SpringContextProvider;
-import com.springframework.dbModels.PlaceToEatDao;
 import com.springframework.functionality.ProjectManager;
 
 @RestController
@@ -14,7 +13,7 @@ public class InitializeController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public void initialize() {
-		SpringContextProvider.getContext().getBean(ProjectManager.class);
+		SpringContextProvider.context.getBean(ProjectManager.class);
 		return;
 	}
 

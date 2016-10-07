@@ -34,7 +34,7 @@
 <body onload="showDestinations()">
 	<!-- Fixed navbar -->
 	
-	
+	<script>getUserInfo()</script>
 	<div class="navbar navbar-inverse navbar-fixed-top headroom" >
 		<div class="container">
 			<div class="navbar-header">
@@ -74,15 +74,15 @@
 				<div class="row widget">
 					<div class="col-xs-12">	
 						
-							<h4></h4>
-							<p></p>
+							<h4 id="fullName"></h4>
+							<p id="description"></p>
 															
 						
 					</div>
 				</div>
 				<div class="row widget">
 					<div class="col-xs-12">						
-						<p><img src="PictureServlet?user=<%=((User)request.getSession().getAttribute("user")).getEmail() %>" height="150" width="150" alt=""></p>
+						<p id="profilePicture"></p>
 					</div>
 				</div>
 				<div class="row widget">
@@ -193,6 +193,7 @@
 <script>
 
 function showDestinations(){
+	
 	$.get(
 		"GetUserDestinations", 
 		function(data){
@@ -218,6 +219,18 @@ function showDestinations(){
 			html += "</tr></table>";
 			document.getElementById("destinations").innerHTML = html;
 		}		
+	)
+}
+
+function getUserInfo(){
+	$.get(
+		"GetUserInfo",
+		function(data){
+			var json = JSON.parse(data);
+			document.getElementById("fullName").innerHTML = json.firstName + " " + json.lastName;
+			document.getElementById("description").innerHTML = json.description;
+			document.getElementById("profilePicture").innerHTML = "<img src=\"GetProfilePicture?email="+ json.email + "height=\"150\" width=\"150\" alt=\"\"/>";
+		}
 	)
 }
 </script>

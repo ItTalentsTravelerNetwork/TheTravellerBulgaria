@@ -7,7 +7,6 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.springframework.SpringContextProvider;
@@ -17,20 +16,19 @@ import com.springframework.exceptions.InvalidLocationException;
 import com.springframework.model.Sight;
 
 @Component
-@Scope("Singleton")
 public class SightDao {
 
-	private SightDao() {
+	public SightDao() {
 	}
 
 	public Set<Sight> getAllSights() {
-		
+
 		Set<Sight> sights = new HashSet<>();
 		Statement st = null;
 		ResultSet rs = null;
 
 		try {
-			st = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().createStatement();
+			st = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
 			rs = st.executeQuery(
 					"SELECT name, lattitude, longitude, description, picture, author_rating, place_name from sights");
 			while (rs.next()) {
@@ -64,7 +62,7 @@ public class SightDao {
 	public synchronized void saveSightToDB(Sight sight) throws CloneNotSupportedException {
 		PreparedStatement ps = null;
 		try {
-			ps = SpringContextProvider.getContext().getBean(DBManager.class).getConnection().prepareStatement(
+			ps = SpringContextProvider.context.getBean(DBManager.class).getConnection().prepareStatement(
 					"INSERT INTO sights(name, lattitude, longitude, description, picture, author_rating, place_name) VALUES(?,?,?,?,?,?,?);");
 			ps.setString(1, sight.getName());
 			ps.setDouble(2, sight.getLocation().getLattitude());
