@@ -3,13 +3,13 @@ function checkForUser() {
 	$.get(
 		"GetUserInfo",
 		function(data){
-			if(data==null){
+			if(data==""){
 				document.getElementById("userButton").innerHTML="<a class=\"btn\" href=\"SignIn.html\">SIGN IN / SIGN UP</a>";
 			}else{
-				var json = JSON.parse(data);
+				var json = data;
 				sessionStorage.setItem('user', json);
-				 document.getElementById("userButton").innerHTML="<a class=\"btn\" href=\"logout\">Logout</a>" +
-		            "<a class=\"btn\" href=\profile.html\">PROFILE</a>";
+				 document.getElementById("userButton").innerHTML="<a class=\"btn\" href=\"logout\">Logout</a>";
+		            document.getElementById("secondButton").innerHTML="<a class=\"btn\" href=\profile.html>PROFILE</a>";
 			}
 		}
 	)
