@@ -35,6 +35,7 @@ public class User {
 		this.addedPlaces = new CopyOnWriteArrayList<>();
 		this.visitedPlaces = new CopyOnWriteArrayList<>();
 		this.followedUsers = new CopyOnWriteArrayList<>();
+		this.chatHistory = new ConcurrentHashMap<String, Chat>();
 	}
 
 	public User(String email, String password, String firstName, String lastName, String description,
