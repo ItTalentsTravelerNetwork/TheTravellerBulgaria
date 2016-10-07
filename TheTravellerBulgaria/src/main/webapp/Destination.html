@@ -53,12 +53,9 @@
 				<ul class="nav navbar-nav pull-right">
 					<li><a href="index.html">Home</a></li>					
 					<li><a href="AllDestinations.html">Destinations</a></li>
-					<%if(request.getSession().getAttribute("user") == null){ %>
-						<li><a class="btn" href="SignIn.html">SIGN IN / SIGN UP</a></li>
-					<%}else{ %>
-						<li><a class="btn" href="LogoutServlet">Logout</a></li>
-						<li><a class="btn" href="profile.html">PROFILE</a></li>
-					<%} %>
+					<div id="userButton">		
+					<script>checkforUser()</script>
+					</div>
 				</ul>
 			</div><!--/.nav-collapse -->
 		</div>
@@ -259,9 +256,12 @@
 			  marker.setMap(map);
 			 <%}%>
 		}
+		
+		
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQKyIgPewrgRCgagA1sDItFSRZh5hZlL4&callback=myMap"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="assets/js/checkForUser.js"></script>
 	
 </body>
 <script>

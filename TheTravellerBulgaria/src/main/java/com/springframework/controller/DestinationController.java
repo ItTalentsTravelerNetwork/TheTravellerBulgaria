@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.springframework.exceptions.InvalidCoordinatesException;
 import com.springframework.functionality.DestinationsManager;
+import com.springframework.model.Destination;
 import com.springframework.model.User;
 
 @RestController
@@ -45,7 +46,9 @@ public class DestinationController {
 			File destinationMainPicFile = new File(dir, name + "-destinationMainPic." + multipartFile.getOriginalFilename());
 			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			try {
-				DestinationsManager.getInstance().addDestination(((User)session.getAttribute("user")), name, description, Double.parseDouble(lattitude), Double.parseDouble(longitude), destinationMainPicFile.getName(), category);
+				if (DestinationsManager.getInstance().addDestination(((User)session.getAttribute("user")), name, description, Double.parseDouble(lattitude), Double.parseDouble(longitude), destinationMainPicFile.getName(), category)){
+					session.setAttribute("destination", DestinationsManager.getInstance().getDestinationFromCache(name));
+				}
 			} catch (BeansException | NumberFormatException | InvalidCoordinatesException e) {
 				e.printStackTrace();
 				return "Destination registration failed!";
