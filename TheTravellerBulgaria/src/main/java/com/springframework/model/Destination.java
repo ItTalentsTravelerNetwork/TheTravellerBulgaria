@@ -3,8 +3,6 @@ package com.springframework.model;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.springframework.SpringContextProvider;
-import com.springframework.dbModels.PlaceToEatDao;
 import com.springframework.functionality.UsersManager;
 
 public class Destination {
@@ -281,7 +279,7 @@ public class Destination {
 	}
 
 	public synchronized User getAuthor() {
-		return SpringContextProvider.getContext().getBean(UsersManager.class).getUserFromCache(this.authorEmail);
+		return UsersManager.getInstance().getUserFromCache(this.authorEmail);
 	}
 
 	public synchronized CopyOnWriteArrayList<String> getPictures() {

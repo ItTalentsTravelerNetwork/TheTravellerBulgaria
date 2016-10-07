@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.springframework.exceptions.CannotConnectToDBException;
 
-@Component
+
 public class DBManager {
 
 	private static final String DB_IP = "localhost";
@@ -22,8 +22,17 @@ public class DBManager {
 	private static final String URL = "jdbc:mysql://" + DB_IP + ":" + DB_PORT + "/" + DB_NAME;
 
 	private Connection connection;
+	
+	private static DBManager instance;
+	
+	public static DBManager getInstance() {
+		if (instance == null) {
+			instance = new DBManager();
+		}
+		return instance;
+	}
 
-	public DBManager() {
+	private DBManager() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver"); // DriverManager
 			setConnection(DriverManager.getConnection(commonURL, DB_USERNAME, DB_PASSWORD));

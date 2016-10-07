@@ -7,19 +7,27 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
-
-import com.springframework.SpringContextProvider;
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.exceptions.InvalidDataException;
 import com.springframework.exceptions.InvalidLocationException;
 import com.springframework.model.Sight;
 
-@Component
-public class SightDao {
 
-	public SightDao() {
+public class SightDao {
+	
+	private static SightDao instance;
+	
+	public static SightDao getInstance() {
+		if (instance == null) {
+			instance = new SightDao();
+		}
+		return instance;
 	}
+
+	private SightDao() {
+	}
+
+	
 
 	public Set<Sight> getAllSights() {
 
@@ -28,7 +36,7 @@ public class SightDao {
 		ResultSet rs = null;
 
 		try {
-			st = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
+			st = DBManager.getInstance().getConnection().createStatement();
 			rs = st.executeQuery(
 					"SELECT name, lattitude, longitude, description, picture, author_rating, place_name from sights");
 			while (rs.next()) {
@@ -62,7 +70,7 @@ public class SightDao {
 	public synchronized void saveSightToDB(Sight sight) throws CloneNotSupportedException {
 		PreparedStatement ps = null;
 		try {
-			ps = SpringContextProvider.context.getBean(DBManager.class).getConnection().prepareStatement(
+			ps = DBManager.getInstance().getConnection().prepareStatement(
 					"INSERT INTO sights(name, lattitude, longitude, description, picture, author_rating, place_name) VALUES(?,?,?,?,?,?,?);");
 			ps.setString(1, sight.getName());
 			ps.setDouble(2, sight.getLocation().getLattitude());

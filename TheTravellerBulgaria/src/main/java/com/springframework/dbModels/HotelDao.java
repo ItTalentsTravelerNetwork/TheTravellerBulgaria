@@ -7,16 +7,22 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
-
-import com.springframework.SpringContextProvider;
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.model.PlaceToSleep;
 
-@Component
-public class HotelDao {
 
-	public HotelDao() {
+public class HotelDao {
+	
+	private static HotelDao instance;
+	
+	public static HotelDao getInstance() {
+		if (instance == null) {
+			instance = new HotelDao();
+		}
+		return instance;
+	}
+
+	private HotelDao() {
 	}
 
 	public Set<PlaceToSleep> getAllHotels() {
@@ -25,7 +31,7 @@ public class HotelDao {
 		ResultSet rs = null;
 
 		try {
-			st = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
+			st = DBManager.getInstance().getConnection().createStatement();
 			rs = st.executeQuery(
 					"SELECT name, lattitude, longitude, description, picture, author_rating, type, contact, price, place_name from places_to_sleep");
 			while (rs.next()) {
@@ -55,7 +61,7 @@ public class HotelDao {
 	public synchronized void saveHotelInDB(PlaceToSleep hotel) throws CloneNotSupportedException {
 		PreparedStatement ps = null;
 		try {
-			ps = SpringContextProvider.context.getBean(DBManager.class).getConnection().prepareStatement(
+			ps = DBManager.getInstance().getConnection().prepareStatement(
 					"INSERT INTO places_to_sleep(name, lattitude, longitude, description, picture, author_rating, type, contact, price, place_name) VALUES(?,?,?,?,?,?,?,?,?,?);");
 			ps.setString(1, hotel.getName());
 			ps.setDouble(2, hotel.getLocation().getLattitude());

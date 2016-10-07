@@ -7,16 +7,22 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
-
-import com.springframework.SpringContextProvider;
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.model.PlaceToEat;
 
-@Component
-public class PlaceToEatDao {
 
-	public PlaceToEatDao() {
+public class PlaceToEatDao {
+	
+	private static PlaceToEatDao instance;
+	
+	public static PlaceToEatDao getInstance() {
+		if (instance == null) {
+			instance = new PlaceToEatDao();
+		}
+		return instance;
+	}
+
+	private PlaceToEatDao() {
 	}
 
 	public Set<PlaceToEat> getAllPlacesToEat() {
@@ -25,7 +31,7 @@ public class PlaceToEatDao {
 		ResultSet rs = null;
 
 		try {
-			st = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
+			st = DBManager.getInstance().getConnection().createStatement();
 			rs = st.executeQuery(
 					"SELECT name, lattitude, longitude, description, picture, author_rating, place_name from places_to_eat");
 			while (rs.next()) {
@@ -55,7 +61,7 @@ public class PlaceToEatDao {
 	public synchronized void savePlaceToEatInDB(PlaceToEat placeToEat) throws CloneNotSupportedException {
 		PreparedStatement ps = null;
 		try {
-			ps = SpringContextProvider.context.getBean(DBManager.class).getConnection().prepareStatement(
+			ps = DBManager.getInstance().getConnection().prepareStatement(
 					"INSERT INTO places_to_eat(name, lattitude, longitude, description, picture, author_rating, place_name) VALUES(?,?,?,?,?,?,?);");
 			ps.setString(1, placeToEat.getName());
 			ps.setDouble(2, placeToEat.getLocation().getLattitude());

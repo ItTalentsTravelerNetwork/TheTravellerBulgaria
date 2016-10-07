@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.springframework.SpringContextProvider;
 import com.springframework.functionality.UsersManager;
 import com.springframework.model.User;
 
@@ -46,7 +45,7 @@ public class UserController {
 			}
 			File profilePicFile = new File(dir, email + "-profilePic." + multipartFile.getOriginalFilename());
 			Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			SpringContextProvider.context.getBean(UsersManager.class).registerUser(email, inputPassword, firstName,
+			UsersManager.getInstance().registerUser(email, inputPassword, firstName,
 					lastName, description, profilePicFile.getName());
 			return "User Registration Successful!";
 		}
@@ -57,7 +56,7 @@ public class UserController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login(@RequestParam("userEmail") String email, @RequestParam("userPassword") String password,
 			HttpSession session) {
-		User user = SpringContextProvider.context.getBean(UsersManager.class).logIn(email, password);
+		User user = UsersManager.getInstance().logIn(email, password);
 		if (user != null) {
 			session.setAttribute("user", user);
 			return "SUCCESS";
@@ -76,7 +75,7 @@ public class UserController {
 	@ResponseBody
 	public String getPicture(HttpServletRequest request, HttpServletResponse response) {
 		String email = request.getParameter("email");
-		User user = SpringContextProvider.context.getBean(UsersManager.class).getUserFromCache(email);
+		User user = UsersManager.getInstance().getUserFromCache(email);
 		File profilePicFile = new File("userPics", user.getProfilePicture());
 		String path = profilePicFile.getAbsolutePath();
 		return path;

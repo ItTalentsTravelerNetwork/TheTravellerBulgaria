@@ -10,14 +10,24 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.springframework.stereotype.Component;
-
-import com.springframework.SpringContextProvider;
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.model.User;
 
-@Component
+
 public class UserDao {
+	
+	private static UserDao instance;
+	
+	public static UserDao getInstance() {
+		if (instance == null) {
+			instance = new UserDao();
+		}
+		return instance;
+	}
+
+	private UserDao() {
+	}
+	
 
 	public synchronized Set<User> getAllUsers() {
 		System.out.println("Getting all users from DB!!!!");
@@ -26,7 +36,7 @@ public class UserDao {
 		ResultSet result = null;
 		try {
 			try {
-				statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
+				statement = DBManager.getInstance().getConnection().createStatement();
 				String selectAllUsersFromDB = "SELECT email, password, first_name, last_name, description, profile_picture, rating, times_liked FROM users;";
 				result = statement.executeQuery(selectAllUsersFromDB);
 				while (result.next()) {
@@ -76,7 +86,7 @@ public class UserDao {
 		String insertUserInfoIntoDB = "INSERT INTO users (email, password, first_name, last_name, description, profile_picture, rating, times_liked) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+			statement = DBManager.getInstance().getConnection()
 					.prepareStatement(insertUserInfoIntoDB);
 			statement.setString(1, user.getEmail());
 			statement.setString(2, user.getPassword());
@@ -113,7 +123,7 @@ public class UserDao {
 		PreparedStatement prepStatement = null;
 		String updateUserStatement = "UPDATE users SET password=?, first_name=?, last_name=?, description=?, profile_picture=? WHERE email=?;";
 		try {
-			prepStatement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+			prepStatement = DBManager.getInstance().getConnection()
 					.prepareStatement(updateUserStatement);
 			prepStatement.setString(1, password);
 			prepStatement.setString(2, firstName);
@@ -148,7 +158,7 @@ public class UserDao {
 		String deleteUserFromDB = "DELETE FROM users where email=?;";
 		PreparedStatement prepStatement = null;
 		try {
-			prepStatement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+			prepStatement = DBManager.getInstance().getConnection()
 					.prepareStatement(deleteUserFromDB);
 			prepStatement.setString(1, user.getEmail());
 			return true;
@@ -176,7 +186,7 @@ public class UserDao {
 		String insertFollowedUserIntoDB = "INSERT INTO followers (follower_email, followed_email) VALUES (?, ?);";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+			statement = DBManager.getInstance().getConnection()
 					.prepareStatement(insertFollowedUserIntoDB);
 			statement.setString(1, user.getEmail());
 			statement.setString(2, followedUserEmail);
@@ -206,7 +216,7 @@ public class UserDao {
 		String deleteFollowedUserFromDB = "DELETE FROM followers where follower_email=? AND followed_email=?;";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+			statement = DBManager.getInstance().getConnection()
 					.prepareStatement(deleteFollowedUserFromDB);
 			statement.setString(1, user.getEmail());
 			statement.setString(2, followedUserEmail);
@@ -243,7 +253,7 @@ public class UserDao {
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
+			statement = DBManager.getInstance().getConnection().createStatement();
 			result = statement.executeQuery(selectAllVisitedPlacesFromDB);
 			while (result.next()) {
 				if (!(allVisitedDestinationsAndUsers.containsKey(result.getString("destination_name")))) {
@@ -278,7 +288,7 @@ public class UserDao {
 		String insertVisitedDestinationAndUserEmailIntoDB = "INSERT INTO visited_destinations (destination_name, user_email) VALUES (?, ?);";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+			statement = DBManager.getInstance().getConnection()
 					.prepareStatement(insertVisitedDestinationAndUserEmailIntoDB);
 			statement.setString(1, destinationName);
 			statement.setString(2, user.getEmail());
@@ -307,7 +317,7 @@ public class UserDao {
 		String deleteVisitedDestinationAndUserEmailFromDB = "DELETE FROM visited_destinations WHERE destination_name=? AND user_email=?;";
 		PreparedStatement statement = null;
 		try {
-			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection()
+			statement = DBManager.getInstance().getConnection()
 					.prepareStatement(deleteVisitedDestinationAndUserEmailFromDB);
 			statement.setString(1, destinationName);
 			statement.setString(2, user.getEmail());
@@ -339,7 +349,7 @@ public class UserDao {
 		Statement statement = null;
 		ResultSet result = null;
 		try {
-			statement = SpringContextProvider.context.getBean(DBManager.class).getConnection().createStatement();
+			statement = DBManager.getInstance().getConnection().createStatement();
 			result = statement.executeQuery(selectAllFollowersFromDB);
 			while (result.next()) {
 				if (!(allFollowers.containsKey(result.getString("follower_email")))) {
