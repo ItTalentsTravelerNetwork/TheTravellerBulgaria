@@ -16,9 +16,26 @@ function checkForUser() {
 }
 
 function checkIfLoggedIn() {
-	if(sessionStorage.getItem('user') == null){
-        window.location.href = "SignIn.html";
-    }
+	$.get(
+			"GetUserInfo",
+			function(data){
+				if(data==""){
+					window.location.href="SignIn.html";
+				}
+			}
+	)
+}
+
+function getUserInfo(){
+	$.get(
+		"GetUserInfo",
+		function(data){
+			var json = data;
+			document.getElementById("fullName").innerHTML = json.firstName + " " + json.lastName;
+			document.getElementById("description").innerHTML = json.description;
+			document.getElementById("profilePicture").innerHTML = "<img src=\"GetProfilePicture?email="+ json.email + "\" height=\"150\" width=\"150\" alt=\"\"/>";
+		}
+	)
 }
 
 

@@ -2,6 +2,7 @@ package com.springframework.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
@@ -39,14 +40,17 @@ public class UserController {
 		String description = request.getParameter("userDescription");
 
 		if (validateData(firstName, lastName, email, inputPassword)) {
+			if (UsersManager.getInstance().getUserFromCache(email) != null) {
+				return "Registration failed!";
+			}
 			File dir = new File("userPics");
 			if (!dir.exists()) {
 				dir.mkdir();
 			}
 			File profilePicFile = new File(dir, email + "-profilePic." + multipartFile.getOriginalFilename());
 			Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			UsersManager.getInstance().registerUser(email, inputPassword, firstName,
-					lastName, description, profilePicFile.getName());
+			UsersManager.getInstance().registerUser(email, inputPassword, firstName, lastName, description,
+					profilePicFile.getName());
 			return "User Registration Successful!";
 		}
 
@@ -73,12 +77,18 @@ public class UserController {
 
 	@RequestMapping(value = "/GetProfilePicture", method = RequestMethod.GET)
 	@ResponseBody
-	public String getPicture(HttpServletRequest request, HttpServletResponse response) {
+	public void getPicture(HttpServletRequest request, HttpServletResponse response) {
 		String email = request.getParameter("email");
 		User user = UsersManager.getInstance().getUserFromCache(email);
 		File profilePicFile = new File("userPics", user.getProfilePicture());
-		String path = profilePicFile.getAbsolutePath();
-		return path;
+
+		try {
+			OutputStream out = response.getOutputStream();
+			Files.copy(profilePicFile.toPath(), out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
