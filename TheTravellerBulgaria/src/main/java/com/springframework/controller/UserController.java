@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -90,6 +91,13 @@ public class UserController {
 			e.printStackTrace();
 		}
 
+	}
+
+	@RequestMapping(value = "/GetUserDestinations", method = RequestMethod.GET)
+	@ResponseBody
+	private static String[] getUserDestination(HttpServletRequest request) {
+		User user = UsersManager.getInstance().getUserFromCache((String)request.getAttribute("email"));
+		String[] userDestinations = 
 	}
 
 	private static boolean validateData(String firstName, String lastName, String email, String password) {
