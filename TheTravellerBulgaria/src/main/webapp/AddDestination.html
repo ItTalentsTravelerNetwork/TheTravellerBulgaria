@@ -100,19 +100,19 @@
 		       				<div class="col-sm-6">
 		        			    <input id="category" name="category" type="text" class="form-control" placeholder="Set Category" maxlength="50" required="">
 		       				</div>
-		       				<div id="message" class="row top-margin">
-									        
-						    </div>
 						    <hr>
-		      			<div class="col-sm-6 text-right">
-      			     		 <input class="btn btn-action" type="submit" value="Add Destination">
-       			 		</div> 
-    					</div>
-		    			<div class="row">
+						    </div> 
+						<div class="row">
+		      				<div class="col-sm-12">
+      			     		 	<input class="btn btn-action" type="submit" value="Add Destination">       			 		
+    						</div>
+    						<div class="row">
 		     				   <div class="col-sm-12" id="message">
 		     				   
 		           			 </div>       			
 		    			</div>
+    					</div>
+		    			
    					 	<div class="row" id="map" style="width:100% height:100%"></div>
 					</form>
 			</article>
@@ -269,8 +269,8 @@ function initialize() {
     });
 
     
-    formlat = document.getElementById("latbox").value = myLatlng.lat();
-    formlng = document.getElementById("lngbox").value = myLatlng.lng();
+    formlat = document.getElementById("lattitude").value = myLatlng.lat();
+    formlng = document.getElementById("longitude").value = myLatlng.lng();
 
     
     google.maps.event.addListener(map, 'click', function() {
@@ -295,8 +295,8 @@ function initialize() {
         });
             marker.setMap(map);
         
-        formlat = document.getElementById("latbox").value = event.latLng.lat();
-        formlng = document.getElementById("lngbox").value = event.latLng.lng();
+        formlat = document.getElementById("lattitude").value = event.latLng.lat();
+        formlng = document.getElementById("longitude").value = event.latLng.lng();
 
     });
 
@@ -322,7 +322,7 @@ function showMessage(results){
         if(results == 'Destination added successfully!'){
             $('#message').html("<font color='green'>Destination added successfully. </font>")
             setTimeout(function(){
-					window.location.href = "Destination.html";
+					window.location.href = "profile.html";
 				}, 500)
         }else if(results == 'Adding destination failed!'){
             $('#message').html("<font color='red'>Incorrect data or picture format </font>")
