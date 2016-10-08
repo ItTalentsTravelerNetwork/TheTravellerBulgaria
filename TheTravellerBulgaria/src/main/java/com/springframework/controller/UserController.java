@@ -5,13 +5,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springframework.functionality.DestinationsManager;
 import com.springframework.functionality.UsersManager;
+import com.springframework.model.Destination;
 import com.springframework.model.User;
 
 @RestController
@@ -95,9 +98,23 @@ public class UserController {
 
 	@RequestMapping(value = "/GetUserDestinations", method = RequestMethod.GET)
 	@ResponseBody
-	private static String[] getUserDestination(HttpServletRequest request) {
-		User user = UsersManager.getInstance().getUserFromCache((String)request.getAttribute("email"));
-		String[] userDestinations = 
+	public Map<String, Destination> getUserDestination(HttpServletRequest request) {
+		User user = UsersManager.getInstance().getUserFromCache((String) request.getParameter("user"));
+		Map<String, Destination> userDestinations = new HashMap<>();
+		for (String place : user.getVisitedPlaces()) {
+			Destination dest = DestinationsManager.getInstance().getDestinationFromCache(place);
+			userDestinations.put(place, dest);
+		}
+		return userDestinations;
+	}
+
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	@ResponseBody
+	public void logOut(HttpServletRequest request) {
+		if (request.getSession().getAttribute("user") != null) {
+			request.getSession().removeAttribute("user");
+			request.getSession().invalidate();
+		}
 	}
 
 	private static boolean validateData(String firstName, String lastName, String email, String password) {

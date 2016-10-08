@@ -57,8 +57,11 @@ public class User {
 	}
 
 	public synchronized void addPlace(String destinationName) {
-		if (destinationName != null && !destinationName.isEmpty() && !addedPlaces.contains(destinationName))
+		if (destinationName != null && !destinationName.isEmpty() && !addedPlaces.contains(destinationName)) {
+			this.visitedPlaces.add(destinationName);
 			this.addedPlaces.add(destinationName);
+		}
+
 	}
 
 	public synchronized void removePlace(String destinationName) {

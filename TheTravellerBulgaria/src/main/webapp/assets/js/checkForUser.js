@@ -8,7 +8,8 @@ function checkForUser() {
 			}else{
 				var json = data;
 				sessionStorage.setItem('user', json);
-				 document.getElementById("userButton").innerHTML="<a class=\"btn\" href=\"logout\">Logout</a>";
+				sessionStorage.setItem('userEmail', json.email);
+				 document.getElementById("userButton").innerHTML="<a class=\"btn\" href=\"logout\" onclick=\"logOut\">Logout</a>";
 		            document.getElementById("secondButton").innerHTML="<a class=\"btn\" href=\profile.html>PROFILE</a>";
 			}
 		}
@@ -36,6 +37,17 @@ function getUserInfo(){
 			document.getElementById("profilePicture").innerHTML = "<img src=\"GetProfilePicture?email="+ json.email + "\" height=\"150\" width=\"150\" alt=\"\"/>";
 		}
 	)
+}
+
+function logOut(){
+	$.get(
+		"logout",
+		function(data){
+			sessionStorage.clear();
+			window.location.href="SignIn.html";
+		}
+	)
+	
 }
 
 
