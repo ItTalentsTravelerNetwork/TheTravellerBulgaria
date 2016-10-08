@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -70,12 +71,12 @@ public class DestinationController {
 		return false;
 	}
 	
-	@RequestMapping(value = "/GetDestinationMainPicture", method = RequestMethod.GET)
+	@RequestMapping(value = "/getDestinationMainPicture", method = RequestMethod.GET)
 	@ResponseBody
 	public void getPicture(HttpServletRequest request, HttpServletResponse response) {
 		String destinationName = request.getParameter("destinationName");
 		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
-		File mainPicFile = new File("userPics", destination.getMainPicture());
+		File mainPicFile = new File("destinationPics", destination.getMainPicture());
 
 		try {
 			OutputStream out = response.getOutputStream();
@@ -86,6 +87,18 @@ public class DestinationController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/getAllDestinations", method = RequestMethod.GET)
+	@ResponseBody
+	public ArrayList<Destination> getAllDestinations(HttpServletRequest request, HttpServletResponse response) {
+		ArrayList<Destination> allDestinations = new ArrayList<>();
+		for (Destination destination: DestinationsManager.getInstance().getAllDestinations().values()) {
+			allDestinations.add(destination);
+		}
+		return allDestinations;
+	}
+	
+	
 	
 	
 	

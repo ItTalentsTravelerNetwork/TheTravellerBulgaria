@@ -185,9 +185,9 @@
 <script>
 function showDestinations(){
 	$.get(
-		"GetAllDestinationsServlet", 
+		"getAllDestinations", 
 		function(data){
-			var json = JSON.parse(data);
+			var json = data;
 			var html = "<header class=\"page-header\"><h1 class=\"page-title\">All Destinations</h1></header>";
 			html += "<table><tr>";
 			var i = 0;
@@ -200,7 +200,7 @@ function showDestinations(){
 				html+="<td>";
 				var destName = "<h5><a href=\"Destination.html?name="+ json[item].name +"\">" + json[item].name + "</a></h5>";
 				html += destName;
-				var imageLocation = "<img src=\"DestinationPictureServlet?destination="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
+				var imageLocation = "<img src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
 				html+=imageLocation;
 				html+="</td>";
 				
