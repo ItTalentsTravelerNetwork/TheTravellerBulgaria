@@ -2,11 +2,13 @@ package com.springframework.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.BeansException;
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.springframework.exceptions.InvalidCoordinatesException;
 import com.springframework.functionality.DestinationsManager;
+import com.springframework.functionality.UsersManager;
 import com.springframework.model.Destination;
 import com.springframework.model.User;
 
@@ -65,6 +68,23 @@ public class DestinationController {
 			}
 		}
 		return false;
+	}
+	
+	@RequestMapping(value = "/GetDestinationMainPicture", method = RequestMethod.GET)
+	@ResponseBody
+	public void getPicture(HttpServletRequest request, HttpServletResponse response) {
+		String destinationName = request.getParameter("destinationName");
+		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
+		File mainPicFile = new File("userPics", destination.getMainPicture());
+
+		try {
+			OutputStream out = response.getOutputStream();
+			Files.copy(mainPicFile.toPath(), out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 	
