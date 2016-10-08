@@ -28,13 +28,22 @@
 	<script src="assets/js/html5shiv.js"></script>
 	<script src="assets/js/respond.min.js"></script>
 	<![endif]-->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	<script src="assets/js/headroom.min.js"></script>
+	<script src="assets/js/jQuery.headroom.min.js"></script>
+	<script src="assets/js/template.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="assets/js/checkForUser.js"></script>
 	<script>checkIfLoggedIn()</script>
+	<script>getUserInfo()</script>
+	
 </head>
 
 <body onload="showDestinations()">
 	<!-- Fixed navbar -->
 	
-	<script>getUserInfo()</script>
+	
 	<div class="navbar navbar-inverse navbar-fixed-top headroom" >
 		<div class="container">
 			<div class="navbar-header">
@@ -99,7 +108,7 @@
 				
 					
 				</article>
-			<%} %>	
+			
 			<!-- /Article -->
 
 		</div>
@@ -177,18 +186,13 @@
 
     </footer>
 		
-
+	
 
 
 
 	<!-- JavaScript libs are placed at the end of the document so the pages load faster -->
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-	<script src="assets/js/headroom.min.js"></script>
-	<script src="assets/js/jQuery.headroom.min.js"></script>
-	<script src="assets/js/template.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="assets/js/checkForUser.js"></script>
+	
+	
 </body>
 <script>
 
@@ -222,17 +226,7 @@ function showDestinations(){
 	)
 }
 
-function getUserInfo(){
-	$.get(
-		"GetUserInfo",
-		function(data){
-			var json = JSON.parse(data);
-			document.getElementById("fullName").innerHTML = json.firstName + " " + json.lastName;
-			document.getElementById("description").innerHTML = json.description;
-			document.getElementById("profilePicture").innerHTML = "<img src=\"GetProfilePicture?email="+ json.email + "height=\"150\" width=\"150\" alt=\"\"/>";
-		}
-	)
-}
+
 </script>
 
 </html>
