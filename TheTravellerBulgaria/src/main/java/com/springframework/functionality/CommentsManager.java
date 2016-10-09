@@ -8,12 +8,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.springframework.dbModels.CommentDao;
 import com.springframework.model.Comment;
 
-
 public class CommentsManager {
 	private static final DateTimeFormatter DATE_AND_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 	private static CommentsManager instance; // Singleton
 	private CopyOnWriteArrayList<Comment> allComments; // all cached comments
-	
 
 	private CommentsManager() {
 		allComments = new CopyOnWriteArrayList<>();
@@ -43,11 +41,10 @@ public class CommentsManager {
 									// the
 									// collection
 		CommentDao.getInstance().saveCommentToDB(comment); // saves
-																							// comment
+															// comment
 		// to
 		// DB
-		DestinationsManager.getInstance().getDestinationFromCache(comment.getPlaceName())
-				.addComment(comment);
+
 	}
 
 	public synchronized void deleteComment(Comment comment) {
