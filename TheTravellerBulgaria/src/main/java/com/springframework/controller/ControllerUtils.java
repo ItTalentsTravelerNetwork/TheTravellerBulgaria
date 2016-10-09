@@ -1,5 +1,7 @@
 package com.springframework.controller;
 
+import javax.servlet.http.HttpServletResponse;
+
 public class ControllerUtils {
 	private static final String[] availablePictureTypes = { ".jpg", ".jpeg", ".bmp", ".gif", ".png" };
 
@@ -17,5 +19,12 @@ public class ControllerUtils {
 		}
 		System.out.println("Picture type: null");
 		return false;
+	}
+
+	public static void setHeaders(HttpServletResponse response) {
+		response.setHeader("Cache-Control",
+				"no-cache,no-store,private,must-revalidate,max-stale=0,post-check=0,pre-check=0");
+		response.setHeader("Pragma", "no-cache");
+		response.setDateHeader("Expires", 0);
 	}
 }

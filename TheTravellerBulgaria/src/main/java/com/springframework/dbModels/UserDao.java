@@ -13,11 +13,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.model.User;
 
-
 public class UserDao {
-	
+
 	private static UserDao instance;
-	
+
 	public static UserDao getInstance() {
 		if (instance == null) {
 			instance = new UserDao();
@@ -27,7 +26,6 @@ public class UserDao {
 
 	private UserDao() {
 	}
-	
 
 	public synchronized Set<User> getAllUsers() {
 		System.out.println("Getting all users from DB!!!!");
@@ -86,8 +84,7 @@ public class UserDao {
 		String insertUserInfoIntoDB = "INSERT INTO users (email, password, first_name, last_name, description, profile_picture, rating, times_liked) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 		PreparedStatement statement = null;
 		try {
-			statement = DBManager.getInstance().getConnection()
-					.prepareStatement(insertUserInfoIntoDB);
+			statement = DBManager.getInstance().getConnection().prepareStatement(insertUserInfoIntoDB);
 			statement.setString(1, user.getEmail());
 			statement.setString(2, user.getPassword());
 			statement.setString(3, user.getFirstName());
@@ -123,8 +120,7 @@ public class UserDao {
 		PreparedStatement prepStatement = null;
 		String updateUserStatement = "UPDATE users SET password=?, first_name=?, last_name=?, description=?, profile_picture=? WHERE email=?;";
 		try {
-			prepStatement = DBManager.getInstance().getConnection()
-					.prepareStatement(updateUserStatement);
+			prepStatement = DBManager.getInstance().getConnection().prepareStatement(updateUserStatement);
 			prepStatement.setString(1, password);
 			prepStatement.setString(2, firstName);
 			prepStatement.setString(3, lastName);
@@ -158,8 +154,7 @@ public class UserDao {
 		String deleteUserFromDB = "DELETE FROM users where email=?;";
 		PreparedStatement prepStatement = null;
 		try {
-			prepStatement = DBManager.getInstance().getConnection()
-					.prepareStatement(deleteUserFromDB);
+			prepStatement = DBManager.getInstance().getConnection().prepareStatement(deleteUserFromDB);
 			prepStatement.setString(1, user.getEmail());
 			return true;
 		} catch (SQLException e) {
@@ -186,8 +181,7 @@ public class UserDao {
 		String insertFollowedUserIntoDB = "INSERT INTO followers (follower_email, followed_email) VALUES (?, ?);";
 		PreparedStatement statement = null;
 		try {
-			statement = DBManager.getInstance().getConnection()
-					.prepareStatement(insertFollowedUserIntoDB);
+			statement = DBManager.getInstance().getConnection().prepareStatement(insertFollowedUserIntoDB);
 			statement.setString(1, user.getEmail());
 			statement.setString(2, followedUserEmail);
 			statement.executeUpdate();
@@ -216,8 +210,7 @@ public class UserDao {
 		String deleteFollowedUserFromDB = "DELETE FROM followers where follower_email=? AND followed_email=?;";
 		PreparedStatement statement = null;
 		try {
-			statement = DBManager.getInstance().getConnection()
-					.prepareStatement(deleteFollowedUserFromDB);
+			statement = DBManager.getInstance().getConnection().prepareStatement(deleteFollowedUserFromDB);
 			statement.setString(1, user.getEmail());
 			statement.setString(2, followedUserEmail);
 			statement.executeUpdate();
@@ -383,5 +376,40 @@ public class UserDao {
 		System.out.println("SQLException: " + e.getMessage());
 		System.out.println("SQLState: " + e.getSQLState());
 		System.out.println("Vendor error: " + e.getErrorCode());
+	}
+
+	public CopyOnWriteArrayList<String> getUserVisitors() {
+		CopyOnWriteArrayList<String> userVisitors = new CopyOnWriteArrayList<>();
+
+		String selectAllVisitedPlacesFromDB = "SELECT destination_name, user_email FROM visited_destinations ORDER BY destination_name;";
+		Statement statement = null;
+		ResultSet result = null;
+		try {
+			statement = DBManager.getInstance().getConnection().createStatement();
+			result = statement.executeQuery(selectAllVisitedPlacesFromDB);
+			while (result.next()) {
+				userVisitors.add(result.getString("user_email"));
+				userVisitors.add(result.getString("destination_name"));
+			}
+		} catch (SQLException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} catch (CannotConnectToDBException e) {
+			// TODO handle exception
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return userVisitors;
 	}
 }

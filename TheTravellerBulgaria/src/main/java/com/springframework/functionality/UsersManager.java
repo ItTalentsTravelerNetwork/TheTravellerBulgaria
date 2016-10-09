@@ -18,9 +18,7 @@ import com.springframework.exceptions.InvalidCoordinatesException;
 import com.springframework.exceptions.InvalidDataException;
 import com.springframework.model.Comment;
 import com.springframework.model.Destination;
-import com.springframework.model.Destination.Category;
 import com.springframework.model.User;
-
 
 public class UsersManager {
 
@@ -28,7 +26,7 @@ public class UsersManager {
 	private static final DateTimeFormatter DATE_AND_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 	private static UsersManager instance; // Singleton
 	private ConcurrentHashMap<String, User> registerredUsers; // user email and
-																// user
+	private CopyOnWriteArrayList<String> userVisitors; // user
 
 	private UsersManager() {
 		registerredUsers = new ConcurrentHashMap<>();
@@ -40,6 +38,7 @@ public class UsersManager {
 		}
 		fillVisitedPlacesToUsers(); // fill visited destinations to users
 		fillFollowedToUsers(); // fill followed to the users' lists
+		userVisitors = UserDao.getInstance().getUserVisitors();
 	}
 
 	public static synchronized UsersManager getInstance() {
@@ -82,9 +81,9 @@ public class UsersManager {
 		registerredUsers.put(email, user); // adds the new user to the
 											// collection
 		UserDao.getInstance().saveUserToDB(user); // saves
-																					// user
-																					// to
-																					// DB
+													// user
+													// to
+													// DB
 	}
 
 	public synchronized boolean updateUserInfo(String email, String password, String firstName, String lastName,
@@ -99,11 +98,11 @@ public class UsersManager {
 			user.setLastName(lastName);
 			user.setDescription(description);
 			user.setProfilePicture(profilePicture);
-			if (UserDao.getInstance().updateUserInDB(email, password, firstName,
-					lastName, description, profilePicture)) { // updates
-																// the
-																// DB
-																// user
+			if (UserDao.getInstance().updateUserInDB(email, password, firstName, lastName, description,
+					profilePicture)) { // updates
+										// the
+										// DB
+										// user
 				return true;
 			}
 		}
@@ -149,8 +148,8 @@ public class UsersManager {
 		double destLongitude = destination.getLocation().getLongitude();
 		String destMainPicture = destination.getMainPicture();
 		String category = destination.getCategory().toString();
-		if (DestinationsManager.getInstance().addDestination(user, destName,
-				destDescription, destLattitude, destLongitude, destMainPicture, category)) {
+		if (DestinationsManager.getInstance().addDestination(user, destName, destDescription, destLattitude,
+				destLongitude, destMainPicture, category)) {
 			addDestinationToUser(user, destName);
 			return true;
 		} else {
@@ -174,19 +173,17 @@ public class UsersManager {
 																										// a
 																										// comment
 		CommentsManager.getInstance().saveComment(comment);
-		DestinationsManager.getInstance().getDestinationFromCache(destinationName)
-				.addComment(comment); // adds
-										// the
-										// comment
-										// to
-										// the
-										// destination
+		DestinationsManager.getInstance().getDestinationFromCache(destinationName).addComment(comment); // adds
+																										// the
+																										// comment
+																										// to
+																										// the
+																										// destination
 		return true;
 	}
 
 	public synchronized boolean addVidsitedDestination(User user, String destinationName) {
-		if (!DestinationsManager.getInstance()
-				.chechDestinationInCache(destinationName)) {
+		if (!DestinationsManager.getInstance().chechDestinationInCache(destinationName)) {
 			user.addVisitedPlace(destinationName);
 			// add in DB
 			if (UserDao.getInstance().addVisitedDestinationToDB(user, destinationName)) {
@@ -201,8 +198,7 @@ public class UsersManager {
 			if (user.getVisitedPlaces().contains(destinationName)) {
 				user.removeVisitedPlace(destinationName);
 				// remove in DB
-				if (UserDao.getInstance().removeVisitedDestinationFromDB(user,
-						destinationName)) {
+				if (UserDao.getInstance().removeVisitedDestinationFromDB(user, destinationName)) {
 					return true;
 				}
 			}
@@ -228,8 +224,7 @@ public class UsersManager {
 			if (user.getFollowedUsers().contains(followedUserEmail)) {
 				user.unFollow(followedUserEmail);
 				// remove in DB
-				if (UserDao.getInstance().removeFromFollowedUsers(user,
-						followedUserEmail)) {
+				if (UserDao.getInstance().removeFromFollowedUsers(user, followedUserEmail)) {
 					return true;
 				}
 			}
@@ -290,12 +285,13 @@ public class UsersManager {
 
 	private synchronized void fillVisitedPlacesToUsers() {
 		if (UserDao.getInstance().getAllVisitedPlacesFromDB() != null) {
-			for (Map.Entry<String, ArrayList<String>> entry : UserDao.getInstance().getAllVisitedPlacesFromDB().entrySet()) { // for
-																// each
-																// (destination
-																// name->list
-																// of
-																// users)
+			for (Map.Entry<String, ArrayList<String>> entry : UserDao.getInstance().getAllVisitedPlacesFromDB()
+					.entrySet()) { // for
+				// each
+				// (destination
+				// name->list
+				// of
+				// users)
 				for (String userEmail : entry.getValue()) { // for each user
 					registerredUsers.get(userEmail).addVisitedPlace(entry.getKey()); // add
 																						// visited
@@ -307,14 +303,20 @@ public class UsersManager {
 		}
 	}
 
+	public CopyOnWriteArrayList<String> getUserVisitors() {
+		CopyOnWriteArrayList<String> copy = new CopyOnWriteArrayList<>();
+		copy.addAll(userVisitors);
+		return copy;
+	}
+
 	private synchronized void fillFollowedToUsers() {
 		if (UserDao.getInstance().getAllFollowersFromDB() != null) {
-			for (Map.Entry<String, CopyOnWriteArrayList<String>> entry : UserDao.getInstance()
-					.getAllFollowersFromDB().entrySet()) { // for
-															// each
-															// (follower->list
-															// of
-															// followed)
+			for (Map.Entry<String, CopyOnWriteArrayList<String>> entry : UserDao.getInstance().getAllFollowersFromDB()
+					.entrySet()) { // for
+									// each
+									// (follower->list
+									// of
+									// followed)
 				if (registerredUsers.containsKey(entry.getKey())) { // if user
 																	// is in
 																	// cache

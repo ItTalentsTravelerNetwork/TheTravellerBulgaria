@@ -9,8 +9,9 @@ function checkForUser() {
 				var json = data;
 				sessionStorage.setItem('user', json);
 				sessionStorage.setItem('userEmail', json.email);
-				 document.getElementById("userButton").innerHTML="<a class=\"btn\" href=\"logout\" onclick=\"logOut\">Logout</a>";
+				 document.getElementById("userButton").innerHTML="<a class=\"btn\" href=\"logout\" onclick=\"logOut()\">Logout</a>";
 		            document.getElementById("secondButton").innerHTML="<a class=\"btn\" href=\profile.html>PROFILE</a>";
+		            document.getElementById("newsFeed").innerHTML="<a href=\NewsFeed.html>News Feed</a>"
 			}
 		}
 	)

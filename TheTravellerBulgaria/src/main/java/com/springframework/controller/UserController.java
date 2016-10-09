@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -74,8 +75,17 @@ public class UserController {
 
 	@RequestMapping(value = "/GetUserInfo", method = RequestMethod.GET)
 	@ResponseBody
-	public User checkForUser(HttpServletRequest request) {
+	public User checkForUser(HttpServletRequest request, HttpServletResponse response) {
+		ControllerUtils.setHeaders(response);
 		User user = (User) request.getSession().getAttribute("user");
+		return user;
+	}
+
+	@RequestMapping(value = "/GetUser", method = RequestMethod.GET)
+	@ResponseBody
+	public User getUser(HttpServletRequest request, HttpServletResponse response) {
+		ControllerUtils.setHeaders(response);
+		User user = UsersManager.getInstance().getUserFromCache(request.getParameter("user"));
 		return user;
 	}
 
@@ -109,12 +119,44 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	@ResponseBody
 	public void logOut(HttpServletRequest request) {
 		if (request.getSession().getAttribute("user") != null) {
 			request.getSession().removeAttribute("user");
 			request.getSession().invalidate();
 		}
+	}
+
+	@RequestMapping(value = "/Follow", method = RequestMethod.POST)
+	public String follow(HttpServletRequest request) {
+		String foreignUserEmail = request.getParameter("user");
+		User user = (User) request.getSession().getAttribute("user");
+		boolean isFollowed = UsersManager.getInstance().addToFollowedUsers(user, foreignUserEmail);
+		if (isFollowed) {
+			return "SUCCESS";
+		} else {
+			return "FAILURE";
+		}
+	}
+
+	@RequestMapping(value = "GetPlacesForNewsFeed", method = RequestMethod.GET)
+	@ResponseBody
+	public CopyOnWriteArrayList<Object> getPlacesForNewsFeed(HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute("user");
+		CopyOnWriteArrayList<String> usersFollowed = user.getFollowedUsers();
+		CopyOnWriteArrayList<Object> visitedPlacesByFollowedUsers = new CopyOnWriteArrayList<>();
+		CopyOnWriteArrayList<String> usersVisitors = UsersManager.getInstance().getUserVisitors();
+		for (int i = 0; i < usersVisitors.size(); i += 2) {
+			for (int j = 0; j < usersFollowed.size(); j++) {
+				if (usersFollowed.get(j).equals(usersVisitors.get(i))) {
+					Destination dest = DestinationsManager.getInstance()
+							.getDestinationFromCache(usersVisitors.get(i + 1));
+					User visitor = UsersManager.getInstance().getUserFromCache(usersVisitors.get(i));
+					visitedPlacesByFollowedUsers.add(dest);
+					visitedPlacesByFollowedUsers.add(visitor);
+				}
+			}
+		}
+		return visitedPlacesByFollowedUsers;
 	}
 
 	private static boolean validateData(String firstName, String lastName, String email, String password) {

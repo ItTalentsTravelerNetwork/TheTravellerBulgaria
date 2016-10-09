@@ -18,6 +18,8 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import com.springframework.controller.NoCacheInterceptor;
+
 @Configuration
 @EnableWebMvc
 @ComponentScan("com.springframework")
@@ -25,6 +27,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
 		registry.addResourceHandler("/assets/css/**").addResourceLocations("/assets/css/");
 		registry.addResourceHandler("/assets/fonts/**").addResourceLocations("/assets/fonts/");
 		registry.addResourceHandler("/assets/js/**").addResourceLocations("/assets/js/");
@@ -67,6 +70,8 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		LocaleChangeInterceptor changeInterceptor = new LocaleChangeInterceptor();
 		changeInterceptor.setParamName("language");
 		registry.addInterceptor(changeInterceptor);
+		registry.addInterceptor(new NoCacheInterceptor());
+
 	}
 
 }
