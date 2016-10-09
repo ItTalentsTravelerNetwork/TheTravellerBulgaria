@@ -6,6 +6,10 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.springframework.exceptions.InvalidCoordinatesException;
 import com.springframework.functionality.DestinationsManager;
 import com.springframework.functionality.UsersManager;
+import com.springframework.model.Comment;
 import com.springframework.model.Destination;
 import com.springframework.model.User;
 
@@ -98,6 +103,32 @@ public class DestinationController {
 		return allDestinations;
 	}
 	
+	@RequestMapping(value = "/getDestination", method = RequestMethod.GET)
+	@ResponseBody
+	public Destination showDestination(HttpServletRequest request, HttpServletResponse response) {
+		String destinationName = request.getParameter("destinationName");
+		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
+		return destination;
+	}
+	
+	
+	@RequestMapping(value = "/getDestinationCommentsUsers", method = RequestMethod.GET)
+	
+	public @ResponseBody ArrayList<Object> getDestinationCommentsUsers (HttpServletRequest request) {
+		
+		String destinationName= request.getParameter("destinationName");
+		
+		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
+
+		ArrayList<Object> commentsAndUsers = new ArrayList<>();
+				
+		for (Comment comment: destination.getComments()) {
+			commentsAndUsers.add(comment);
+			commentsAndUsers.add(UsersManager.getInstance().getUserFromCache(comment.getAuthorEmail()));
+		}
+		
+		return commentsAndUsers;
+	}
 	
 	
 	

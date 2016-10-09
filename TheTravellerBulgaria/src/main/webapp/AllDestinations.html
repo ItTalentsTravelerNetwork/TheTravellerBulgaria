@@ -5,18 +5,16 @@
 	<meta name="viewport"    content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="">
 	<meta name="author"      content="David & Yasen">
-	<meta http-equiv="Cache-Control" content="no-cache,no-store,private,must-revalidate,max-stale=0,post-check=0,pre-check=0" />
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />
 	
 	<title>The Traveler Bulgaria</title>
-	
 	<link rel="shortcut icon" href="assets/images/gt_favicon.png">
 	
 	<link rel="stylesheet" media="screen" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/font-awesome.min.css">
-	
 
 	<!-- Custom styles for our template -->
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
@@ -27,18 +25,16 @@
 	<script src="assets/js/html5shiv.js"></script>
 	<script src="assets/js/respond.min.js"></script>
 	<![endif]-->
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-	<script src="assets/js/headroom.min.js"></script>
-	<script src="assets/js/jQuery.headroom.min.js"></script>
-	<script src="assets/js/template.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="assets/js/checkForUser.js"></script>
-	<script>checkIfLoggedIn()</script>	
+	
+	
+	
+	
 </head>
 
 <body>
 	<!-- Fixed navbar -->
+	
 	<div class="navbar navbar-inverse navbar-fixed-top headroom" >
 		<div class="container">
 			<div class="navbar-header">
@@ -49,9 +45,9 @@
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav pull-right">
 					<li><a href="index.html">Home</a></li>					
-					<li><a href="AllDestinations.html">Destinations</a></li>
-					<li><a class="btn" onclick="logOut()">Logout</a></li>
-					<li><a class="btn" href="profile.html">PROFILE</a></li>
+					<li><a href="AllDestinations.html">Destinations</a></li>									
+					<li id="userButton"></li>
+					<li id="secondButton"></li>
 				</ul>
 			</div><!--/.nav-collapse -->
 		</div>
@@ -62,39 +58,41 @@
 
 	<!-- container -->
 	<div class="container">
-
+		
 		<ol class="breadcrumb">
 			<li><a href="index.html">Home</a></li>
-			<li class="active">NewsFeed</li>
+			<li class="active">All Destinations</li>
 		</ol>
 
 		<div class="row">
 			
-			<!-- Article main content -->
-			<article id="feed" class="col-sm-8 maincontent">
-				<header class="page-header">
-					<h1 class="page-title">People are visiting</h1>
-				</header>
-				
-			</article>
-			<!-- /Article -->
-			
 			<!-- Sidebar -->
-			<aside class="col-sm-4 sidebar sidebar-right">
+			<aside class="col-md-4 sidebar sidebar-left">
 
-				<div class="widget">
-					<h4>Popular destinations</h4>
-					<ul class="list-unstyled list-spaces">
-						<li><a href="">Lorem ipsum dolor</a><br><span class="small text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi, laborum.</span></li>
-						<li><a href="">Totam, libero, quis</a><br><span class="small text-muted">Suscipit veniam debitis sed ipsam quia magnam eveniet perferendis nisi.</span></li>
-						<li><a href="">Enim, sequi dignissimos</a><br><span class="small text-muted">Reprehenderit illum quod unde quo vero ab inventore alias veritatis.</span></li>
-						<li><a href="">Suscipit, consequatur, aut</a><br><span class="small text-muted">Sed, mollitia earum debitis est itaque esse reiciendis amet cupiditate.</span></li>
-						<li><a href="">Nam, illo, veritatis</a><br><span class="small text-muted">Delectus, sapiente illo provident quo aliquam nihil beatae dignissimos itaque.</span></li>
-					</ul>
+				<div class="row widget">
+					<div class="col-xs-12">											
+						
+					</div>
+				</div>
+				<div class="row widget">
+					<div class="col-xs-12">						
+						
+					</div>
+				</div>
+				<div class="row widget">
+					<div class="col-xs-12">						
+						
+					</div>
 				</div>
 
 			</aside>
 			<!-- /Sidebar -->
+
+			<!-- Article main content -->
+			<article id="allDestinations" class="col-md-8 maincontent">				
+					
+			</article>
+			<!-- /Article -->
 
 		</div>
 	</div>	<!-- /container -->
@@ -141,7 +139,7 @@
             </div>
         </div>
 
-		<div class="footer2">
+        <div class="footer2">
             <div class="container">
                 <div class="row">
                     
@@ -181,38 +179,40 @@
 	<script src="assets/js/headroom.min.js"></script>
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script>checkForUser()</script>	
 </body>
 
 <script>
-$(function loadFeed(){
+$(function showDestinations(){
 	$.get(
-		"GetPlacesForNewsFeed",
+		"getAllDestinations", 
 		function(data){
-			var html = "<table>";
-			html+="<tr>";
-			for (var i = 0; i < data.length; i+=2) {
-				var place = data[i];
-				var userVisited = data[i+1];
+			var json = data;
+			var html = "<header class=\"page-header\"><h1 class=\"page-title\">All Destinations</h1></header>";
+			html += "<table><tr>";
+			var i = 0;
+			for(var item in json){
+				
+				if(i%3==0){
+					html += "</tr><tr>";					
+				}
+				
 				html+="<td>";
-				html+="<h4><a href=\"foreignProfile.html?userEmail=" + userVisited.email + "\">" + userVisited.firstName + " " + userVisited.lastName +"</a></h4>";
-				html+="<img src=\"GetProfilePicture?email="+ userVisited.email +"\"height=\"60\" width=\"60\"/>";
+				var destName = "<h5 id=\"tempDestName\"><a class=\"btn\" href=\"Destination.html?destinationName="+ json[item].name +"\">" + json[item].name + "</a></h5>";
+				html += destName;
+				var imageLocation = "<img src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
+				html+=imageLocation;
 				html+="</td>";
-				html+="<td>";
-				html+="<h4>  has visited  "+ place.name +"</h4>";
-				html+="<img src=\"getDestinationMainPicture?destinationName="+ place.name +"\"height=\"100\" width=\"200\"/>"
-				html+="</td>";
-				html+="</tr>";
-				html+="<tr>";
+				
+				i++;
 			}
-			html+="</tr>";
-			html += ("</table>");
-			document.getElementById('feed').innerHTML = html;
-		}
-	
-	)	
-			
+			html += "</tr></table>";
+			console.log(html);
+			document.getElementById("allDestinations").innerHTML = html;
 		}		
 	)
-
+})
 </script>
+
 </html>
