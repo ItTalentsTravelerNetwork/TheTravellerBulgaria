@@ -70,6 +70,11 @@
 			color: white;
 		}
 		
+		.destination-main-picture {
+	   		max-width: 350px;
+    		height: auto;
+		}
+
 		
 		
 	</style>
@@ -297,7 +302,7 @@
 				function(destination){
 					document.getElementById("destinationName").innerHTML=destination.name;
 					document.getElementById("destinationImage").
-					innerHTML="<img src=\"getDestinationMainPicture?destinationName="+destination.name+"\" height=\"150\" width=\"250\" alt=\"\">";
+					innerHTML="<img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+destination.name+"\" alt=\"\">";
 					document.getElementById("destinationDescription").innerHTML=destination.description;
 					return $.get("getDestinationCommentsUsers?destinationName=" + destination.name);
 				},
@@ -317,7 +322,7 @@
 						
 						html.push("<td>");
 						html.push("");
-						html.push("<img src=\"GetProfilePicture?email="+ user.email + "\" height=\"60\" width=\"60\"/>")
+						html.push("<img src=\"GetProfilePicture?email="+ user.email + "\" height=\"60\" width=\"60\" style=\"border-radius: 50%;\"/>")
 						html.push("</td>");
 						
 						html.push("<td>");
