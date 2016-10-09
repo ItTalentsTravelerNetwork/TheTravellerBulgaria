@@ -212,7 +212,7 @@ function showDestinations(){
 				}
 				
 				html+="<td>";
-				var destName = "<h5><a href=\"Destination.html?name="+ json[item].name +"\">" + json[item].name + "</a></h5>";
+				var destName = "<h5><a href=\"Destination.html?destinationName="+ json[item].name +"\">" + json[item].name + "</a></h5>";
 				html += destName;
 				var imageLocation = "<img src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
 				html+=imageLocation;

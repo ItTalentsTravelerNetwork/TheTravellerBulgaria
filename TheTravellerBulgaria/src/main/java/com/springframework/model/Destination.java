@@ -28,6 +28,7 @@ public class Destination {
 	private ConcurrentSkipListSet<Activity> activities;
 	private ConcurrentSkipListSet<Sight> sights;
 
+
 	public Destination(String name, String description, double lattitude, double longitude, String mainPicture,
 			String authorEmail, Category category, int numberOfLikes, int numberOfDislikes) {
 

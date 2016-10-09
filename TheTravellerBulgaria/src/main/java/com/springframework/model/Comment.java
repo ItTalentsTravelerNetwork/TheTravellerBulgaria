@@ -9,6 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.springframework.exceptions.InvalidAuthorException;
 import com.springframework.exceptions.InvalidDataException;
 
+
 public class Comment {
 
 	private static final DateTimeFormatter DATE_AND_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
@@ -19,7 +20,7 @@ public class Comment {
 	private int numberOfLikes;
 	private CopyOnWriteArrayList<String> userLikers; // List of users who like
 														// the comment
-	// (emails)
+														// (emails)
 	private LocalDateTime dateAndTime;
 	private boolean hasVideo;
 	private String video;
@@ -43,6 +44,7 @@ public class Comment {
 		setPlaceName(placeName);
 		this.setText(text);
 		setNumberOfLikes(numberOfLikes);
+		setUserLikers(new CopyOnWriteArrayList<>());
 		LocalDateTime date = LocalDateTime.parse(dateAndTime, DATE_AND_TIME_FORMAT);
 		setDateAndTime(date);
 		setVideo(video); // can be null -> hasVideo=false

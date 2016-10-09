@@ -32,7 +32,7 @@
 	
 </head>
 
-<body onload="showDestinations()">
+<body>
 	<!-- Fixed navbar -->
 	
 	<div class="navbar navbar-inverse navbar-fixed-top headroom" >
@@ -182,8 +182,9 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script>checkForUser()</script>	
 </body>
+
 <script>
-function showDestinations(){
+$(function showDestinations(){
 	$.get(
 		"getAllDestinations", 
 		function(data){
@@ -198,7 +199,7 @@ function showDestinations(){
 				}
 				
 				html+="<td>";
-				var destName = "<h5><a href=\"Destination.html?name="+ json[item].name +"\">" + json[item].name + "</a></h5>";
+				var destName = "<h5 id=\"tempDestName\"><a class=\"btn\" onclick=\"addDestinationInSession()\ >" + json[item].name + "</a></h5>";
 				html += destName;
 				var imageLocation = "<img src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
 				html+=imageLocation;
@@ -210,7 +211,7 @@ function showDestinations(){
 			document.getElementById("allDestinations").innerHTML = html;
 		}		
 	)
-}
+})
 </script>
 
 </html>

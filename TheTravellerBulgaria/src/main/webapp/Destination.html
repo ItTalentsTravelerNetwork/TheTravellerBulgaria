@@ -20,8 +20,60 @@
 	<!-- Custom styles for our template -->
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
 	<link rel="stylesheet" href="assets/css/main.css">
-	<script src="assets/js/checkForUser.js"></script>
-	<scriprt>checkIfLoggedIn()</scriprt>
+	
+	<style>
+		
+		.my-table {
+			width: 100%;
+			text-align: left;
+			border-spacing: 0 15px;
+			border-collapse: separate;
+		}
+		
+		.my-table img {
+			width: auto;
+			max-width:none;
+		}
+		
+		.my-table td {
+			padding:0px 15px;
+			vertical-align: top;
+		}
+		
+		.my-table .username {
+			float: left;
+			line-height: inherit;
+			color: #09c;
+			font-style: normal;
+			font-size: 14px;
+		}
+		
+		.my-table td:last-child {
+			border: 1px solid #ddd;
+			padding-bottom: 15px;
+			background: rgb(255,255,255);
+			background: -moz-linear-gradient(-45deg, rgba(255,255,255,1) 0%, rgba(243,243,243,1) 50%, rgba(237,237,237,1) 51%, rgba(255,255,255,1) 100%);
+			background: -webkit-linear-gradient(-45deg, rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%);
+			background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=1 );
+		}
+		
+		.my-table h6 {
+			text-align: right;
+			color: #777;
+			font-style: italic;
+		}
+		
+		.my-table .btn {
+			padding: 5px 40px;
+			background: rgba(15, 114, 185, 0.92);
+			color: white;
+		}
+		
+		
+		
+	</style>
+
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -67,28 +119,32 @@
 		<div class="row">
 			
 			<!-- Sidebar -->
-			<% Destination dest = null; %>
-			<%if (request.getParameter("name") != null){ %>
+			
+			
+
 			<aside class="col-md-4 sidebar sidebar-left">
-						<% dest = DestinationsManager.getDestinationFromCache(request.getParameter("name")); %>
-						<%if(dest == null){ %>
-							<%request.getRequestDispatcher("AllDestinations.html").forward(request, response); %>
-							
-						<%} %>
+						
 				<div class="row widget">
-					<div class="col-xs-12">	
-							<h4><%out.println(request.getParameter("name")); %></h4>					
+					<div  class="col-xs-12">
+						
+						<h1 id="destinationName"></h1>					
 						
 					</div>
 				</div>
 				<div class="row widget">
-					<div class="col-xs-12">						
-						<p><img src="DestinationPictureServlet?destination=<%=request.getParameter("name") %>" height="150" width="150" alt=""></p>
+					<div class="col-xs-12">	
+										
+						<p id="destinationImage"> </p>
+						
 					</div>
 				</div>
 				<div class="row widget">
-					<div class="col-xs-12">						
-						<a class="btn" href="Comment.html?name=<%=dest.getName()%>">Add Comment</a>
+				
+				
+					<div id="addComment" class="col-xs-12">		
+									
+						
+						
 					</div>
 				</div>
 				
@@ -100,35 +156,30 @@
 			<!-- Article main content -->
 			<article class="col-md-8 maincontent">
 				<header class="page-header">
-					<h1 class="page-title">Description</h1>
+					<h2 class="page-title">Description</h2>
 				</header>
-					<h4><%out.print(dest.getDescription()); %></h4>
+				
+					<h4 id="destinationDescription"> </h4>
 					
 			</article>
-				<%if(dest.getComments().size()>0){ %>
 				<article class="col-md-8 maincontent">
 					<header class="page-header">
-						<h1 class="page-title">Comments</h1>
-					</header>
-						<table>
-							<tr>	
-								<%for(Comment comment : dest.getComments()){ %>				
-										<td>
-										<% User user = UsersManager.getUserFromCache(comment.getAuthorEmail()); %>
-											<h6><%= (user.getFirstName()+ " " + user.getLastName()) %></h6>
-											<img src="PictureServlet?user=<%= user.getEmail()%>" height="60" width="60"/>
-										</td>
-										<td>
-											<p><%=comment.getText() %></p>
-										</td>
-									</tr>
-									<tr>
-								<%} %>
-							</tr>
-						</table>
 					
+
+						<h2 id="commentsTitle" class="page-title"></h2>
+						
+						
+					</header>
+					
+					
+						<table class="my-table" id="commentsTable">
+							
+		
+						</table>
+
+	
 				</article>
-				<%} %>
+
 				
 				<article class="col-md-8 maincontent">
 					<br>
@@ -139,7 +190,7 @@
 		</div>
 		
 		<div id="map" style="width:100% height:100%"></div>
-		<%} %>
+
 	</div>	<!-- /container -->
 	
 	
@@ -226,40 +277,109 @@
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
 	<script src="assets/js/checkForUser.js"></script>
+	<script>checkForUser()</script>
 	
 	<script>
-		function myMap() {
-			<%if (request.getParameter("name") != null){ %>
-			var myCenter = new google.maps.LatLng(<%= dest.getLocation().getLattitude()%>,<%= dest.getLocation().getLongitude()%>);
-			  var mapCanvas = document.getElementById("map");
-			  var mapOptions = {
-				  	center: myCenter, zoom: 7,
-				    panControl: true,
-				    zoomControl: true,
-				    mapTypeControl: true,
-				    scaleControl: true,
-				    streetViewControl: true,
-				    overviewMapControl: true,
-				    rotateControl: true
+	
+	var params = location.search.substr(1).split("&").reduce(function(acc, element){
+		element=element.split("=");
+		acc[element[0]]=element[1];
+		return acc;
+	}, {});
+
+	$('[name="destinationName"]').val(params.destinationName)
+	
+		$(function showDestination(){
+			var destinationName = location.search.split('destinationName=')[1];
+			
+			$.get("getDestination?destinationName="+destinationName)  
+			.then (
+				function(destination){
+					document.getElementById("destinationName").innerHTML=destination.name;
+					document.getElementById("destinationImage").
+					innerHTML="<img src=\"getDestinationMainPicture?destinationName="+destination.name+"\" height=\"150\" width=\"250\" alt=\"\">";
+					document.getElementById("destinationDescription").innerHTML=destination.description;
+					return $.get("getDestinationCommentsUsers?destinationName=" + destination.name);
+				},
+				function(err){
+					console.log(err)
 				}
-			  
-			  var map = new google.maps.Map(mapCanvas, mapOptions);
-			  var marker = new google.maps.Marker({position:myCenter});
-			  marker.setMap(map);
-			 <%}%>
-		}
+			)
+			
+			.then(
+				function(data){
+					var html = [];
+				
+					for(var i=0; i<data.length; i+=2){
+						html.push("<tr>");
+						var comment = data[i];
+						var user = data[i+1];
+						
+						html.push("<td>");
+						html.push("");
+						html.push("<img src=\"GetProfilePicture?email="+ user.email + "\" height=\"60\" width=\"60\"/>")
+						html.push("</td>");
+						
+						html.push("<td>");
+						html.push("<h6> <span class='username'>"+user.firstName+" "+user.lastName+"</span> Added on: "+comment.dateAndTime.hour+":"+comment.dateAndTime.minute+":"+comment.dateAndTime.second+" - "+comment.dateAndTime.dayOfMonth+"."+comment.dateAndTime.month+"."+comment.dateAndTime.year+"</h6>");
+						html.push("<h5>"+comment.text+"</h5>");
+						html.push('<button class="btn btn pull-right"> like </button> ');
+						html.push("</td>");
+						html.push("</tr>");
+						
+					}
+				
+					
+					$('#commentsTitle').html("Comments");
+					$('#commentsTable').html(html.join(" "));
+				}	
+			)			
+		})
 		
+		$(function addComment() {
+			var destinationName = location.search.split('destinationName=')[1];
+			document.getElementById("addComment").innerHTML="<a  class=\"btn\" href=\"Comment.html?destinationName="+destinationName+"\">Add Comment</a>";
+		})
 		
+
+	</script>
+	
+
+	<script>
+	function myMap() {
+			
+		$.get("getDestination?destinationName=" + params.destinationName)
+		.then (
+			function (destination) {
+				
+			   var myCenter = new google.maps.LatLng(destination.location.lattitude, destination.location.longitude);
+			     var mapCanvas = document.getElementById("map");
+			     var mapOptions = {
+			       center: myCenter, zoom: 7,
+			        panControl: true,
+			        zoomControl: true,
+			        mapTypeControl: true,
+			        scaleControl: true,
+			        streetViewControl: true,
+			        overviewMapControl: true,
+			        rotateControl: true
+			    }
+			     
+			    var map = new google.maps.Map(mapCanvas, mapOptions);
+			    var marker = new google.maps.Marker({position:myCenter});
+			    marker.setMap(map);
+			     
+			}
+			
+		)
+		     
+	}
 	</script>
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQKyIgPewrgRCgagA1sDItFSRZh5hZlL4&callback=myMap"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	
 
-	<script>checkforUser()</script>
 	
 </body>
-<script>
-
-
-</script>
 
 </html>
