@@ -37,6 +37,13 @@
 	<script src="assets/js/checkForUser.js"></script>
 	<script>checkIfLoggedIn()</script>
 	
+	<style> 
+		.destination-main-picture {
+	   		max-height: 150px;
+    		width: auto;
+		}
+	</style>
+	
 </head>
 
 <body >
@@ -255,7 +262,7 @@ $(function showProfile(){
 			var json = data;
 			document.getElementById("fullName").innerHTML = json.firstName + " " + json.lastName;
 			document.getElementById("description").innerHTML = json.description;
-			document.getElementById("profilePicture").innerHTML = "<img src=\"GetProfilePicture?email="+ json.email + "\" height=\"150\" width=\"150\" alt=\"\"/>";	
+			document.getElementById("profilePicture").innerHTML = "<img src=\"GetProfilePicture?email="+ json.email + "\" height=\"150\" width=\"150\" alt=\"\" style=\"border-radius: 50%;\"/>";	
 		}
 	).then(function(data){
 	var user = data.email;
@@ -275,7 +282,7 @@ $(function showProfile(){
 					html+="<td>";
 					var destName = "<h5><a href=\"Destination.html?destinationName="+ json[item].name +"\">" + json[item].name + "</a></h5>";
 					html += destName;
-					var imageLocation = "<img src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
+					var imageLocation = "<img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
 					html+=imageLocation;
 					html+="</td>";
 					

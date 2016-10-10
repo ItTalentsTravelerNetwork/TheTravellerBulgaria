@@ -31,7 +31,7 @@
 		}
 		
 		.my-table img {
-			width: auto;
+	
 			max-width:none;
 		}
 		
@@ -134,8 +134,12 @@
 					<div  class="col-xs-12">
 						
 						<h1 id="destinationName"></h1>					
+						<h5 id="destinationAuthorName"></h5>
 						
 					</div>
+					
+					
+					
 				</div>
 				<div class="row widget">
 					<div class="col-xs-12">	
@@ -286,7 +290,6 @@
 	<script>checkForUser()</script>
 	
 	<script>
-	
 	var params = location.search.substr(1).split("&").reduce(function(acc, element){
 		element=element.split("=");
 		acc[element[0]]=element[1];
@@ -305,24 +308,37 @@
 					document.getElementById("destinationImage").
 					innerHTML="<img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+destination.name+"\" alt=\"\">";
 					document.getElementById("destinationDescription").innerHTML=destination.description;
-					return $.get("getDestinationCommentsUsers?destinationName=" + destination.name);
-				},
-				function(err){
-					console.log(err)
+					return $.get("getDestinationAuthor?destinationName=" + destination.name);
 				}
 			)
 			
+			.then (
+				function(destinationAuthor) {
+					var html = [];
+					html.push("Added by <span>");
+					if (destinationAuthor.email.valueOf() != sessionStorage.getItem('userEmail').valueOf()) {
+						html.push("<a href=\"foreignProfile.html?userEmail="+ destinationAuthor.email +"\">");
+					}
+					html.push(destinationAuthor.firstName+' '+destinationAuthor.lastName+' </span>');
+					$('#destinationAuthorName').html(html.join(" "));
+					return $.get("getDestinationCommentsUsers?destinationName=" + destinationName);
+				}		
+			)
+		
 			.then(
 				function(data){
 					var html = [];
-				
 					for(var i=0; i<data.length; i+=2){
 						html.push("<tr>");
 						var comment = data[i];
 						var user = data[i+1];
-						
+			
 						html.push("<td>");
 						html.push("");
+						if (user.email.valueOf() != sessionStorage.getItem('userEmail').valueOf()) {
+							html.push("<a href=\"foreignProfile.html?userEmail="+ user.email +"\">");
+						}
+						
 						html.push("<img src=\"GetProfilePicture?email="+ user.email + "\" height=\"60\" width=\"60\" style=\"border-radius: 50%;\"/>")
 						html.push("</td>");
 						
@@ -332,9 +348,7 @@
 						html.push('<button class="btn btn pull-right"> like </button> ');
 						html.push("</td>");
 						html.push("</tr>");
-						
 					}
-				
 					
 					$('#commentsTitle').html("Comments");
 					$('#commentsTable').html(html.join(" "));
@@ -346,8 +360,6 @@
 			var destinationName = location.search.split('destinationName=')[1];
 			document.getElementById("addComment").innerHTML="<a  class=\"btn\" href=\"Comment.html?destinationName="+destinationName+"\">Add Comment</a>";
 		})
-		
-
 	</script>
 	
 

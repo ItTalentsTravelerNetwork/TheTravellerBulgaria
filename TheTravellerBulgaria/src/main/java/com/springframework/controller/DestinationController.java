@@ -6,10 +6,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -128,6 +124,15 @@ public class DestinationController {
 		}
 		
 		return commentsAndUsers;
+	}
+	
+	@RequestMapping(value= "/getDestinationAuthor", method = RequestMethod.GET)
+	@ResponseBody
+	public User getDestinationAuthor(HttpServletRequest request, HttpServletResponse response) {
+		String destinationName = request.getParameter("destinationName");
+		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
+		User user = UsersManager.getInstance().getUserFromCache(destination.getAuthorEmail());
+		return user;
 	}
 	
 	
