@@ -22,13 +22,12 @@ import com.springframework.model.PlaceToSleep;
 import com.springframework.model.Sight;
 import com.springframework.model.User;
 
-
 public class DestinationDao {
 
 	private ConcurrentHashMap<String, ArrayList<String>> destinationPictures;
-	
+
 	private static DestinationDao instance;
-	
+
 	public static DestinationDao getInstance() {
 		if (instance == null) {
 			instance = new DestinationDao();
@@ -77,7 +76,8 @@ public class DestinationDao {
 				String selectAllDestinationsFromDB = "SELECT name, description, lattitude, longitude, main_picture, author_email, category, number_of_likes, number_of_dislikes FROM destinations;";
 				result = statement.executeQuery(selectAllDestinationsFromDB);
 				while (result.next()) {
-					Destination dest = new Destination(result.getString("name"), result.getString("description"),
+					String name = result.getString("name").replaceAll("%20", " ");
+					Destination dest = new Destination(name, result.getString("description"),
 							Double.parseDouble(result.getString("lattitude")),
 							Double.parseDouble(result.getString("longitude")), result.getString("main_picture"),
 							result.getString("author_email"),
@@ -117,8 +117,7 @@ public class DestinationDao {
 		PreparedStatement statement2 = null;
 		try {
 			DBManager.getInstance().getConnection().setAutoCommit(false);
-			statement = DBManager.getInstance().getConnection()
-					.prepareStatement(insertDestinationInfoIntoDB);
+			statement = DBManager.getInstance().getConnection().prepareStatement(insertDestinationInfoIntoDB);
 			statement.setString(1, destination.getName());
 			statement.setString(2, destination.getDescription());
 			statement.setDouble(3, destination.getLocation().getLattitude());
@@ -130,8 +129,7 @@ public class DestinationDao {
 			statement.setInt(9, destination.getNumberOfDislikes());
 			statement.executeUpdate();
 
-			statement2 = DBManager.getInstance().getConnection()
-					.prepareStatement(insertIntoVisitedDestinations);
+			statement2 = DBManager.getInstance().getConnection().prepareStatement(insertIntoVisitedDestinations);
 			statement2.setString(1, destination.getName());
 			statement2.setString(2, u.getEmail());
 			statement2.executeUpdate();
@@ -176,8 +174,7 @@ public class DestinationDao {
 		try {
 			// TODO update only current fields
 
-			prepStatement = DBManager.getInstance().getConnection()
-					.prepareStatement(updateDestinationStatement);
+			prepStatement = DBManager.getInstance().getConnection().prepareStatement(updateDestinationStatement);
 			prepStatement.setString(1, description);
 			prepStatement.setDouble(2, longitude);
 			prepStatement.setDouble(3, lattitude);

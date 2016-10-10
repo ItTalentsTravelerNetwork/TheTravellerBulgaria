@@ -138,6 +138,18 @@ public class UserController {
 		}
 	}
 
+	@RequestMapping(value = "/Unfollow", method = RequestMethod.POST)
+	public String unFollow(HttpServletRequest request) {
+		String foreignUserEmail = request.getParameter("user");
+		User user = (User) request.getSession().getAttribute("user");
+		boolean isFollowed = UsersManager.getInstance().removeFromFollowedUsers(user, foreignUserEmail);
+		if (isFollowed) {
+			return "SUCCESS";
+		} else {
+			return "FAILURE";
+		}
+	}
+
 	@RequestMapping(value = "GetPlacesForNewsFeed", method = RequestMethod.GET)
 	@ResponseBody
 	public CopyOnWriteArrayList<Object> getPlacesForNewsFeed(HttpServletRequest request) {
@@ -157,6 +169,17 @@ public class UserController {
 			}
 		}
 		return visitedPlacesByFollowedUsers;
+	}
+
+	@RequestMapping(value = "isFollowed", method = RequestMethod.GET)
+	@ResponseBody
+	public String isFollowed(HttpServletRequest request) {
+		User user = UsersManager.getInstance().getUserFromCache(request.getParameter("user"));
+		String email = ((User) request.getSession().getAttribute("user")).getEmail();
+		if (!user.getFollowedUsers().contains(email)) {
+			return "followed";
+		}
+		return "notFollowed";
 	}
 
 	private static boolean validateData(String firstName, String lastName, String email, String password) {

@@ -54,6 +54,7 @@
 				<ul class="nav navbar-nav pull-right">
 					<li><a href="index.html">Home</a></li>					
 					<li><a href="AllDestinations.html">Destinations</a></li>
+					<li><a href="NewsFeed.html">News Feed</a></li>
 					<li><a class="btn" onclick="logOut()">Logout</a></li>
 					<li><a class="btn" href="profile.html">PROFILE</a></li>
 				</ul>
@@ -91,7 +92,7 @@
 				<div class="row widget">
 					<div class="col-xs-12">						
 						<p id="profilePicture"></p>
-						<a class="btn btn-action" onclick="follow()">Follow</a>
+						<div id="follow"><a class="btn btn-action" onclick="follow()">Follow</a></div>						
 					</div>
 				</div>
 				<div class="row widget">
@@ -196,6 +197,35 @@
 	
 </body>
 <script>
+$(function showUnfollow(){
+	var userEmail = location.search.split('userEmail=')[1];
+	$.get(
+		"isFollowed?user="+userEmail,
+		function(data){
+			if(data=="followed"){
+				document.getElementById("follow").innerHTML = "<a class=\"btn btn-action\" onclick=\"unFollow()\">Stop Following</a>";
+			}
+		}
+	)	
+})
+
+function unFollow(){
+	var userEmail = location.search.split('userEmail=')[1];
+	$.post(
+		"Unfollow",
+		{user : userEmail},
+		function(data){
+			var name = document.getElementById('fullName').innerHTML;
+			if(data == 'SUCCESS'){				
+				$('#followMessage').html("<font color='green'>You have stopped following " + name + ". </font>");
+				document.getElementById("follow").innerHTML = "<a class=\"btn btn-action\" onclick=\"follow()\">Follow</a>";
+			}else if(data == 'FAILURE'){
+				$('#followMessage').html("<font color='red'>You don't follow " + name + ". </font>");
+			}
+		}
+	)
+}
+
 function follow(){
 	var userEmail = location.search.split('userEmail=')[1];
 	$.post(
@@ -205,6 +235,7 @@ function follow(){
 			var name = document.getElementById('fullName').innerHTML;
 			if(data == 'SUCCESS'){				
 				$('#followMessage').html("<font color='green'>You have successfully followed " + name + ". </font>");
+				document.getElementById("follow").innerHTML = "<a class=\"btn btn-action\" onclick=\"unFollow()\">Stop Following</a>";
 			}else if(data == 'FAILURE'){
 				$('#followMessage').html("<font color='red'>You have already followed " + name + ". </font>");
 			}

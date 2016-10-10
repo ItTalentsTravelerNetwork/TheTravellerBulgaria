@@ -23,9 +23,7 @@ import com.springframework.model.PlaceToSleep;
 import com.springframework.model.Sight;
 import com.springframework.model.User;
 
-
 public class DestinationsManager {
-	
 
 	private static DestinationsManager instance; // Singleton
 	private ConcurrentHashMap<String, Destination> allDestinations; // destination
@@ -66,10 +64,10 @@ public class DestinationsManager {
 		}
 		return instance;
 	}
-	
+
 	private void fillDestinationsWithPics() {
-		for (Entry<String, ArrayList<String>> destPics : DestinationDao.getInstance()
-				.getDestinationPictures().entrySet()) {
+		for (Entry<String, ArrayList<String>> destPics : DestinationDao.getInstance().getDestinationPictures()
+				.entrySet()) {
 			String destName = destPics.getKey();
 			for (String pic : destPics.getValue()) {
 				this.allDestinations.get(destName).addPicture(pic);
@@ -108,11 +106,11 @@ public class DestinationsManager {
 			allDestinations.put(name, destination); // adds the new destination
 			allDestinationsAndAuthors.put(name, user.getEmail()); // to the
 																	// collection
-			user.addPlace(name);
+			UsersManager.getInstance().addDestinationToUser(user.getEmail(), name);
 			DestinationDao.getInstance().saveDestinationToDB(user, destination); // saves
-																												// destination
-																												// to
-																												// DB
+																					// destination
+																					// to
+																					// DB
 			return true;
 		}
 		return false; // no such user
@@ -123,13 +121,13 @@ public class DestinationsManager {
 														// destination
 			allDestinations.remove(destinationName);
 			allDestinationsAndAuthors.remove(destinationName);
-			UsersManager.getInstance()
-					.getUserFromCache(allDestinationsAndAuthors.get(destinationName)).removePlace(destinationName); // removes
-																													// place
-																													// from
-																													// user's
-																													// added
-																													// places
+			UsersManager.getInstance().getUserFromCache(allDestinationsAndAuthors.get(destinationName))
+					.removePlace(destinationName); // removes
+													// place
+													// from
+													// user's
+													// added
+													// places
 			DestinationDao.getInstance().removeDestination(destinationName);
 			return true;
 		}
@@ -166,12 +164,12 @@ public class DestinationsManager {
 			destination.setVideos(videos);
 			destination.setActivities(activities);
 			destination.setSights(sights);
-			boolean updateInDB = DestinationDao.getInstance().updateDestinationInDB(name,
-					description, longitude, lattitude, mainPicture, placesToSleep, placesToEat, destCategory, pictures,
-					videos, activities, sights); // updates
-													// the
-													// DB
-													// destination
+			boolean updateInDB = DestinationDao.getInstance().updateDestinationInDB(name, description, longitude,
+					lattitude, mainPicture, placesToSleep, placesToEat, destCategory, pictures, videos, activities,
+					sights); // updates
+								// the
+								// DB
+								// destination
 			if (updateInDB) { // if DB is updated
 				return true;
 			}
@@ -200,8 +198,7 @@ public class DestinationsManager {
 			if (allDestinations.get(destinationName).dislike(userEmail)) { // if
 																			// destination
 																			// updated
-				if (DestinationDao.getInstance().removeLike(userEmail,
-						destinationName)) {
+				if (DestinationDao.getInstance().removeLike(userEmail, destinationName)) {
 					// if the DB is updated
 					return true;
 				}
@@ -250,14 +247,12 @@ public class DestinationsManager {
 	}
 
 	private void fillDestinationsWithLikesAndDislikes() {
-		for (Entry<String, ArrayList<String>> entry : DestinationDao.getInstance()
-				.getLikes().entrySet()) {
+		for (Entry<String, ArrayList<String>> entry : DestinationDao.getInstance().getLikes().entrySet()) {
 			for (String email : entry.getValue()) {
 				this.allDestinations.get(entry.getKey()).like(email);
 			}
 		}
-		for (Entry<String, ArrayList<String>> entry : DestinationDao.getInstance()
-				.getDisLikes().entrySet()) {
+		for (Entry<String, ArrayList<String>> entry : DestinationDao.getInstance().getDisLikes().entrySet()) {
 			for (String email : entry.getValue()) {
 				this.allDestinations.get(entry.getKey()).dislike(email);
 			}
@@ -265,8 +260,7 @@ public class DestinationsManager {
 	}
 
 	private void fillDestinationsWithVideos() {
-		for (Entry<String, ArrayList<String>> entry : DestinationDao.getInstance()
-				.getVideos().entrySet()) {
+		for (Entry<String, ArrayList<String>> entry : DestinationDao.getInstance().getVideos().entrySet()) {
 			for (String video : entry.getValue()) {
 				this.allDestinations.get(entry.getKey()).addVideo(video);
 			}

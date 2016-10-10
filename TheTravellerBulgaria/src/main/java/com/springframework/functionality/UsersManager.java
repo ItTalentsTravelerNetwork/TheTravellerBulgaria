@@ -150,15 +150,20 @@ public class UsersManager {
 		String category = destination.getCategory().toString();
 		if (DestinationsManager.getInstance().addDestination(user, destName, destDescription, destLattitude,
 				destLongitude, destMainPicture, category)) {
-			addDestinationToUser(user, destName);
+
+			userVisitors.add(user.getEmail());
+			userVisitors.add(destName);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private synchronized void addDestinationToUser(User user, String destinationName) {
-		user.getAddedPlaces().add(destinationName);
+	public synchronized void addDestinationToUser(String userEmail, String destinationName) {
+		User user = this.getUserFromCache(userEmail);
+		user.addPlace(destinationName);
+		userVisitors.add(user.getEmail());
+		userVisitors.add(destinationName);
 	}
 
 	public synchronized boolean addComment(String userEmail, String destinationName, String text, String video)

@@ -14,18 +14,18 @@ import com.springframework.exceptions.InvalidDataException;
 import com.springframework.functionality.UsersManager;
 import com.springframework.model.User;
 
-
-
 @RestController
 @MultipartConfig(maxFileSize = 200000000)
 public class CommentController {
-	
+
 	@RequestMapping(value = "/addComment", method = RequestMethod.POST)
 	@ResponseBody
 	public String addComment(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		String text = request.getParameter("commentText");
+		String destName = request.getParameter("destinationName").replaceAll("%20", " ");
 		try {
-			UsersManager.getInstance().addComment(((User)session.getAttribute("user")).getEmail(), request.getParameter("destinationName"), text, null);
+			UsersManager.getInstance().addComment(((User) session.getAttribute("user")).getEmail(), destName, text,
+					null);
 		} catch (InvalidDataException e) {
 			e.printStackTrace();
 			return "Comment adding failed!";
