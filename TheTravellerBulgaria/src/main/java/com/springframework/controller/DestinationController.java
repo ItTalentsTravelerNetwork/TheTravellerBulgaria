@@ -28,7 +28,7 @@ import com.springframework.model.Destination;
 import com.springframework.model.User;
 
 @RestController
-@MultipartConfig(maxFileSize = 200000000)
+@MultipartConfig
 public class DestinationController {
 
 	@RequestMapping(value = "/addDestination", method = RequestMethod.POST)
@@ -94,6 +94,23 @@ public class DestinationController {
 
 	}
 
+	@RequestMapping(value = "/GetDestinationPicture", method = RequestMethod.GET)
+	@ResponseBody
+	public void getDestPicture(HttpServletRequest request, HttpServletResponse response) {
+		String pic = request.getParameter("pic");
+
+		File mainPicFile = new File("destinationPics", pic);
+
+		try {
+			OutputStream out = response.getOutputStream();
+			Files.copy(mainPicFile.toPath(), out);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
 	@RequestMapping(value = "/getAllDestinations", method = RequestMethod.GET)
 	@ResponseBody
 	public ArrayList<Destination> getAllDestinations(HttpServletRequest request, HttpServletResponse response) {
@@ -130,8 +147,11 @@ public class DestinationController {
 		return commentsAndUsers;
 	}
 
-	@RequestMapping(value = "/AddPicture", method = RequestMethod.POST)
-	public void addPicture(@RequestParam("pic") MultipartFile multipartFile, HttpServletRequest request) {
+	@RequestMapping(value = "/AddPic", method = RequestMethod.POST)
+	@ResponseBody
+	public String addPicture(@RequestParam("pic") MultipartFile multipartFile, HttpServletRequest request) {
+		String dName = request.getParameter("destinationName");
+
 		String destName = request.getParameter("destinationName").replaceAll("%20", " ");
 		Destination dest = DestinationsManager.getInstance().getDestinationFromCache(destName);
 
@@ -140,15 +160,17 @@ public class DestinationController {
 			dir.mkdir();
 		}
 		File destinationMainPicFile = new File(dir,
-				dest.getName() + "-destinationMainPic." + multipartFile.getOriginalFilename());
+				dest.getName() + "-destinationPic." + multipartFile.getOriginalFilename());
 		try {
 			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
 					StandardCopyOption.REPLACE_EXISTING);
 			DestinationsManager.getInstance().addPicture(dest.getName(), destinationMainPicFile.getName());
+			return "SUCCESS";
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return "FAILURE";
 	}
 
 	@RequestMapping(value = "/getDestinationAuthor", method = RequestMethod.GET)
@@ -160,4 +182,17 @@ public class DestinationController {
 		return user;
 	}
 
+	@RequestMapping(value = "/GetDestinationGallery", method = RequestMethod.GET)
+	@ResponseBody
+	public ArrayList<String> getDestinationGallery(HttpServletRequest request) {
+		ArrayList<String> gallery = new ArrayList<>();
+		Destination dest = DestinationsManager.getInstance()
+				.getDestinationFromCache(request.getParameter("destinationName").replaceAll("%20", " "));
+		gallery.add(dest.getMainPicture());
+		for (String pic : dest.getPictures()) {
+			gallery.add(pic);
+		}
+
+		return gallery;
+	}
 }
