@@ -21,63 +21,7 @@
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
 	<link rel="stylesheet" href="assets/css/main.css">
 	
-	<style>
-		
-		.my-table {
-			width: 100%;
-			text-align: left;
-			border-spacing: 0 15px;
-			border-collapse: separate;
-		}
-		
-		.my-table img {
 	
-			max-width:none;
-		}
-		
-		.my-table td {
-			padding:0px 15px;
-			vertical-align: top;
-		}
-		
-		.my-table .username {
-			float: left;
-			line-height: inherit;
-			color: #09c;
-			font-style: normal;
-			font-size: 14px;
-		}
-		
-		.my-table td:last-child {
-			border: 1px solid #ddd;
-			padding-bottom: 15px;
-			background: rgb(255,255,255);
-			background: -moz-linear-gradient(-45deg, rgba(255,255,255,1) 0%, rgba(243,243,243,1) 50%, rgba(237,237,237,1) 51%, rgba(255,255,255,1) 100%);
-			background: -webkit-linear-gradient(-45deg, rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%);
-			background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%);
-			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=1 );
-		}
-		
-		.my-table h6 {
-			text-align: right;
-			color: #777;
-			font-style: italic;
-		}
-		
-		.my-table .btn {
-			padding: 5px 40px;
-			background: rgba(15, 114, 185, 0.92);
-			color: white;
-		}
-		
-		.destination-main-picture {
-	   		max-width: 350px;
-    		height: auto;
-		}
-
-		
-		
-	</style>
 
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -135,7 +79,7 @@
 						
 						<h1 id="destinationName"></h1>					
 
-						<div id="gallery" class="btn btn-action" onclick="showGallery()">Gallery</div>					
+											
 						
 						<h5 id="destinationAuthorName"></h5>
 					</div>
@@ -148,19 +92,7 @@
 						
 					</div>
 				</div>
-				<div class="row widget">
 				
-				
-					<div id="addComment" class="col-xs-12">		
-						
-					</div>
-					
-				</div>
-				<div class="row widget">
-				<div class="col-xs-12">		
-						<div id="addPicture" class="btn"></div>
-					</div>
-				</div>
 				
 
 			</aside>
@@ -180,13 +112,13 @@
 					<header class="page-header">
 					
 
-						<h2 id="commentsTitle" class="page-title"></h2>
+						<h2 id="destinationTitle" class="page-title"></h2>
 						
 						
 					</header>
 					
 					
-						<table class="my-table" id="commentsTable">
+						<table class="my-table" id="pictureTable">
 							
 		
 						</table>
@@ -312,7 +244,7 @@
 					document.getElementById("destinationImage").
 					innerHTML="<img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+destination.name+"\" alt=\"\">";
 					document.getElementById("destinationDescription").innerHTML=destination.description;
-					document.getElementById("addPicture").innerHTML = "<a href=\"AddPicture.html?destinationName="+ destination.name +"\">Add Picture</a>";
+					
 					return $.get("getDestinationAuthor?destinationName=" + destination.name);
 					
 				},
@@ -337,94 +269,37 @@
 					}
 					
 					$('#destinationAuthorName').html(html.join(" "));
-					return $.get("getDestinationCommentsUsers?destinationName=" + destinationName);
+					return $.get("GetDestinationGallery?destinationName=" + destinationName);
 				}		
 			)
 		
 			.then(
 				function(data){
 					var html = [];
-					for(var i=0; i<data.length; i+=2){
-						html.push("<tr>");
-						var comment = data[i];
-						var user = data[i+1];
-			
+					html.push("<tr>");
+					for(var i=0; i<data.length; i++){
+						
+						var pic = data[i];
+						
 						html.push("<td>");
-						html.push("");
-						if (user.email.valueOf() != sessionStorage.getItem('userEmail').valueOf()) {
-							html.push("<a href=\"foreignProfile.html?userEmail="+ user.email +"\">");
+						html.push("");						
+						
+						html.push("<img src=\"GetDestinationPicture?pic="+ pic + "\" height=\"300\" width=\"400\"/>")
+						html.push("</td>");						
+						if(i%2==1){
+							html.push("</tr>");
+							html.push("<tr>");
 						}
 						
-						html.push("<img src=\"GetProfilePicture?email="+ user.email + "\" height=\"60\" width=\"60\" style=\"border-radius: 50%;\"/>")
-						html.push("</td>");
-						
-						html.push("<td>");
-						html.push("<h6> <span class='username'>"+user.firstName+" "+user.lastName+"</span> Added on: "+comment.dateAndTime.hour+":"+comment.dateAndTime.minute+":"+comment.dateAndTime.second+" - "+comment.dateAndTime.dayOfMonth+"."+comment.dateAndTime.month+"."+comment.dateAndTime.year+"</h6>");
-						html.push("<h5>"+comment.text+"</h5>");
-						
-						html.push("<form id=\"likeDislikeCommentForm\" action=\"javascript:likeComment()\">");
-						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
-						html.push("<input id=\"likeButton\" type=\"image\" src=\"assets/images/LikeButtonNonActive.png\" height=25px width=auto alt=\"Submit\">");		 
-						html.push("</form>");
-						
-						html.push("</td>");
-						html.push("</tr>");
 					}
-					
-					$('#commentsTitle').html("Comments");
-					$('#commentsTable').html(html.join(" "));
+					html.push("</tr>");
+					$('#destinationTitle').html("Gallery");
+					$('#pictureTable').html(html.join(" "));
 				}	
 			)			
 		})
 		
-		$(function addComment() {
-			var destinationName = location.search.split('destinationName=')[1];
-			document.getElementById("addComment").innerHTML="<a  class=\"btn\" href=\"Comment.html?destinationName="+destinationName+"\">Add Comment</a>";
-		})
 		
-		
-function likeComment(){
-
-	var form = $("#likeDislikeCommentForm");
-	
-	$.post("likeDislikeComment", form.serialize())
-	.then(
-		function(result) {
-			if (result.valueOf() == 'Comment liked successfully!') {
-				document.getElementById("likeButton").src="assets/images/LikeButtonActive.png";
-			}
-		}	
-	);
-}
-	
-	function showLikeButton(results){
-	      if(results == 'Comment not liked!'){
-	         
-	    	  
-	      }else if(results == 'Comment liked!'){
-	          
-	    	  
-	      }
-	 }
-			
-function showMessage(results){
-	var destinationName = location.search.split('destinationName=')[1];
-      if(results == 'Comment adding successful!'){
-          $('#message').html("<font color='green'>Comment successfully added. </font>")
-          setTimeout(function(){
-			window.location.href = "Destination.html?destinationName="+destinationName;
-		}, 500)
-      }else if(results == 'Comment adding failed!'){
-          $('#message').html("<font color='red'>Incorrect data! </font>")
-      }
- }
- 
- 
-function showGallery(){
-	var destinationName = location.search.split('destinationName=')[1];
-	window.location.href = "Gallery.html?destinationName="+destinationName; 
-	
-}
 
 	</script>
 	
@@ -462,7 +337,6 @@ function showGallery(){
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQKyIgPewrgRCgagA1sDItFSRZh5hZlL4&callback=myMap"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	
-
 
 	
 </body>
