@@ -132,6 +132,7 @@ public class DBManager {
 					+ "ON DELETE CASCADE,\r\n" + "place_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_place_name FOREIGN KEY (place_name)\r\n" + "REFERENCES destinations (name)\r\n"
 					+ "ON DELETE CASCADE,\r\n" + "text VARCHAR(500) NOT NULL,\r\n" + "number_of_likes INT NOT NULL,\r\n"
+					+ "number_of_dislikes INT NOT NULL,\r\n"
 					+ "date_and_time VARCHAR(20) NOT NULL,\r\n" + "video VARCHAR(100)\r\n" + ") ENGINE=InnoDB;\r\n"
 					+ "";
 

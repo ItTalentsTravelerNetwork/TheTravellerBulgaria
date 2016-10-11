@@ -200,7 +200,7 @@ public class UsersManager {
 		String dateAndTimeString = LocalDateTime.now().format(DATE_AND_TIME_FORMAT); // date&Time
 																						// to
 																						// string
-		Comment comment = new Comment(userEmail, destinationName, text, 0, dateAndTimeString, video); // creating
+		Comment comment = new Comment(userEmail, destinationName, text, 0, 0, dateAndTimeString, video); // creating
 																										// a
 																										// comment
 		CommentsManager.getInstance().saveComment(comment);
@@ -292,26 +292,40 @@ public class UsersManager {
 		return false;
 	}
 
-	public synchronized void likeAComment(String userEmail, Comment comment) {
+	public synchronized boolean likeAComment(String userEmail, Comment comment) {
 		if (registerredUsers.containsKey(userEmail)) { // if user exists
-			CopyOnWriteArrayList<String> userLikersOfComment = comment.getUserLikers(); // all
-																						// the
-																						// users
-																						// who
-																						// like
-																						// the
-																						// comment
-			for (int i = 0; i < userLikersOfComment.size(); i++) {
-				if (userLikersOfComment.get(i) == userEmail) { // if the current
-																// user
-																// has already
-																// liked
-																// the comment
-					return; // do nothing
-				}
+			if (CommentsManager.getInstance().likeComment(comment.getId(), userEmail)){
+				return true; // the comment is liked
 			}
-			comment.like(userEmail); // the comment is liked
 		}
+		return false; // already liked or incorrect data
+	}
+	
+	public synchronized boolean unlikeAComment(String userEmail, Comment comment) {
+		if (registerredUsers.containsKey(userEmail)) { // if user exists
+			if (CommentsManager.getInstance().unlikeComment(comment.getId(), userEmail)){
+				return true; // the comment is unliked
+			}
+		}
+		return false; // not liked yet or incorrect data
+	}
+	
+	public synchronized boolean dislikeAComment(String userEmail, Comment comment) {
+		if (registerredUsers.containsKey(userEmail)) { // if user exists
+			if (CommentsManager.getInstance().dislikeComment(comment.getId(), userEmail)){
+				return true; // the comment is disliked
+			}
+		}
+		return false; // already disliked or incorrect data
+	}
+	
+	public synchronized boolean undislikeAComment(String userEmail, Comment comment) {
+		if (registerredUsers.containsKey(userEmail)) { // if user exists
+			if (CommentsManager.getInstance().undislikeComment(comment.getId(), userEmail)){
+				return true; // the comment is undisliked
+			}
+		}
+		return false; // not disliked yet or incorrect data
 	}
 
 	private synchronized void fillVisitedPlacesToUsers() {

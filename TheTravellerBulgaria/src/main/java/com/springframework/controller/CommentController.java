@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springframework.exceptions.InvalidDataException;
+import com.springframework.functionality.CommentsManager;
 import com.springframework.functionality.UsersManager;
+import com.springframework.model.Comment;
 import com.springframework.model.User;
 
 @RestController
@@ -32,6 +34,63 @@ public class CommentController {
 		}
 		return "Comment adding successful!";
 
+	}
+	
+	
+	@RequestMapping(value = "/likeUnlikeComment", method = RequestMethod.POST)
+	@ResponseBody
+	public String likeUnlikeComment(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		Long commentId = Long.valueOf(request.getParameter("commentId"));
+		String userEmail = ((User)session.getAttribute("user")).getEmail();
+		String result = null;
+		
+		switch (CommentsManager.getInstance().showCommentStatus(commentId, userEmail)) {
+		case "Comment not liked nor disliked!":
+			if (CommentsManager.getInstance().likeComment(commentId, userEmail)) {
+				result = "Comment liked!";
+			}
+			else {
+				result = "Wrong data!";
+			}
+			break;
+		case "Comment already liked!":
+			result = "Comment already liked!";	
+			break;
+		case "Comment already disliked!":
+			if (CommentsManager.getInstance().likeComment(commentId, userEmail)) {
+				result = "Comment liked!";
+			}
+			else {
+				result = "Wrong data!";
+			}
+			break;
+		default:
+			result = "No such comment!";
+			break;
+		}
+		return result;
+	}
+	
+	@RequestMapping(value = "/showLikeButtonStatus", method = RequestMethod.POST)
+	@ResponseBody
+	public String showLikeButtonStatus(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		Long commentId = Long.valueOf(request.getParameter("commentId"));
+		String userEmail = ((User)session.getAttribute("user")).getEmail();
+		if (CommentsManager.getInstance().showCommentStatus(commentId, userEmail).equals("Comment already liked!")) {
+			return "Comment already liked!";
+		}
+		return "Comment not liked!";
+	}
+	
+	@RequestMapping(value = "/showDislikeButtonStatus", method = RequestMethod.POST)
+	@ResponseBody
+	public String showDislikeButtonStatus(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		Long commentId = Long.valueOf(request.getParameter("commentId"));
+		String userEmail = ((User)session.getAttribute("user")).getEmail();
+		if (CommentsManager.getInstance().showCommentStatus(commentId, userEmail).equals("Comment already disliked!")) {
+			return "Comment already disliked!";
+		}
+		return "Comment not liked!";
 	}
 
 }

@@ -26,7 +26,8 @@ public class CommentsManager {
 			allComments.add(c);
 		}
 		fillUserLikersToComments(); // fills all users who like the comments
-	}
+		fillUserDislikersToComments(); // fills all users who dislike the comments
+	} 
 
 	public static synchronized CommentsManager getInstance() {
 		if (instance == null) {
@@ -60,28 +61,36 @@ public class CommentsManager {
 		return copy;
 	}
 
-	public synchronized void likeComment(long commentId, String userEmail) {
-		for (Comment comment : allComments) {
-			if (comment.getId() == commentId) {
-				if (!comment.getUserLikers().contains(comment)) {
-					comment.like(userEmail);
-					CommentDao.getInstance().addLike(commentId, userEmail);
-					return;
-				}
-			}
+	public synchronized boolean likeComment(long commentId, String userEmail) {
+		Comment comment = getCommentById(commentId);
+		if (comment.like(userEmail)) {
+			return true;
 		}
+		return false; // incorrect data or already liked
 	}
 
-	public synchronized void removeLikeComment(long commentId, String userEmail) {
-		for (Comment comment : allComments) {
-			if (comment.getId() == commentId) {
-				if (comment.getUserLikers().contains(comment)) {
-					comment.unlike(userEmail);
-					CommentDao.getInstance().removeLike(commentId, userEmail);
-					return;
-				}
-			}
+	public synchronized boolean unlikeComment(long commentId, String userEmail) {
+		Comment comment = getCommentById(commentId);
+		if (comment.unlike(userEmail)) {
+			return true;
 		}
+		return false; // incorrect data or not liked
+	}
+	
+	public synchronized boolean dislikeComment(long commentId, String userEmail) {
+		Comment comment = getCommentById(commentId);
+		if (comment.dislike(userEmail)) {
+			return true;
+		}
+		return false; // incorrect data or already disliked
+	}
+
+	public synchronized boolean undislikeComment(long commentId, String userEmail) {
+		Comment comment = getCommentById(commentId);
+		if (comment.undislike(userEmail)) {
+			return true;
+		}
+		return false; // incorrect data or not disliked
 	}
 
 	public synchronized void deleteUserComments(String userEmail) {
@@ -119,6 +128,30 @@ public class CommentsManager {
 			}
 		}
 	}
+	
+	private synchronized void fillUserDislikersToComments() {
+		if (CommentDao.getInstance().getAllCommentUserDislikersFromDB() != null) {
+			for (Map.Entry<Long, CopyOnWriteArrayList<String>> entry : CommentDao.getInstance()
+					.getAllCommentUserDislikersFromDB().entrySet()) { // for
+																	// each
+																	// (comment
+																	// id->list
+																	// of
+																	// user
+																	// dislikers)
+				if (getCommentById(entry.getKey()) != null) { // if there is
+																// such a
+																// comment in
+																// cache
+					getCommentById(entry.getKey()).setUserDislikers(entry.getValue()); // add
+																					// user
+																					// dislikers
+																					// to
+																					// comment
+				}
+			}
+		}
+	}
 
 	public synchronized Comment getCommentById(long commentId) {
 		for (Comment comment : allComments) {
@@ -127,6 +160,24 @@ public class CommentsManager {
 			}
 		}
 		return null;
+	}
+	
+	public synchronized String showCommentStatus(long commentId, String userEmail) {
+		if (allComments.contains(getCommentById(commentId))) {
+			Comment comment = getCommentById(commentId);
+			if (comment.getUserLikers().contains(userEmail)) {
+				return "Comment already liked!";
+			}
+			else {
+				if (comment.getUserDislikers().contains(userEmail)) {
+					return "Comment already disliked!";
+				}
+				else {
+					return "Comment not liked nor disliked!";
+				}
+			}
+		}
+		return "No such comment!";
 	}
 
 }

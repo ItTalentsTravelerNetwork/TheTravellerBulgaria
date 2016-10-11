@@ -354,7 +354,12 @@
 						html.push("<td>");
 						html.push("<h6> <span class='username'>"+user.firstName+" "+user.lastName+"</span> Added on: "+comment.dateAndTime.hour+":"+comment.dateAndTime.minute+":"+comment.dateAndTime.second+" - "+comment.dateAndTime.dayOfMonth+"."+comment.dateAndTime.month+"."+comment.dateAndTime.year+"</h6>");
 						html.push("<h5>"+comment.text+"</h5>");
-						html.push('<button class="btn btn pull-right"> like </button> ');
+						
+						html.push("<form id=\"likeDislikeCommentForm\" action=\"javascript:likeComment()\">");
+						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
+						html.push("<input id=\"likeButton\" type=\"image\" src=\"assets/images/LikeButtonNonActive.png\" height=25px width=auto alt=\"Submit\">");		 
+						html.push("</form>");
+						
 						html.push("</td>");
 						html.push("</tr>");
 					}
@@ -369,6 +374,43 @@
 			var destinationName = location.search.split('destinationName=')[1];
 			document.getElementById("addComment").innerHTML="<a  class=\"btn\" href=\"Comment.html?destinationName="+destinationName+"\">Add Comment</a>";
 		})
+		
+		
+function likeComment(){
+
+	var form = $("#likeDislikeCommentForm");
+	
+	$.post("likeDislikeComment", form.serialize())
+	.then(
+		function(result) {
+			if (result.valueOf() == 'Comment liked successfully!') {
+				document.getElementById("likeButton").src="assets/images/LikeButtonActive.png";
+			}
+		}	
+	);
+}
+	
+	function showLikeButton(results){
+	      if(results == 'Comment not liked!'){
+	         
+	    	  
+	      }else if(results == 'Comment liked!'){
+	          
+	    	  
+	      }
+	 }
+			
+function showMessage(results){
+	var destinationName = location.search.split('destinationName=')[1];
+      if(results == 'Comment adding successful!'){
+          $('#message').html("<font color='green'>Comment successfully added. </font>")
+          setTimeout(function(){
+			window.location.href = "Destination.html?destinationName="+destinationName;
+		}, 500)
+      }else if(results == 'Comment adding failed!'){
+          $('#message').html("<font color='red'>Incorrect data! </font>")
+      }
+ }
 
 	</script>
 	
@@ -406,6 +448,7 @@
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQKyIgPewrgRCgagA1sDItFSRZh5hZlL4&callback=myMap"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	
+
 
 	
 </body>
