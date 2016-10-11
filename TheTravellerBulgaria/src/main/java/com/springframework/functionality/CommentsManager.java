@@ -63,15 +63,25 @@ public class CommentsManager {
 
 	public synchronized boolean likeComment(long commentId, String userEmail) {
 		Comment comment = getCommentById(commentId);
-		if (comment.like(userEmail)) {
+		int result = comment.like(userEmail);
+		if (result==1) {
+			CommentDao.getInstance().addLike(commentId, userEmail);
 			return true;
 		}
+		else {
+			if (result==2) {
+				CommentDao.getInstance().addLike(commentId, userEmail);
+				CommentDao.getInstance().removeDislike(commentId, userEmail);
+				return true;
+			}
+		}	
 		return false; // incorrect data or already liked
 	}
 
 	public synchronized boolean unlikeComment(long commentId, String userEmail) {
 		Comment comment = getCommentById(commentId);
 		if (comment.unlike(userEmail)) {
+			CommentDao.getInstance().removeLike(commentId, userEmail);
 			return true;
 		}
 		return false; // incorrect data or not liked
@@ -79,8 +89,17 @@ public class CommentsManager {
 	
 	public synchronized boolean dislikeComment(long commentId, String userEmail) {
 		Comment comment = getCommentById(commentId);
-		if (comment.dislike(userEmail)) {
+		int result = comment.dislike(userEmail);
+		if (result==1) {
+			CommentDao.getInstance().addDislike(commentId, userEmail);
 			return true;
+		}
+		else {
+			if (result==2) {
+				CommentDao.getInstance().addDislike(commentId, userEmail);
+				CommentDao.getInstance().removeLike(commentId, userEmail);
+				return true;
+			}
 		}
 		return false; // incorrect data or already disliked
 	}
@@ -88,6 +107,7 @@ public class CommentsManager {
 	public synchronized boolean undislikeComment(long commentId, String userEmail) {
 		Comment comment = getCommentById(commentId);
 		if (comment.undislike(userEmail)) {
+			CommentDao.getInstance().removeDislike(commentId, userEmail);
 			return true;
 		}
 		return false; // incorrect data or not disliked

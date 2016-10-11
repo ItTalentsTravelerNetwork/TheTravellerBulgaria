@@ -54,11 +54,56 @@ public class CommentController {
 			}
 			break;
 		case "Comment already liked!":
-			result = "Comment already liked!";	
+			if (CommentsManager.getInstance().unlikeComment(commentId, userEmail)) {
+				result = "Comment unliked!";
+			}
+			else {
+				result = "Wrong data!";
+			}
 			break;
 		case "Comment already disliked!":
 			if (CommentsManager.getInstance().likeComment(commentId, userEmail)) {
 				result = "Comment liked!";
+			}
+			else {
+				result = "Wrong data!";
+			}
+			break;
+		default:
+			result = "No such comment!";
+			break;
+		}
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "/dislikeUndislikeComment", method = RequestMethod.POST)
+	@ResponseBody
+	public String dislikeUndislikeComment(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		Long commentId = Long.valueOf(request.getParameter("commentId"));
+		String userEmail = ((User)session.getAttribute("user")).getEmail();
+		String result = null;
+		
+		switch (CommentsManager.getInstance().showCommentStatus(commentId, userEmail)) {
+		case "Comment not liked nor disliked!":
+			if (CommentsManager.getInstance().dislikeComment(commentId, userEmail)) {
+				result = "Comment disliked!";
+			}
+			else {
+				result = "Wrong data!";
+			}
+			break;
+		case "Comment already liked!":
+			if (CommentsManager.getInstance().dislikeComment(commentId, userEmail)) {
+				result = "Comment disliked!";
+			}
+			else {
+				result = "Wrong data!";
+			}
+			break;
+		case "Comment already disliked!":
+			if (CommentsManager.getInstance().undislikeComment(commentId, userEmail)) {
+				result = "Comment undisliked!";
 			}
 			else {
 				result = "Wrong data!";

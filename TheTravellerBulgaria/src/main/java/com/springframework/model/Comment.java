@@ -118,19 +118,22 @@ public class Comment {
 		return numberOfDislikes;
 	}
 
-	public synchronized boolean like(String userEmail) {
+	public synchronized int like(String userEmail) {
 		if (userEmail != null && !userEmail.isEmpty()) { // if correct data
 			if (!userLikers.contains(userEmail)) { // if not liked yet
 				if (userDislikers.contains(userEmail)) { // if already disliked
 					userDislikers.remove(userEmail);
 					numberOfDislikes--;
+					userLikers.add(userEmail);
+					numberOfLikes++;
+					return 2; // removing dislike and adding like
 				}
 				userLikers.add(userEmail);
 				numberOfLikes++;
-				return true;
+				return 1; // only adding like
 			}
 		}
-		return false;
+		return 3; // false data
 	}
 
 	public synchronized boolean unlike(String userEmail) {
@@ -144,19 +147,22 @@ public class Comment {
 		return false;
 	}
 
-	public synchronized boolean dislike(String userEmail) {
+	public synchronized int dislike(String userEmail) {
 		if (userEmail != null && !userEmail.isEmpty()) { // if correct data
 			if (!userDislikers.contains(userEmail)) { // if not disliked yet
 				if (userLikers.contains(userEmail)) { // if already liked
 					userLikers.remove(userEmail);
 					numberOfLikes--;
+					userDislikers.add(userEmail);
+					numberOfDislikes++;
+					return 2; // adding dislike and removing like
 				}
 				userDislikers.add(userEmail);
 				numberOfDislikes++;
-				return true;
+				return 1; // only adding dislike
 			}
 		}
-		return false;
+		return 3; // false data
 	}
 
 	public synchronized boolean undislike(String userEmail) {

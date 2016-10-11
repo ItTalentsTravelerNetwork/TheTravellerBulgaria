@@ -362,9 +362,14 @@
 						html.push("<h6> <span class='username'>"+user.firstName+" "+user.lastName+"</span> Added on: "+comment.dateAndTime.hour+":"+comment.dateAndTime.minute+":"+comment.dateAndTime.second+" - "+comment.dateAndTime.dayOfMonth+"."+comment.dateAndTime.month+"."+comment.dateAndTime.year+"</h6>");
 						html.push("<h5>"+comment.text+"</h5>");
 						
-						html.push("<form id=\"likeDislikeCommentForm\" action=\"javascript:likeComment()\">");
+						html.push("<form id=\"likeUnlikeCommentForm-"+comment.id+"-1\" action=\"javascript:likeComment("+comment.id+")\">");
 						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
-						html.push("<input id=\"likeButton\" type=\"image\" src=\"assets/images/LikeButtonNonActive.png\" height=25px width=auto alt=\"Submit\">");		 
+						html.push("<input id=\"likeButton-"+comment.id+"-1\" type=\"image\" src=\"assets/images/LikeButtonNonActive.png\" height=25px width=auto alt=\"Submit\">");		 
+						html.push("</form>");
+						
+						html.push("<form id=\"dislikeUndislikeCommentForm-"+comment.id+"-2\" action=\"javascript:dislikeComment("+comment.id+")\">");
+						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
+						html.push("<input id=\"dislikeButton-"+comment.id+"-2\" type=\"image\" src=\"assets/images/DislikeButtonNonActive.png\" height=25px width=auto alt=\"Submit\">");		 
 						html.push("</form>");
 						
 						html.push("</td>");
@@ -383,29 +388,45 @@
 		})
 		
 		
-function likeComment(){
+function likeComment(commentId){
 
-	var form = $("#likeDislikeCommentForm");
+	var form = $("#likeUnlikeCommentForm-"+commentId+"-1");
 	
-	$.post("likeDislikeComment", form.serialize())
+	$.post("likeUnlikeComment", form.serialize())
 	.then(
 		function(result) {
-			if (result.valueOf() == 'Comment liked successfully!') {
-				document.getElementById("likeButton").src="assets/images/LikeButtonActive.png";
+			if (result.valueOf() == 'Comment liked!') {
+				document.getElementById("likeButton-"+commentId+"-1").src="assets/images/LikeButtonActive.png";
+				document.getElementById("dislikeButton-"+commentId+"-2").src="assets/images/DislikeButtonNonActive.png";
+			} else if (result.valueOf() == 'Comment unliked!') {
+				document.getElementById("likeButton-"+commentId+"-1").src="assets/images/LikeButtonNonActive.png";
 			}
 		}	
 	);
 }
 	
-	function showLikeButton(results){
-	      if(results == 'Comment not liked!'){
-	         
-	    	  
-	      }else if(results == 'Comment liked!'){
-	          
-	    	  
-	      }
-	 }
+function dislikeComment(commentId){
+
+	var form = $("#dislikeUndislikeCommentForm-"+commentId+"-2");
+	
+	$.post("dislikeUndislikeComment", form.serialize())
+	.then(
+		function(result) {
+			if (result.valueOf() == 'Comment disliked!') {
+				document.getElementById("dislikeButton-"+commentId+"-2").src="assets/images/DislikeButtonActive.png";
+				document.getElementById("likeButton-"+commentId+"-1").src="assets/images/LikeButtonNonActive.png";
+			} else if (result.valueOf() == 'Comment undisliked!') {
+				document.getElementById("dislikeButton-"+commentId+"-2").src="assets/images/DislikeButtonNonActive.png";
+			}
+		}	
+	);
+}
+	
+	
+	
+	
+	
+	
 			
 function showMessage(results){
 	var destinationName = location.search.split('destinationName=')[1];
