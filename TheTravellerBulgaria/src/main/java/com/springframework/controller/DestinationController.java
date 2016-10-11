@@ -57,12 +57,12 @@ public class DestinationController {
 						destinationMainPicFile.getName(), category)) {
 					session.setAttribute("destination",
 							DestinationsManager.getInstance().getDestinationFromCache(name));
+					return "Destination added successfully!";
 				}
 			} catch (BeansException | NumberFormatException | InvalidCoordinatesException e) {
 				e.printStackTrace();
 				return "Destination registration failed!";
 			}
-			return "Destination added successfully!";
 		}
 		return "Adding destination failed!";
 	}

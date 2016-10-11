@@ -88,7 +88,7 @@ public class DestinationsManager {
 
 	public boolean addDestination(User user, String name, String description, double lattitude, double longitude,
 			String mainPicture, String category) throws InvalidCoordinatesException {
-		if (UsersManager.getInstance().validateUser(user.getEmail(), user.getPassword())
+		if (UsersManager.getInstance().validateLoggedInUser(user.getEmail(), user.getPassword())
 				&& !chechDestinationInCache(name)) { // if
 														// the
 														// user
