@@ -151,4 +151,13 @@ public class DestinationController {
 		}
 	}
 
+	@RequestMapping(value = "/getDestinationAuthor", method = RequestMethod.GET)
+	@ResponseBody
+	public User getDestinationAuthor(HttpServletRequest request, HttpServletResponse response) {
+		String destinationName = request.getParameter("destinationName");
+		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
+		User user = UsersManager.getInstance().getUserFromCache(destination.getAuthorEmail());
+		return user;
+	}
+
 }
