@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -55,6 +57,30 @@ public class UsersManager {
 		if (!registerredUsers.containsKey(email)) { // no such user
 			return false;
 		}
+		return registerredUsers.get(email).getPassword().equals(MD5PasswordConvert(password)); // returns
+																			// the
+																			// result
+																			// of
+																			// the
+																			// comparing
+																			// of
+																			// the
+																			// login
+																			// pass
+																			// and
+																			// the
+																			// pass
+																			// in
+																			// the
+																			// collection
+	}
+	
+	public synchronized boolean validateLoggedInUser(String email, String password) { // validation
+																				// of already logged in
+																				// user
+		if (!registerredUsers.containsKey(email)) { // no such user
+			return false;
+		}
 		return registerredUsers.get(email).getPassword().equals(password); // returns
 																			// the
 																			// result
@@ -75,7 +101,7 @@ public class UsersManager {
 
 	public synchronized void registerUser(String email, String password, String firstName, String lastName,
 			String description, String profilePicture) {
-		User user = new User(email, password, firstName, lastName, description, profilePicture,
+		User user = new User(email, MD5PasswordConvert(password), firstName, lastName, description, profilePicture,
 				new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>(),
 				new ConcurrentHashMap<>(), 0, 0);
 		registerredUsers.put(email, user); // adds the new user to the
@@ -93,7 +119,7 @@ public class UsersManager {
 														// input email and
 														// updates
 														// their fields
-			user.setPassword(password);
+			user.setPassword(MD5PasswordConvert(password));
 			user.setFirstName(firstName);
 			user.setLastName(lastName);
 			user.setDescription(description);
@@ -334,6 +360,25 @@ public class UsersManager {
 				}
 			}
 		}
+	}
+	
+	private String MD5PasswordConvert(String password) {
+		MessageDigest md;
+		StringBuffer encodedPassword = null;
+		try {
+			md = MessageDigest.getInstance("MD5");
+			md.update(password.getBytes());
+			encodedPassword = new StringBuffer();
+			byte byteData[] = md.digest();
+			for (int i = 0; i < byteData.length; i++) {
+				encodedPassword.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+			}
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return encodedPassword.toString();
+
 	}
 
 	private synchronized static void printToLog(String message) {
