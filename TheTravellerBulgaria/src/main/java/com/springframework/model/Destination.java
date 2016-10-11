@@ -1,11 +1,16 @@
 package com.springframework.model;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.springframework.functionality.UsersManager;
 
 public class Destination {
+	
+	public static final DateTimeFormatter DATE_AND_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+	
 	public enum Category {
 		MOUNTAINS, BEACHES, CAVES, RIVERS, FORESTS, WATERFALLS, LAKES, CITIES, RURAL_AREAS, CAMPSITES
 	};
@@ -27,10 +32,11 @@ public class Destination {
 	private CopyOnWriteArrayList<String> userDislikers;
 	private ConcurrentSkipListSet<Activity> activities;
 	private ConcurrentSkipListSet<Sight> sights;
+	private LocalDateTime dateAndTime;
 
 
 	public Destination(String name, String description, double lattitude, double longitude, String mainPicture,
-			String authorEmail, Category category, int numberOfLikes, int numberOfDislikes) {
+			String authorEmail, Category category, int numberOfLikes, int numberOfDislikes) { // creating dest. without time (now)
 
 		setName(name);
 		setDescription(description);
@@ -49,6 +55,30 @@ public class Destination {
 		this.userDislikers = new CopyOnWriteArrayList<>();
 		this.pictures = new CopyOnWriteArrayList<>();
 		this.videos = new CopyOnWriteArrayList<>();
+		setDateAndTime(LocalDateTime.now());
+	}
+	
+	public Destination(String name, String description, double lattitude, double longitude, String mainPicture,
+			String authorEmail, Category category, int numberOfLikes, int numberOfDislikes, String dateAndTimeString) {
+		// creating destination with a fixed dateTime value
+		setName(name);
+		setDescription(description);
+		setLocation(lattitude, longitude);
+		setMainPicture(mainPicture);
+		setAuthorEmail(authorEmail);
+		setCategory(category);
+		setNumberOfLikes(numberOfLikes);
+		setNumberOfDislikes(numberOfDislikes);
+		this.placesToEat = new ConcurrentSkipListSet<>();
+		this.comments = new CopyOnWriteArrayList<>();
+		this.activities = new ConcurrentSkipListSet<>();
+		this.sights = new ConcurrentSkipListSet<>();
+		this.placesToSleep = new ConcurrentSkipListSet<>();
+		this.userLikers = new CopyOnWriteArrayList<>();
+		this.userDislikers = new CopyOnWriteArrayList<>();
+		this.pictures = new CopyOnWriteArrayList<>();
+		this.videos = new CopyOnWriteArrayList<>();
+		setDateAndTimeFromString(dateAndTimeString);
 	}
 
 	private void setLocation(double lattitude, double longitude) {
@@ -376,6 +406,24 @@ public class Destination {
 
 	public synchronized void addVideo(String video) {
 		this.videos.add(video);
+	}
+	
+	public synchronized LocalDateTime getDateAndTime() {
+		return dateAndTime;
+	}
+
+	public synchronized String getDateAndTimeToString() {
+		String dateAndTimeToString = dateAndTime.format(DATE_AND_TIME_FORMAT);
+		return dateAndTimeToString;
+	}
+
+	public synchronized void setDateAndTimeFromString(String dateAndTimeString) {
+		LocalDateTime dateAndTime = LocalDateTime.parse(dateAndTimeString, DATE_AND_TIME_FORMAT);
+		this.dateAndTime = dateAndTime;
+	}
+
+	public synchronized void setDateAndTime(LocalDateTime dateAndTime) {
+		this.dateAndTime = dateAndTime;
 	}
 
 }

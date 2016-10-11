@@ -73,7 +73,7 @@ public class DestinationDao {
 		try {
 			try {
 				statement = DBManager.getInstance().getConnection().createStatement();
-				String selectAllDestinationsFromDB = "SELECT name, description, lattitude, longitude, main_picture, author_email, category, number_of_likes, number_of_dislikes FROM destinations;";
+				String selectAllDestinationsFromDB = "SELECT name, description, lattitude, longitude, main_picture, author_email, category, number_of_likes, number_of_dislikes, date_and_time FROM destinations;";
 				result = statement.executeQuery(selectAllDestinationsFromDB);
 				while (result.next()) {
 					String name = result.getString("name").replaceAll("%20", " ");
@@ -82,7 +82,7 @@ public class DestinationDao {
 							Double.parseDouble(result.getString("longitude")), result.getString("main_picture"),
 							result.getString("author_email"),
 							Destination.Category.valueOf(result.getString("category")),
-							result.getInt("number_of_likes"), result.getInt("number_of_dislikes"));
+							result.getInt("number_of_likes"), result.getInt("number_of_dislikes"), result.getString("date_and_time"));
 
 					destinations.add(dest);
 				}
@@ -111,8 +111,8 @@ public class DestinationDao {
 	}
 
 	public synchronized boolean saveDestinationToDB(User u, Destination destination) {
-		String insertDestinationInfoIntoDB = "INSERT INTO destinations (name, description, lattitude, longitude, main_picture, author_email, category, number_of_likes, number_of_dislikes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-		String insertIntoVisitedDestinations = "INSERT INTO visited_destinations (destination_name, user_email) VALUES (?, ?);";
+		String insertDestinationInfoIntoDB = "INSERT INTO destinations (name, description, lattitude, longitude, main_picture, author_email, category, number_of_likes, number_of_dislikes, date_and_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		String insertIntoVisitedDestinations = "INSERT INTO visited_destinations (destination_name, user_email, date_and_time) VALUES (?, ?, ?);";
 		PreparedStatement statement = null;
 		PreparedStatement statement2 = null;
 		try {
@@ -127,11 +127,13 @@ public class DestinationDao {
 			statement.setString(7, destination.getCategory().toString());
 			statement.setInt(8, destination.getNumberOfLikes());
 			statement.setInt(9, destination.getNumberOfDislikes());
+			statement.setString(10, destination.getDateAndTimeToString());
 			statement.executeUpdate();
 
 			statement2 = DBManager.getInstance().getConnection().prepareStatement(insertIntoVisitedDestinations);
 			statement2.setString(1, destination.getName());
 			statement2.setString(2, u.getEmail());
+			statement2.setString(3, destination.getDateAndTimeToString());
 			statement2.executeUpdate();
 			DBManager.getInstance().getConnection().commit();
 			return true;

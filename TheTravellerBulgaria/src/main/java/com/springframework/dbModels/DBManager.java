@@ -113,7 +113,8 @@ public class DBManager {
 					+ "main_picture VARCHAR(100) NOT NULL, \r\n" + "author_email VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_author_email FOREIGN KEY (author_email)\r\n" + "REFERENCES users (email)\r\n"
 					+ "ON DELETE CASCADE,\r\n" + "category VARCHAR(50) NOT NULL,\r\n"
-					+ "number_of_likes INT NOT NULL,\r\n" + "number_of_dislikes INT NOT NULL\r\n"
+					+ "number_of_likes INT NOT NULL,\r\n" + "number_of_dislikes INT NOT NULL,\r\n"
+					+ "date_and_time VARCHAR(20) NOT NULL\r\n"
 					+ ") ENGINE=InnoDB;\r\n" + "";
 
 			String createVisitedDestinationsTable = "CREATE TABLE visited_destinations (\r\n"
@@ -122,6 +123,7 @@ public class DBManager {
 					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE,\r\n"
 					+ "user_email VARCHAR(64) NOT NULL,\r\n" + "CONSTRAINT FK_user_email FOREIGN KEY (user_email)\r\n"
 					+ "REFERENCES users (email)\r\n" + "ON DELETE CASCADE,\r\n"
+					+ "date_and_time VARCHAR(20) NOT NULL, \r\n"
 					+ "PRIMARY KEY (destination_name, user_email)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createCommentsTable = "CREATE TABLE comments (\r\n"

@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.springframework.exceptions.CannotConnectToDBException;
+import com.springframework.model.Destination;
 import com.springframework.model.User;
 
 public class UserDao {
@@ -278,13 +280,15 @@ public class UserDao {
 	}
 
 	public synchronized boolean addVisitedDestinationToDB(User user, String destinationName) {
-		String insertVisitedDestinationAndUserEmailIntoDB = "INSERT INTO visited_destinations (destination_name, user_email) VALUES (?, ?);";
+		String insertVisitedDestinationAndUserEmailIntoDB = "INSERT INTO visited_destinations (destination_name, user_email, date_and_time) VALUES (?, ?);";
 		PreparedStatement statement = null;
 		try {
 			statement = DBManager.getInstance().getConnection()
 					.prepareStatement(insertVisitedDestinationAndUserEmailIntoDB);
 			statement.setString(1, destinationName);
 			statement.setString(2, user.getEmail());
+			String dateAndTimeToString = LocalDateTime.now().format(Destination.DATE_AND_TIME_FORMAT);
+			statement.setString(3, dateAndTimeToString);
 			statement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
