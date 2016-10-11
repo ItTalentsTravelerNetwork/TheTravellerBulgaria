@@ -174,9 +174,9 @@ public class UserController {
 	@RequestMapping(value = "isFollowed", method = RequestMethod.GET)
 	@ResponseBody
 	public String isFollowed(HttpServletRequest request) {
-		User user = UsersManager.getInstance().getUserFromCache(request.getParameter("user"));
-		String email = ((User) request.getSession().getAttribute("user")).getEmail();
-		if (!user.getFollowedUsers().contains(email)) {
+		User user = (User) request.getSession().getAttribute("user");
+		String email = request.getParameter("user");
+		if (user.getFollowedUsers().contains(email)) {
 			return "followed";
 		}
 		return "notFollowed";

@@ -7,7 +7,7 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 
 public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
-	private static final String LOCATION = "D:\\Traveler final\\pictures";
+	private static final String LOCATION = "E:\\Traveler final\\pictures";
 
 	private static final long MAX_FILE_SIZE = 5242880;
 	private static final long MAX_REQUEST_SIZE = 20971520;
