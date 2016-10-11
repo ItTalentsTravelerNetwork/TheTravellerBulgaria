@@ -134,7 +134,7 @@
 					<div  class="col-xs-12">
 						
 						<h1 id="destinationName"></h1>					
-						
+						<div id="gallery" class="btn btn-action">Gallery</div>
 					</div>
 				</div>
 				<div class="row widget">
@@ -148,9 +148,13 @@
 				
 				
 					<div id="addComment" class="col-xs-12">		
-									
 						
-						
+					</div>
+					
+				</div>
+				<div class="row widget">
+				<div class="col-xs-12">		
+						<div id="addPicture" class="btn"></div>
 					</div>
 				</div>
 				
@@ -305,7 +309,9 @@
 					document.getElementById("destinationImage").
 					innerHTML="<img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+destination.name+"\" alt=\"\">";
 					document.getElementById("destinationDescription").innerHTML=destination.description;
+					document.getElementById("addPicture").innerHTML = "<a href=\"AddPicture.html?destinationName="+ destination.name +"\">Add Picture</a>";
 					return $.get("getDestinationCommentsUsers?destinationName=" + destination.name);
+					
 				},
 				function(err){
 					console.log(err)
@@ -346,6 +352,8 @@
 			var destinationName = location.search.split('destinationName=')[1];
 			document.getElementById("addComment").innerHTML="<a  class=\"btn\" href=\"Comment.html?destinationName="+destinationName+"\">Add Comment</a>";
 		})
+		
+		
 		
 
 	</script>

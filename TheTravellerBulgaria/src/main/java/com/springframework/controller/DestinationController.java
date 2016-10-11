@@ -6,10 +6,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -35,12 +31,11 @@ import com.springframework.model.User;
 @MultipartConfig(maxFileSize = 200000000)
 public class DestinationController {
 
-	
 	@RequestMapping(value = "/addDestination", method = RequestMethod.POST)
 	@ResponseBody
-	public String addDestination(@RequestParam("mainPicture") MultipartFile multipartFile, HttpServletRequest request, HttpSession session)
-			throws IOException {
-		
+	public String addDestination(@RequestParam("mainPicture") MultipartFile multipartFile, HttpServletRequest request,
+			HttpSession session) throws IOException {
+
 		String name = request.getParameter("name");
 		String lattitude = request.getParameter("lattitude");
 		String longitude = request.getParameter("longitude");
@@ -52,11 +47,16 @@ public class DestinationController {
 			if (!dir.exists()) {
 				dir.mkdir();
 			}
-			File destinationMainPicFile = new File(dir, name + "-destinationMainPic." + multipartFile.getOriginalFilename());
-			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			File destinationMainPicFile = new File(dir,
+					name + "-destinationMainPic." + multipartFile.getOriginalFilename());
+			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
+					StandardCopyOption.REPLACE_EXISTING);
 			try {
-				if (DestinationsManager.getInstance().addDestination(((User)session.getAttribute("user")), name, description, Double.parseDouble(lattitude), Double.parseDouble(longitude), destinationMainPicFile.getName(), category)){
-					session.setAttribute("destination", DestinationsManager.getInstance().getDestinationFromCache(name));
+				if (DestinationsManager.getInstance().addDestination(((User) session.getAttribute("user")), name,
+						description, Double.parseDouble(lattitude), Double.parseDouble(longitude),
+						destinationMainPicFile.getName(), category)) {
+					session.setAttribute("destination",
+							DestinationsManager.getInstance().getDestinationFromCache(name));
 				}
 			} catch (BeansException | NumberFormatException | InvalidCoordinatesException e) {
 				e.printStackTrace();
@@ -66,16 +66,17 @@ public class DestinationController {
 		}
 		return "Adding destination failed!";
 	}
-	
-	private static boolean validateData(String name, String lattitude, String longitude, String description, String category) {
-		if ((name != null && lattitude != null && longitude != null && description != null && category!=null)) {
+
+	private static boolean validateData(String name, String lattitude, String longitude, String description,
+			String category) {
+		if ((name != null && lattitude != null && longitude != null && description != null && category != null)) {
 			if (!DestinationsManager.getInstance().chechDestinationInCache(name)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	@RequestMapping(value = "/getDestinationMainPicture", method = RequestMethod.GET)
 	@ResponseBody
 	public void getPicture(HttpServletRequest request, HttpServletResponse response) {
@@ -92,17 +93,17 @@ public class DestinationController {
 		}
 
 	}
-	
+
 	@RequestMapping(value = "/getAllDestinations", method = RequestMethod.GET)
 	@ResponseBody
 	public ArrayList<Destination> getAllDestinations(HttpServletRequest request, HttpServletResponse response) {
 		ArrayList<Destination> allDestinations = new ArrayList<>();
-		for (Destination destination: DestinationsManager.getInstance().getAllDestinations().values()) {
+		for (Destination destination : DestinationsManager.getInstance().getAllDestinations().values()) {
 			allDestinations.add(destination);
 		}
 		return allDestinations;
 	}
-	
+
 	@RequestMapping(value = "/getDestination", method = RequestMethod.GET)
 	@ResponseBody
 	public Destination showDestination(HttpServletRequest request, HttpServletResponse response) {
@@ -110,27 +111,44 @@ public class DestinationController {
 		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
 		return destination;
 	}
-	
-	
+
 	@RequestMapping(value = "/getDestinationCommentsUsers", method = RequestMethod.GET)
-	
-	public @ResponseBody ArrayList<Object> getDestinationCommentsUsers (HttpServletRequest request) {
-		
-		String destinationName= request.getParameter("destinationName");
-		
+
+	public @ResponseBody ArrayList<Object> getDestinationCommentsUsers(HttpServletRequest request) {
+
+		String destinationName = request.getParameter("destinationName");
+
 		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
 
 		ArrayList<Object> commentsAndUsers = new ArrayList<>();
-				
-		for (Comment comment: destination.getComments()) {
+
+		for (Comment comment : destination.getComments()) {
 			commentsAndUsers.add(comment);
 			commentsAndUsers.add(UsersManager.getInstance().getUserFromCache(comment.getAuthorEmail()));
 		}
-		
+
 		return commentsAndUsers;
 	}
-	
-	
-	
-	
+
+	@RequestMapping(value = "/AddPicture", method = RequestMethod.POST)
+	public void addPicture(@RequestParam("pic") MultipartFile multipartFile, HttpServletRequest request) {
+		String destName = request.getParameter("destinationName").replaceAll("%20", " ");
+		Destination dest = DestinationsManager.getInstance().getDestinationFromCache(destName);
+
+		File dir = new File("destinationPics");
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		File destinationMainPicFile = new File(dir,
+				dest.getName() + "-destinationMainPic." + multipartFile.getOriginalFilename());
+		try {
+			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
+					StandardCopyOption.REPLACE_EXISTING);
+			DestinationsManager.getInstance().addPicture(dest.getName(), destinationMainPicFile.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
