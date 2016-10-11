@@ -99,7 +99,7 @@
 				<div class="row widget">
 					<div class="col-xs-12">						
 						<p id="profilePicture"></p>
-						<div id="follow"><a class="btn btn-action" onclick="follow()">Follow</a></div>						
+						<div id="follow"></div>						
 					</div>
 				</div>
 				<div class="row widget">
@@ -211,6 +211,8 @@ $(function showUnfollow(){
 		function(data){
 			if(data=="followed"){
 				document.getElementById("follow").innerHTML = "<a class=\"btn btn-action\" onclick=\"unFollow()\">Stop Following</a>";
+			}else{
+				document.getElementById("follow").innerHTML = "<a class=\"btn btn-action\" onclick=\"follow()\">Follow</a>";
 			}
 		}
 	)	
