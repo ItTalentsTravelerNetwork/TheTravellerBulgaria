@@ -58,26 +58,26 @@ public class UsersManager {
 			return false;
 		}
 		return registerredUsers.get(email).getPassword().equals(MD5PasswordConvert(password)); // returns
-																			// the
-																			// result
-																			// of
-																			// the
-																			// comparing
-																			// of
-																			// the
-																			// login
-																			// pass
-																			// and
-																			// the
-																			// pass
-																			// in
-																			// the
-																			// collection
+		// the
+		// result
+		// of
+		// the
+		// comparing
+		// of
+		// the
+		// login
+		// pass
+		// and
+		// the
+		// pass
+		// in
+		// the
+		// collection
 	}
-	
+
 	public synchronized boolean validateLoggedInUser(String email, String password) { // validation
-																				// of already logged in
-																				// user
+		// of already logged in
+		// user
 		if (!registerredUsers.containsKey(email)) { // no such user
 			return false;
 		}
@@ -177,8 +177,9 @@ public class UsersManager {
 		if (DestinationsManager.getInstance().addDestination(user, destName, destDescription, destLattitude,
 				destLongitude, destMainPicture, category)) {
 
-			userVisitors.add(user.getEmail());
-			userVisitors.add(destName);
+			userVisitors.add(0, user.getEmail());
+			userVisitors.add(1, destName);
+			userVisitors.add(2, LocalDateTime.now().format(DATE_AND_TIME_FORMAT));
 			return true;
 		} else {
 			return false;
@@ -188,8 +189,9 @@ public class UsersManager {
 	public synchronized void addDestinationToUser(String userEmail, String destinationName) {
 		User user = this.getUserFromCache(userEmail);
 		user.addPlace(destinationName);
-		userVisitors.add(user.getEmail());
-		userVisitors.add(destinationName);
+		userVisitors.add(0, user.getEmail());
+		userVisitors.add(1, destinationName);
+		userVisitors.add(2, LocalDateTime.now().format(DATE_AND_TIME_FORMAT));
 	}
 
 	public synchronized boolean addComment(String userEmail, String destinationName, String text, String video)
@@ -201,8 +203,8 @@ public class UsersManager {
 																						// to
 																						// string
 		Comment comment = new Comment(userEmail, destinationName, text, 0, 0, dateAndTimeString, video); // creating
-																										// a
-																										// comment
+																											// a
+																											// comment
 		CommentsManager.getInstance().saveComment(comment);
 		DestinationsManager.getInstance().getDestinationFromCache(destinationName).addComment(comment); // adds
 																										// the
@@ -214,8 +216,14 @@ public class UsersManager {
 	}
 
 	public synchronized boolean addVidsitedDestination(User user, String destinationName) {
-		if (!DestinationsManager.getInstance().chechDestinationInCache(destinationName)) {
+		if (DestinationsManager.getInstance().chechDestinationInCache(destinationName)) {
+			if (user.getVisitedPlaces().contains(destinationName)) {
+				return false;
+			}
 			user.addVisitedPlace(destinationName);
+			this.userVisitors.add(0, user.getEmail());
+			this.userVisitors.add(1, destinationName);
+			this.userVisitors.add(2, LocalDateTime.now().format(DATE_AND_TIME_FORMAT));
 			// add in DB
 			if (UserDao.getInstance().addVisitedDestinationToDB(user, destinationName)) {
 				return true;
@@ -294,34 +302,34 @@ public class UsersManager {
 
 	public synchronized boolean likeAComment(String userEmail, Comment comment) {
 		if (registerredUsers.containsKey(userEmail)) { // if user exists
-			if (CommentsManager.getInstance().likeComment(comment.getId(), userEmail)){
+			if (CommentsManager.getInstance().likeComment(comment.getId(), userEmail)) {
 				return true; // the comment is liked
 			}
 		}
 		return false; // already liked or incorrect data
 	}
-	
+
 	public synchronized boolean unlikeAComment(String userEmail, Comment comment) {
 		if (registerredUsers.containsKey(userEmail)) { // if user exists
-			if (CommentsManager.getInstance().unlikeComment(comment.getId(), userEmail)){
+			if (CommentsManager.getInstance().unlikeComment(comment.getId(), userEmail)) {
 				return true; // the comment is unliked
 			}
 		}
 		return false; // not liked yet or incorrect data
 	}
-	
+
 	public synchronized boolean dislikeAComment(String userEmail, Comment comment) {
 		if (registerredUsers.containsKey(userEmail)) { // if user exists
-			if (CommentsManager.getInstance().dislikeComment(comment.getId(), userEmail)){
+			if (CommentsManager.getInstance().dislikeComment(comment.getId(), userEmail)) {
 				return true; // the comment is disliked
 			}
 		}
 		return false; // already disliked or incorrect data
 	}
-	
+
 	public synchronized boolean undislikeAComment(String userEmail, Comment comment) {
 		if (registerredUsers.containsKey(userEmail)) { // if user exists
-			if (CommentsManager.getInstance().undislikeComment(comment.getId(), userEmail)){
+			if (CommentsManager.getInstance().undislikeComment(comment.getId(), userEmail)) {
 				return true; // the comment is undisliked
 			}
 		}
@@ -338,6 +346,7 @@ public class UsersManager {
 				// of
 				// users)
 				for (String userEmail : entry.getValue()) { // for each user
+
 					registerredUsers.get(userEmail).addVisitedPlace(entry.getKey()); // add
 																						// visited
 																						// place
@@ -375,7 +384,7 @@ public class UsersManager {
 			}
 		}
 	}
-	
+
 	private String MD5PasswordConvert(String password) {
 		MessageDigest md;
 		StringBuffer encodedPassword = null;

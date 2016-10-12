@@ -4,13 +4,13 @@ function checkForUser() {
 		"GetUserInfo",
 		function(data){
 			if(data==""){
-				document.getElementById("userButton").innerHTML="<a class=\"btn\" href=\"SignIn.html\">SIGN IN / SIGN UP</a>";
+				document.getElementById("userButton").innerHTML="<a class=\"btnc\" href=\"SignIn.html\">SIGN IN / SIGN UP</a>";
 			}else{
 				var json = data;
 				sessionStorage.setItem('user', json);
 				sessionStorage.setItem('userEmail', json.email);
-				 document.getElementById("userButton").innerHTML="<a class=\"btn\" href=\"logout\" onclick=\"logOut()\">Logout</a>";
-		            document.getElementById("secondButton").innerHTML="<a class=\"btn\" href=\profile.html>PROFILE</a>";
+				 document.getElementById("userButton").innerHTML="<a class=\"btnc\" href=\"logout\" onclick=\"logOut()\">Logout</a>";
+		            document.getElementById("secondButton").innerHTML="<a class=\"btnc\" href=\profile.html>PROFILE</a>";
 		            document.getElementById("newsFeed").innerHTML="<a href=\NewsFeed.html>News Feed</a>"
 			}
 		}

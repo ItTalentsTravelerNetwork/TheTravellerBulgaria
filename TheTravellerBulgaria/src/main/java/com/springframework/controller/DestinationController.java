@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.springframework.exceptions.InvalidCoordinatesException;
+import com.springframework.exceptions.InvalidDataException;
 import com.springframework.functionality.DestinationsManager;
 import com.springframework.functionality.UsersManager;
 import com.springframework.model.Comment;
@@ -150,25 +151,27 @@ public class DestinationController {
 	@RequestMapping(value = "/AddPic", method = RequestMethod.POST)
 	@ResponseBody
 	public String addPicture(@RequestParam("pic") MultipartFile multipartFile, HttpServletRequest request) {
-		String dName = request.getParameter("destinationName");
-
 		String destName = request.getParameter("destinationName").replaceAll("%20", " ");
-		Destination dest = DestinationsManager.getInstance().getDestinationFromCache(destName);
 
+		Destination dest = DestinationsManager.getInstance().getDestinationFromCache(destName);
+		if (dest == null) {
+			return "NOT EXISTING";
+		}
 		File dir = new File("destinationPics");
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
 		File destinationMainPicFile = new File(dir,
-				dest.getName() + "-destinationPic." + multipartFile.getOriginalFilename());
+				dest.getName() + "-destinationMainPic." + multipartFile.getOriginalFilename());
 		try {
 			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
 					StandardCopyOption.REPLACE_EXISTING);
 			DestinationsManager.getInstance().addPicture(dest.getName(), destinationMainPicFile.getName());
 			return "SUCCESS";
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("IO exception occured");
+		} catch (InvalidDataException e) {
+			return "PICTURE EXISTS";
 		}
 		return "FAILURE";
 	}

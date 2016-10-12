@@ -122,8 +122,8 @@ public class UserController {
 	public void logOut(HttpServletRequest request) {
 		if (request.getSession().getAttribute("user") != null) {
 			request.getSession().removeAttribute("user");
-			request.getSession().invalidate();
 		}
+		request.getSession().invalidate();
 	}
 
 	@RequestMapping(value = "/Follow", method = RequestMethod.POST)
@@ -157,7 +157,7 @@ public class UserController {
 		CopyOnWriteArrayList<String> usersFollowed = user.getFollowedUsers();
 		CopyOnWriteArrayList<Object> visitedPlacesByFollowedUsers = new CopyOnWriteArrayList<>();
 		CopyOnWriteArrayList<String> usersVisitors = UsersManager.getInstance().getUserVisitors();
-		for (int i = 0; i < usersVisitors.size(); i += 2) {
+		for (int i = 0; i < usersVisitors.size(); i += 3) {
 			for (int j = 0; j < usersFollowed.size(); j++) {
 				if (usersFollowed.get(j).equals(usersVisitors.get(i))) {
 					Destination dest = DestinationsManager.getInstance()
@@ -165,13 +165,14 @@ public class UserController {
 					User visitor = UsersManager.getInstance().getUserFromCache(usersVisitors.get(i));
 					visitedPlacesByFollowedUsers.add(dest);
 					visitedPlacesByFollowedUsers.add(visitor);
+					visitedPlacesByFollowedUsers.add((String) usersVisitors.get(i + 2));
 				}
 			}
 		}
 		return visitedPlacesByFollowedUsers;
 	}
 
-	@RequestMapping(value = "isFollowed", method = RequestMethod.GET)
+	@RequestMapping(value = "/isFollowed", method = RequestMethod.GET)
 	@ResponseBody
 	public String isFollowed(HttpServletRequest request) {
 		User user = (User) request.getSession().getAttribute("user");
@@ -180,6 +181,36 @@ public class UserController {
 			return "followed";
 		}
 		return "notFollowed";
+	}
+
+	@RequestMapping(value = "/addToVisited", method = RequestMethod.POST)
+	@ResponseBody
+	public String addToVisited(HttpServletRequest request) {
+		String place = request.getParameter("destinationName").replaceAll("%20", " ");
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null) {
+			return "FAILURE";
+		}
+		boolean isAdded = UsersManager.getInstance().addVidsitedDestination(user, place);
+		if (!isAdded) {
+			return "VISITED";
+		}
+		return "SUCCESS";
+	}
+
+	@RequestMapping(value = "/isVisited", method = RequestMethod.GET)
+	@ResponseBody
+	public String isVisited(HttpServletRequest request) {
+		String place = request.getParameter("destinationName").replaceAll("%20", " ");
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null) {
+			return "FAILURE";
+		}
+		boolean isVisited = user.getVisitedPlaces().contains(place);
+		if (isVisited) {
+			return "VISITED";
+		}
+		return "NOT VISITED";
 	}
 
 	private static boolean validateData(String firstName, String lastName, String email, String password) {

@@ -83,8 +83,9 @@
    			  					  	
 							        <input id="pic" type="file" name="pic" class="form-control" accept="image/*" required="">							    
  			 					 </div>
+ 			 					 <div id="message" class="top-margin"></div>
   								 
-       			 					<div class="col-lg-4 text-right">
+       			 					<div class="top-margin">
        	 								    <button class="btn btn-action" id="addPic" placeholder="Insert Picture" type="submit">Add Picture</button>
        								 </div>
    								 
@@ -186,6 +187,7 @@
 	<script src="assets/js/PictureValidate.js"></script>
 	<script src="http://malsup.github.com/jquery.form.js"></script> 
 	<script src="assets/js/checkForUser.js"></script>
+	<script>checkIfLoggedIn()</script>
 </body>
 
 <script>
@@ -200,7 +202,7 @@
 				async: true,
 				success : function(results){
 					if(results!=null && results != ""){
-						window.location.href="AllDestinations.html";					
+						showMessage(results);					
 						
 					}else{
 						alert("Some error occured, try again.");
@@ -209,6 +211,21 @@
 			})
 			
 		}
+		
+		function showMessage(results){		
+	        if(results == 'SUCCESS'){
+	            $('#message').html("<font color='green'>You have successfully added the picture. </font>")
+	            setTimeout(function(){
+						window.location.href = "Destination.html?destinationName="+destinationName;
+					}, 500)
+	        }else if(results == 'NOT EXISTING'){
+	            $('#message').html("<font color='red'>The destination does not exist. </font>");
+	        }else if(results == 'PICTURE EXISTS'){
+	        	$('#message').html("<font color='red'>The picture already exists. </font>");
+	        }else{
+	        	$('#message').html("<font color='red'>Some error occured, try again. </font>");
+	        }
+	    }
 	
 	</script>
 </html>

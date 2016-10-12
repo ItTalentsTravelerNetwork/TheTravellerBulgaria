@@ -260,7 +260,7 @@
 				function(destinationAuthor) {
 					var html = [];
 					html.push("Added by <span>");
-					if (destinationAuthor.email.valueOf() != sessionStorage.getItem('userEmail').valueOf()) {
+					if (destinationAuthor.email.valueOf() != sessionStorage.getItem('userEmail')) {
 						html.push("<a href=\"foreignProfile.html?userEmail="+ destinationAuthor.email +"\">");
 						html.push(destinationAuthor.firstName+' '+destinationAuthor.lastName+' </span>');
 					}else{

@@ -280,7 +280,7 @@ public class UserDao {
 	}
 
 	public synchronized boolean addVisitedDestinationToDB(User user, String destinationName) {
-		String insertVisitedDestinationAndUserEmailIntoDB = "INSERT INTO visited_destinations (destination_name, user_email, date_and_time) VALUES (?, ?);";
+		String insertVisitedDestinationAndUserEmailIntoDB = "INSERT INTO visited_destinations (destination_name, user_email, date_and_time) VALUES (?, ?, ?);";
 		PreparedStatement statement = null;
 		try {
 			statement = DBManager.getInstance().getConnection()
@@ -385,7 +385,7 @@ public class UserDao {
 	public CopyOnWriteArrayList<String> getUserVisitors() {
 		CopyOnWriteArrayList<String> userVisitors = new CopyOnWriteArrayList<>();
 
-		String selectAllVisitedPlacesFromDB = "SELECT destination_name, user_email FROM visited_destinations ORDER BY destination_name;";
+		String selectAllVisitedPlacesFromDB = "SELECT destination_name, user_email, date_and_time FROM visited_destinations ORDER BY date_and_time desc;";
 		Statement statement = null;
 		ResultSet result = null;
 		try {
@@ -394,6 +394,7 @@ public class UserDao {
 			while (result.next()) {
 				userVisitors.add(result.getString("user_email"));
 				userVisitors.add(result.getString("destination_name"));
+				userVisitors.add(result.getString("date_and_time"));
 			}
 		} catch (SQLException e) {
 			// TODO handle exception

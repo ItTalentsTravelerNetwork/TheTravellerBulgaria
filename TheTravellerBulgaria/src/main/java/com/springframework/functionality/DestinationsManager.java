@@ -1,6 +1,5 @@
 package com.springframework.functionality;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -14,6 +13,7 @@ import com.springframework.dbModels.HotelDao;
 import com.springframework.dbModels.PlaceToEatDao;
 import com.springframework.dbModels.SightDao;
 import com.springframework.exceptions.InvalidCoordinatesException;
+import com.springframework.exceptions.InvalidDataException;
 import com.springframework.model.Activity;
 import com.springframework.model.Comment;
 import com.springframework.model.Destination;
@@ -288,7 +288,11 @@ public class DestinationsManager {
 		PlaceToEatDao.getInstance().savePlaceToEatInDB(e);
 	}
 
-	public void addPicture(String destName, String pic) {
+	public void addPicture(String destName, String pic) throws InvalidDataException {
+		if (this.allDestinations.get(destName).getPictures().contains(pic)
+				|| this.allDestinations.get(destName).getMainPicture().equals(pic)) {
+			throw new InvalidDataException();
+		}
 		this.allDestinations.get(destName).addPicture(pic);
 		DestinationDao.getInstance().addPicture(destName, pic);
 	}

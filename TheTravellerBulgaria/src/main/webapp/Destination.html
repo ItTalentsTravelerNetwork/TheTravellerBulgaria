@@ -135,12 +135,21 @@
 						
 						<h1 id="destinationName"></h1>					
 
-						<div id="gallery" class="btn btn-action" onclick="showGallery()">Gallery</div>					
+						<div id="gallery" class="btn btn-action" onclick="showGallery()">Gallery</div>	
+								
 						
 						<h5 id="destinationAuthorName"></h5>
 					</div>
 				
 				</div>
+				
+				<div class="row widget">
+					<div class="col-xs-12">
+						<p id="visit" class="btn btn-action" onclick="addToVisited()">Add to Visited</p>
+						
+					</div>
+					<p class="col-xs-12" id="message"></p>
+				</div>		
 				<div class="row widget">
 					<div class="col-xs-12">	
 										
@@ -148,14 +157,15 @@
 						
 					</div>
 				</div>
-				<div class="row widget">
-				
+				<div class="row widget">				
 				
 					<div id="addComment" class="col-xs-12">		
 						
-					</div>
+					</div>	
+					
 					
 				</div>
+				
 				<div class="row widget">
 				<div class="col-xs-12">		
 						<div id="addPicture" class="btn"></div>
@@ -328,12 +338,11 @@
 				function(destinationAuthor) {
 					var html = [];
 					html.push("Added by <span>");
-					if (destinationAuthor.email.valueOf() != sessionStorage.getItem('userEmail').valueOf()) {
-						html.push("<a href=\"foreignProfile.html?userEmail="+ destinationAuthor.email +"\">");
-						html.push(destinationAuthor.firstName+' '+destinationAuthor.lastName+' </span>');
+					if (destinationAuthor.email.valueOf() == sessionStorage.getItem('userEmail')) {
+						html.push("You" + "</span>" );						
 					}else{
-						html.push("You" + "</span>" );
-						
+						html.push("<a href=\"foreignProfile.html?userEmail="+ destinationAuthor.email +"\">");
+						html.push(destinationAuthor.firstName+' '+destinationAuthor.lastName+' </span>');						
 					}
 					
 					$('#destinationAuthorName').html(html.join(" "));
@@ -351,7 +360,7 @@
 			
 						html.push("<td>");
 						html.push("");
-						if (user.email.valueOf() != sessionStorage.getItem('userEmail').valueOf()) {
+						if (user.email.valueOf() != sessionStorage.getItem('userEmail')) {
 							html.push("<a href=\"foreignProfile.html?userEmail="+ user.email +"\">");
 						}
 						
@@ -421,9 +430,41 @@ function dislikeComment(commentId){
 		}	
 	);
 }
+
+
+function addToVisited(){
+	var destinationName = location.search.split('destinationName=')[1];
+	$.post(
+		"addToVisited",
+		{destinationName : destinationName},
+		function(result){
+			if(result == 'SUCCESS'){
+				$('#message').html("<font color='green'>You have added "+ destinationName.replace('%20', ' ') +" to visited places.</font>")
+				$('#visit').html("Visited"); 
+			}else if(result == 'FAILURE'){
+				$('#message').html("<font color='red'>You have to sign in first. </font>")
+				setTimeout(function(){
+					window.location.href = "SignIn.html";
+				}, 1000)
+			}else if(result == 'VISITED'){
+				$('#message').html("<font color='black'>You have already added "+ destinationName.replace('%20', ' ') +" </font>")
+			}
+		}
+	)
+}	
 	
-	
-	
+$(function isVisited(){
+	var destinationName = location.search.split('destinationName=')[1];
+	$.get(
+		"isVisited",
+		{destinationName : destinationName},
+		function(result){
+			if(result=='VISITED'){
+				$('#visit').html("Visited"); 
+			}
+		}
+	)
+})
 	
 	
 	
