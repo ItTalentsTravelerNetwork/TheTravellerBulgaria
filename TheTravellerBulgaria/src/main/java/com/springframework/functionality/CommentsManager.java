@@ -66,12 +66,14 @@ public class CommentsManager {
 		int result = comment.like(userEmail);
 		if (result==1) {
 			CommentDao.getInstance().addLike(commentId, userEmail);
+			CommentDao.getInstance().updateNumberOfLikesAndDislikes(commentId, comment.getNumberOfLikes(), comment.getNumberOfDislikes());
 			return true;
 		}
 		else {
 			if (result==2) {
 				CommentDao.getInstance().addLike(commentId, userEmail);
 				CommentDao.getInstance().removeDislike(commentId, userEmail);
+				CommentDao.getInstance().updateNumberOfLikesAndDislikes(commentId, comment.getNumberOfLikes(), comment.getNumberOfDislikes());
 				return true;
 			}
 		}	
@@ -82,6 +84,7 @@ public class CommentsManager {
 		Comment comment = getCommentById(commentId);
 		if (comment.unlike(userEmail)) {
 			CommentDao.getInstance().removeLike(commentId, userEmail);
+			CommentDao.getInstance().updateNumberOfLikesAndDislikes(commentId, comment.getNumberOfLikes(), comment.getNumberOfDislikes());
 			return true;
 		}
 		return false; // incorrect data or not liked
@@ -92,12 +95,14 @@ public class CommentsManager {
 		int result = comment.dislike(userEmail);
 		if (result==1) {
 			CommentDao.getInstance().addDislike(commentId, userEmail);
+			CommentDao.getInstance().updateNumberOfLikesAndDislikes(commentId, comment.getNumberOfLikes(), comment.getNumberOfDislikes());
 			return true;
 		}
 		else {
 			if (result==2) {
 				CommentDao.getInstance().addDislike(commentId, userEmail);
 				CommentDao.getInstance().removeLike(commentId, userEmail);
+				CommentDao.getInstance().updateNumberOfLikesAndDislikes(commentId, comment.getNumberOfLikes(), comment.getNumberOfDislikes());
 				return true;
 			}
 		}
@@ -108,6 +113,7 @@ public class CommentsManager {
 		Comment comment = getCommentById(commentId);
 		if (comment.undislike(userEmail)) {
 			CommentDao.getInstance().removeDislike(commentId, userEmail);
+			CommentDao.getInstance().updateNumberOfLikesAndDislikes(commentId, comment.getNumberOfLikes(), comment.getNumberOfDislikes());
 			return true;
 		}
 		return false; // incorrect data or not disliked

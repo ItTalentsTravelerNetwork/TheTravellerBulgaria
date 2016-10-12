@@ -75,6 +75,10 @@
     		height: auto;
 		}
 
+		.sideBySideForm{
+			display: inline-block;
+			float: right;
+		}
 		
 		
 	</style>
@@ -304,6 +308,37 @@
 	<script>checkForUser()</script>
 	
 	<script>
+	
+	function showDislikeButtonStatus(commentId){
+		
+		var result = null;
+		$.ajax({
+			url: "showDislikeButtonStatus?commentId=" + commentId,
+			method: "GET",
+			async: false,
+			success: function (status) {
+				 result=status;
+					}
+			}
+		)
+		return result;
+	}
+	
+function showLikeButtonStatus(commentId){
+		
+		var result = null;
+		$.ajax({
+			url: "showLikeButtonStatus?commentId=" + commentId,
+			method: "GET",
+			async: false,
+			success: function (status) {
+				 result=status;
+					}
+			}
+		)
+		return result;
+	}
+	
 	var params = location.search.substr(1).split("&").reduce(function(acc, element){
 		element=element.split("=");
 		acc[element[0]]=element[1];
@@ -325,12 +360,6 @@
 					document.getElementById("addPicture").innerHTML = "<a href=\"AddPicture.html?destinationName="+ destination.name +"\">Add Picture</a>";
 					return $.get("getDestinationAuthor?destinationName=" + destination.name);
 					
-				},
-				function(err){
-					console.log(err)
-
-					
-
 				}
 			)
 			
@@ -371,15 +400,38 @@
 						html.push("<h6> <span class='username'>"+user.firstName+" "+user.lastName+"</span> Added on: "+comment.dateAndTime.hour+":"+comment.dateAndTime.minute+":"+comment.dateAndTime.second+" - "+comment.dateAndTime.dayOfMonth+"."+comment.dateAndTime.month+"."+comment.dateAndTime.year+"</h6>");
 						html.push("<h5>"+comment.text+"</h5>");
 						
-						html.push("<form id=\"likeUnlikeCommentForm-"+comment.id+"-1\" action=\"javascript:likeComment("+comment.id+")\">");
+						html.push("<h6 id=\"dislikeCounter-"+comment.id+"-2\" class=\"sideBySideForm\">Disliked: "+comment.numberOfDislikes+"</h6>");
+						html.push("<form id=\"dislikeUndislikeCommentForm-"+comment.id+"-2\" class=\"sideBySideForm\" action=\"javascript:dislikeComment("+comment.id+")\">");
 						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
-						html.push("<input id=\"likeButton-"+comment.id+"-1\" type=\"image\" src=\"assets/images/LikeButtonNonActive.png\" height=25px width=auto alt=\"Submit\">");		 
-						html.push("</form>");
+						html.push("<input id=\"dislikeButton-"+comment.id+"-2\" type=\"image\" ");
 						
-						html.push("<form id=\"dislikeUndislikeCommentForm-"+comment.id+"-2\" action=\"javascript:dislikeComment("+comment.id+")\">");
-						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
-						html.push("<input id=\"dislikeButton-"+comment.id+"-2\" type=\"image\" src=\"assets/images/DislikeButtonNonActive.png\" height=25px width=auto alt=\"Submit\">");		 
+						var result = showDislikeButtonStatus(comment.id);
+						if (result.valueOf() == 'Comment already disliked!') {
+							html.push("src=\"assets/images/DislikeButtonActive.png\"");
+						}
+						else {
+							html.push("src=\"assets/images/DislikeButtonNonActive.png\"");
+						}
+						html.push("height=25px width=auto alt=\"Submit\">");
+						
 						html.push("</form>");
+						html.push("<form id=\"likeUnlikeCommentForm-"+comment.id+"-1\" class=\"sideBySideForm\" action=\"javascript:likeComment("+comment.id+")\">");
+						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
+						html.push("<input id=\"likeButton-"+comment.id+"-1\" type=\"image\"");
+						
+						var result = showLikeButtonStatus(comment.id);
+						if (result.valueOf() == 'Comment already liked!') {
+							html.push("src=\"assets/images/LikeButtonActive.png\"");
+						}
+						else {
+							html.push("src=\"assets/images/LikeButtonNonActive.png\"");
+						}
+						html.push("height=25px width=auto alt=\"Submit\">");
+						
+						
+						html.push("</form>");
+						html.push("<h6 id=\"likeCounter-"+comment.id+"-1\" class=\"sideBySideForm\">Liked: "+comment.numberOfLikes+"</h6>");
+					
 						
 						html.push("</td>");
 						html.push("</tr>");
@@ -395,8 +447,7 @@
 			var destinationName = location.search.split('destinationName=')[1];
 			document.getElementById("addComment").innerHTML="<a  class=\"btn\" href=\"Comment.html?destinationName="+destinationName+"\">Add Comment</a>";
 		})
-		
-		
+	
 function likeComment(commentId){
 
 	var form = $("#likeUnlikeCommentForm-"+commentId+"-1");
@@ -410,6 +461,14 @@ function likeComment(commentId){
 			} else if (result.valueOf() == 'Comment unliked!') {
 				document.getElementById("likeButton-"+commentId+"-1").src="assets/images/LikeButtonNonActive.png";
 			}
+			return $.get("getCommentById?commentId=" + commentId);
+		}	
+	)
+	
+	.then (
+		function (comment) {
+			document.getElementById("likeCounter-"+commentId+"-1").innerHTML="Liked: "+comment.numberOfLikes+"";
+			document.getElementById("dislikeCounter-"+commentId+"-2").innerHTML="Disliked: "+comment.numberOfDislikes+"";
 		}	
 	);
 }
@@ -427,7 +486,15 @@ function dislikeComment(commentId){
 			} else if (result.valueOf() == 'Comment undisliked!') {
 				document.getElementById("dislikeButton-"+commentId+"-2").src="assets/images/DislikeButtonNonActive.png";
 			}
+			return $.get("getCommentById?commentId=" + commentId);
 		}	
+	)
+	
+	.then (
+			function (comment) {
+				document.getElementById("likeCounter-"+commentId+"-1").innerHTML="Liked: "+comment.numberOfLikes+"";
+				document.getElementById("dislikeCounter-"+commentId+"-2").innerHTML="Disliked: "+comment.numberOfDislikes+"";
+			}	
 	);
 }
 
