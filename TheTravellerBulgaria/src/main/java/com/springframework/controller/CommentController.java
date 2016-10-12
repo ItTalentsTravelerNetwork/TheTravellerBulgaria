@@ -116,7 +116,7 @@ public class CommentController {
 		return result;
 	}
 	
-	@RequestMapping(value = "/showLikeButtonStatus", method = RequestMethod.POST)
+	@RequestMapping(value = "/showLikeButtonStatus", method = RequestMethod.GET)
 	@ResponseBody
 	public String showLikeButtonStatus(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		Long commentId = Long.valueOf(request.getParameter("commentId"));
@@ -127,7 +127,7 @@ public class CommentController {
 		return "Comment not liked!";
 	}
 	
-	@RequestMapping(value = "/showDislikeButtonStatus", method = RequestMethod.POST)
+	@RequestMapping(value = "/showDislikeButtonStatus", method = RequestMethod.GET)
 	@ResponseBody
 	public String showDislikeButtonStatus(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		Long commentId = Long.valueOf(request.getParameter("commentId"));
@@ -136,6 +136,14 @@ public class CommentController {
 			return "Comment already disliked!";
 		}
 		return "Comment not liked!";
+	}
+	
+	@RequestMapping(value = "/getCommentById", method = RequestMethod.GET)
+	@ResponseBody
+	public Comment getCommentById(HttpServletRequest request, HttpServletResponse response) {
+		Long commentId = Long.valueOf(request.getParameter("commentId"));
+		Comment comment = CommentsManager.getInstance().getCommentById(commentId);
+		return comment;
 	}
 
 }

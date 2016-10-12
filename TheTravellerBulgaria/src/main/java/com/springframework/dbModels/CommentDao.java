@@ -6,11 +6,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.exceptions.InvalidDataException;
+import com.springframework.functionality.CommentsManager;
+import com.springframework.model.Activity;
 import com.springframework.model.Comment;
+import com.springframework.model.PlaceToEat;
+import com.springframework.model.PlaceToSleep;
+import com.springframework.model.Sight;
+import com.springframework.model.Destination.Category;
 
 
 public class CommentDao {
@@ -119,8 +126,9 @@ public class CommentDao {
 	}
 
 	public synchronized void addLike(long commentId, String userEmail) {
+		PreparedStatement ps = null;
 		try {
-			PreparedStatement ps = DBManager.getInstance().getConnection()
+			ps = DBManager.getInstance().getConnection()
 					.prepareStatement("INSERT INTO comment_likes(commenter_email, comment_id) VALUES (?,?)");
 			ps.setString(1, userEmail);
 			ps.setLong(2, commentId);
@@ -128,8 +136,58 @@ public class CommentDao {
 		} catch (SQLException | CannotConnectToDBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
+	
+	
+	
+	
+	
+	public synchronized void updateNumberOfLikesAndDislikes(long commentId, int numberOfLikes, int numberOfDislikes) {
+		PreparedStatement ps = null;
+		PreparedStatement ps2 = null;
+		String updateCommentNumberOfLikesStatement = "UPDATE comments SET number_of_likes=?, number_of_dislikes=? WHERE id=?;";
+		try {
+			ps = DBManager.getInstance().getConnection()
+					.prepareStatement(updateCommentNumberOfLikesStatement);
+			ps.setInt(1, numberOfLikes);
+			ps.setInt(2, numberOfDislikes);
+			ps.setLong(3, commentId);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if (ps2 != null) {
+				try {
+					ps2.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
+	
 
 	public synchronized void removeLike(long commentId, String userEmail) {
 		try {
