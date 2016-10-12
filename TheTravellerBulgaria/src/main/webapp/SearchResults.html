@@ -111,8 +111,8 @@
 				<ul class="nav navbar-nav pull-right">
 				<li>
 					<div class="button_box2">
-						<form class="form-wrapper-2 cf">
-							<input type="text" placeholder="Search here..." required>
+						<form class="form-wrapper-2 cf" action="SearchResults.html">
+							<input type="text" name="search" placeholder="Search here..." required>
 							<button type="submit">Search</button>
 						</form>
 					</div>
@@ -164,12 +164,8 @@
 
 				<div class="widget">
 					<h4>Popular destinations</h4>
-					<ul class="list-unstyled list-spaces">
-						<li><a href="">Lorem ipsum dolor</a><br><span class="small text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Animi, laborum.</span></li>
-						<li><a href="">Totam, libero, quis</a><br><span class="small text-muted">Suscipit veniam debitis sed ipsam quia magnam eveniet perferendis nisi.</span></li>
-						<li><a href="">Enim, sequi dignissimos</a><br><span class="small text-muted">Reprehenderit illum quod unde quo vero ab inventore alias veritatis.</span></li>
-						<li><a href="">Suscipit, consequatur, aut</a><br><span class="small text-muted">Sed, mollitia earum debitis est itaque esse reiciendis amet cupiditate.</span></li>
-						<li><a href="">Nam, illo, veritatis</a><br><span class="small text-muted">Delectus, sapiente illo provident quo aliquam nihil beatae dignissimos itaque.</span></li>
+					<ul id="popDest" class="list-unstyled list-spaces">
+					
 					</ul>
 				</div>
 
@@ -270,6 +266,7 @@ $(function getSearchResults(){
 	$.get(
 		"getDestinationSearchResults?search="+search,
 		function(data){
+			var destInfo = "";
 			var json = data;
 			var html = "<table><tr>";
 			var i = 0;
@@ -282,14 +279,16 @@ $(function getSearchResults(){
 				html+="<td>";
 				var destName = "<h5 id=\"tempDestName\"><a class=\"btn\" href=\"Destination.html?destinationName="+ json[item].name +"\">" + json[item].name + "</a></h5>";
 				html += destName;
-				var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"250\" width=\"250\"/>";
+				var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <img src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"250\"/>";
 				html+=imageLocation;
 				html+="</td>";
+				destInfo+="<li><a href=\"Destination.html?destinationName"+ json[item].name +"\">"+ json[item].name +"</a><br><span class=\"small text-muted\">"+ json[item].description +"</span></li>";
 				
 				i++;
 			}
 			html += "</tr></table>";
 			document.getElementById('destinations').innerHTML = html;
+			document.getElementById("popDest").innerHTML = destInfo;
 		}
 	
 	).then(
