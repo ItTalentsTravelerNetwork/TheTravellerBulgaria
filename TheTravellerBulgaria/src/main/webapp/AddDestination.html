@@ -99,7 +99,20 @@
 		        			    <input id="mainPicture" name="mainPicture" type="file" class="form-control" placeholder="Insert Picture" accept="image/*" required="">
 		       				</div>
 		       				<div class="col-sm-6">
-		        			    <input id="category" name="category" type="text" class="form-control" placeholder="Set Category" maxlength="50" required="">
+		       					<input id="category" name="category" class="form-control" list="categories" placeholder="Set Category" required="">
+		       					<datalist id="categories">
+		       						<option value="MOUNTAINS">
+		       						<option value="BEACHES">
+		       						<option value="CAVES">
+		       						<option value="RIVERS">
+		       						<option value="FORESTS">
+		       						<option value="WATERFALLS">
+		       						<option value="LAKES">
+		       						<option value="CITIES">
+		       						<option value="RURAL_AREAS">
+		       						<option value="CAMPCITIES">
+		       					</datalist>
+		        			    
 		       				</div>
 						    <hr>
 						    </div> 
@@ -325,7 +338,7 @@ function showMessage(results){
             setTimeout(function(){
 					window.location.href = "profile.html";
 				}, 500)
-        }else if(results == 'Adding destination failed!'){
+        }else if(results == 'Destination registration failed!'){
             $('#message').html("<font color='red'>Incorrect data or picture format </font>")
         }
     }

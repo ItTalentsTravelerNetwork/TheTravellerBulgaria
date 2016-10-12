@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -60,8 +61,8 @@ public class DestinationController {
 							DestinationsManager.getInstance().getDestinationFromCache(name));
 					return "Destination added successfully!";
 				}
-			} catch (BeansException | NumberFormatException | InvalidCoordinatesException e) {
-				e.printStackTrace();
+			} catch (BeansException | InvalidCoordinatesException | IllegalArgumentException e) {
+
 				return "Destination registration failed!";
 			}
 		}
@@ -197,5 +198,30 @@ public class DestinationController {
 		}
 
 		return gallery;
+	}
+
+	@RequestMapping(value = "/getDestinationsByCategory", method = RequestMethod.GET)
+	@ResponseBody
+	public ArrayList<Destination> getDestinationsByCategory(@RequestParam("category") String category) {
+		ArrayList<Destination> allDestinations = new ArrayList<>();
+		for (Destination destination : DestinationsManager.getInstance().getAllDestinations().values()) {
+			if (destination.getCategory().toString().equals(category)) {
+				allDestinations.add(destination);
+			}
+		}
+		return allDestinations;
+	}
+
+	@RequestMapping(value = "/getDestinationSearchResults", method = RequestMethod.GET)
+	@ResponseBody
+	public TreeSet<Destination> getDestinationSearchResults(@RequestParam("search") String search) {
+		TreeSet<Destination> destinations = new TreeSet<>(
+				(d1, d2) -> d1.getDateAndTimeToString().compareTo(d2.getDateAndTimeToString()));
+		for (Destination destination : DestinationsManager.getInstance().getAllDestinations().values()) {
+			if (destination.getName().toLowerCase().contains(search)) {
+				destinations.add(destination);
+			}
+		}
+		return destinations;
 	}
 }
