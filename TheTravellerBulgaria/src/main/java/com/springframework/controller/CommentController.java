@@ -1,5 +1,11 @@
 package com.springframework.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -7,8 +13,10 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.springframework.exceptions.InvalidDataException;
 import com.springframework.functionality.CommentsManager;
@@ -17,7 +25,7 @@ import com.springframework.model.Comment;
 import com.springframework.model.User;
 
 @RestController
-@MultipartConfig(maxFileSize = 200000000)
+@MultipartConfig(maxFileSize = 314572800)
 public class CommentController {
 
 	@RequestMapping(value = "/addComment", method = RequestMethod.POST)
@@ -145,5 +153,63 @@ public class CommentController {
 		Comment comment = CommentsManager.getInstance().getCommentById(commentId);
 		return comment;
 	}
+	
+	@RequestMapping(value = "/uploadVideo", method = RequestMethod.POST)
+	@ResponseBody
+	public void uploadVideo(@RequestParam("video") MultipartFile multipartFile, HttpServletRequest request, HttpServletResponse response) {
+		Long commentId = Long.valueOf(request.getParameter("commentId"));
+		File dir = new File("commentsVideos");
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		File video = new File(dir,
+				commentId + "-commentVideo." + multipartFile.getOriginalFilename());
+		try {
+			Files.copy(multipartFile.getInputStream(), video.toPath(),
+					StandardCopyOption.REPLACE_EXISTING);
+			CommentsManager.getInstance().addVideo(commentId, video.getName()); 
+		} catch (IOException e) {
+			System.out.println("IO exception occured");
+		}
+
+	}
+	
+	@RequestMapping(value = "/getVideo", method = RequestMethod.GET)
+	@ResponseBody
+	public void getVideo(HttpServletRequest request, HttpServletResponse response) {
+		Long commentId = Long.valueOf(request.getParameter("commentId"));
+		String originalVideoName = request.getParameter("video");
+		String commentVideoName = commentId.toString()+"-commentVideo."+originalVideoName;
+		Comment comment = CommentsManager.getInstance().getCommentById(commentId);
+		if (comment.hasVideo() && comment.getVideo().equals(commentVideoName)) {
+			File video = new File("commentsVideos", commentId + "-commentVideo." + originalVideoName);
+			try {
+				OutputStream out = response.getOutputStream();
+				Files.copy(video.toPath(), out);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	@RequestMapping(value = "/showCommentVideoName", method = RequestMethod.GET)
+	@ResponseBody
+	public String showCommentVideoName(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		Long commentId = Long.valueOf(request.getParameter("commentId"));
+		Comment comment = CommentsManager.getInstance().getCommentById(commentId);
+		if (comment.hasVideo()) {
+			String originalVideoName=comment.getVideo().split("-commentVideo.")[1];
+			return originalVideoName;
+		}
+		return null;
+	}
+	
+	
+	
+	
+	
+	
 
 }

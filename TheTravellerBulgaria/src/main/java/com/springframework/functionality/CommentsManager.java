@@ -205,5 +205,15 @@ public class CommentsManager {
 		}
 		return "No such comment!";
 	}
+	
+	public synchronized boolean addVideo(long commentId, String video) {
+		Comment comment = getCommentById(commentId);
+		if (allComments.contains(comment) && !video.isEmpty() && video!=null && !comment.hasVideo()) {
+			comment.setVideo(video);
+			CommentDao.getInstance().addVideo(commentId, video);
+			return true;
+		}
+		return false;
+	}
 
 }

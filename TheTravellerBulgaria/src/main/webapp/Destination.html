@@ -28,10 +28,10 @@
 			text-align: left;
 			border-spacing: 0 15px;
 			border-collapse: separate;
+			word-break: break-all;
 		}
 		
 		.my-table img {
-	
 			max-width:none;
 		}
 		
@@ -75,9 +75,13 @@
     		height: auto;
 		}
 
-		.sideBySideForm{
+		.sideBySideForm {
 			display: inline-block;
 			float: right;
+		}
+		
+		.wrapper {
+			opacity : 0;
 		}
 		
 		
@@ -324,20 +328,41 @@
 		return result;
 	}
 	
-function showLikeButtonStatus(commentId){
-		
+	function showLikeButtonStatus(commentId){
+			
+			var result = null;
+			$.ajax({
+				url: "showLikeButtonStatus?commentId=" + commentId,
+				method: "GET",
+				async: false,
+				success: function (status) {
+					 result=status;
+						}
+				}
+			)
+			return result;
+	}
+	
+	
+	function showCommentVideoName(commentId){
 		var result = null;
 		$.ajax({
-			url: "showLikeButtonStatus?commentId=" + commentId,
+			url: "showCommentVideoName?commentId=" + commentId,
 			method: "GET",
 			async: false,
-			success: function (status) {
-				 result=status;
-					}
+			success: function (commentVideoName) {
+				 result=commentVideoName;
 			}
-		)
+		})
 		return result;
 	}
+	
+	function insertVideo(commentId, videoName) {
+		
+	}
+	
+	
+	
 	
 	var params = location.search.substr(1).split("&").reduce(function(acc, element){
 		element=element.split("=");
@@ -399,11 +424,22 @@ function showLikeButtonStatus(commentId){
 						html.push("<td>");
 						html.push("<h6> <span class='username'>"+user.firstName+" "+user.lastName+"</span> Added on: "+comment.dateAndTime.hour+":"+comment.dateAndTime.minute+":"+comment.dateAndTime.second+" - "+comment.dateAndTime.dayOfMonth+"."+comment.dateAndTime.month+"."+comment.dateAndTime.year+"</h6>");
 						html.push("<h5>"+comment.text+"</h5>");
+						html.push("</form>");
+						
+						
+						var commentVideoName = showCommentVideoName(comment.id);
+						if (!commentVideoName) {
+							html.push('<form class="sideBySideForm">');
+							html.push("&nbsp;&nbsp;&nbsp;<label  for=\"videoButton-"+comment.id+"-1\" class=\"sideBySideForm\" type=\"file\" > <img src=\"assets/images/videoButton.png\" height=30px width=auto > </label>");
+							html.push("<div class=\"sideBySideForm\" style=\"display: none;\"> <input class=\"uploadVideo\" type=\"file\" data-id=\""+comment.id+"\" id=\"videoButton-"+comment.id+"-1\"/> </div>");
+							html.push('</form>');
+						}
 						
 						html.push("<h6 id=\"dislikeCounter-"+comment.id+"-2\" class=\"sideBySideForm\">Disliked: "+comment.numberOfDislikes+"</h6>");
 						html.push("<form id=\"dislikeUndislikeCommentForm-"+comment.id+"-2\" class=\"sideBySideForm\" action=\"javascript:dislikeComment("+comment.id+")\">");
 						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
 						html.push("<input id=\"dislikeButton-"+comment.id+"-2\" type=\"image\" ");
+						
 						
 						var result = showDislikeButtonStatus(comment.id);
 						if (result.valueOf() == 'Comment already disliked!') {
@@ -419,6 +455,7 @@ function showLikeButtonStatus(commentId){
 						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
 						html.push("<input id=\"likeButton-"+comment.id+"-1\" type=\"image\"");
 						
+						
 						var result = showLikeButtonStatus(comment.id);
 						if (result.valueOf() == 'Comment already liked!') {
 							html.push("src=\"assets/images/LikeButtonActive.png\"");
@@ -428,10 +465,13 @@ function showLikeButtonStatus(commentId){
 						}
 						html.push("height=25px width=auto alt=\"Submit\">");
 						
-						
 						html.push("</form>");
 						html.push("<h6 id=\"likeCounter-"+comment.id+"-1\" class=\"sideBySideForm\">Liked: "+comment.numberOfLikes+"</h6>");
-					
+						
+						
+						if (commentVideoName) {
+							html.push('<video width="500" controls preload> <source  src="getVideo?commentId='+comment.id+'&video='+commentVideoName+'"type="video/mp4"></video>');
+						}
 						
 						html.push("</td>");
 						html.push("</tr>");
@@ -473,7 +513,60 @@ function likeComment(commentId){
 	);
 }
 	
-function dislikeComment(commentId){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	$(function () {
+		$(document).on('change', '.uploadVideo' , function(e){
+
+			 var self = $(this);
+			 var video = e.target.files[0],
+			 id = self.data('id');
+			 
+			 if(!video) return;
+
+			 var ext = video.name.split('.').slice(-1)[0];
+
+			 if( !/^(mp4|webm|ogg)$/i.test(ext) ) 
+			  return alert('Wrong file type! Only mp4, webm and ogg are supported!');
+
+			 if(video.size > 314572800)
+			  return alert('File too big! Try again!');
+
+			 console.log(video);
+
+			 var formData = new FormData();
+			 formData.append("video", video);
+			 
+			 $.ajax({
+			     url: 'uploadVideo?commentId=' + id,
+			     data: formData,
+			     cache: false,
+			     contentType: false,
+			     processData: false,
+			     type: 'POST'
+			 })
+			 .then(function(res){
+
+			  self.closest('td').append('<video width="500" controls preload> <source  src="getVideo?commentId='+id+'&video='+video.name+'"type="video/mp4"></video>');
+					
+			 }, err => console.log(err));
+		})
+	});
+	
+	
+	
+
+function dislikeComment(commentId) {
 
 	var form = $("#dislikeUndislikeCommentForm-"+commentId+"-2");
 	

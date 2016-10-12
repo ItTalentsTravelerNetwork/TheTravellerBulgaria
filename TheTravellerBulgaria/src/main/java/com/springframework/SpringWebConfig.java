@@ -32,6 +32,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		registry.addResourceHandler("/assets/fonts/**").addResourceLocations("/assets/fonts/");
 		registry.addResourceHandler("/assets/js/**").addResourceLocations("/assets/js/");
 		registry.addResourceHandler("/assets/images/**").addResourceLocations("/assets/images/");
+		registry.addResourceHandler("/assets/videos/**").addResourceLocations("/assets/videos/");
 		registry.addResourceHandler("/*.html").addResourceLocations("/").setCachePeriod(0)
 				.setCacheControl(CacheControl.noCache());
 	}

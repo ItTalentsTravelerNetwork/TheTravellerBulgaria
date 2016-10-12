@@ -21,8 +21,27 @@
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
 	<link rel="stylesheet" href="assets/css/main.css">
 	
-	
 
+<style>
+	 .bg-img-c{
+	  -webkit-background-size: cover;
+	  background-size: cover;
+	  background-position: center;
+	 }
+	 .img {
+	  display: inline-block;
+	 }
+	 .img:before{
+	  content: '';
+	  display: block;
+	  padding-top: 75%;
+	 }
+	 .img.square:before{
+	  padding-top: 100%;
+	 }
+ 
+ 
+</style>
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -284,7 +303,11 @@
 						html.push("<td>");
 						html.push("");						
 						
-						html.push("<img src=\"GetDestinationPicture?pic="+ pic + "\" height=\"300\" width=\"400\"/>")
+						var src = "GetDestinationPicture?pic="+ pic;
+						//html.push("<img src=\"GetDestinationPicture?pic="+ pic + "\" height=\"300\" width=\"400\"/>")
+						html.push('<div class="img bg-img-c" style="width: 400px; background-image: url('+src+')"></div>');
+						
+						
 						html.push("</td>");						
 						if(i%2==1){
 							html.push("</tr>");

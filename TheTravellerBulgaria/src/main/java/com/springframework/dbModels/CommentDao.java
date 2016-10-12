@@ -150,6 +150,31 @@ public class CommentDao {
 	
 	
 	
+	public synchronized void addVideo(long commentId, String video) {
+		PreparedStatement ps = null;
+		String updateCommentNumberOfLikesStatement = "UPDATE comments SET video=? WHERE id=?;";
+		try {
+			ps = DBManager.getInstance().getConnection()
+					.prepareStatement(updateCommentNumberOfLikesStatement);
+			ps.setString(1, video);
+			ps.setLong(2, commentId);
+			ps.executeUpdate();
+		} catch (SQLException | CannotConnectToDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (ps != null) {
+				try {
+					ps.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
 	
 	
 	public synchronized void updateNumberOfLikesAndDislikes(long commentId, int numberOfLikes, int numberOfDislikes) {
@@ -185,7 +210,6 @@ public class CommentDao {
 			}
 		}
 	}
-	
 	
 	
 
