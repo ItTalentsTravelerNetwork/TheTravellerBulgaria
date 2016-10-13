@@ -35,7 +35,7 @@ function getUserInfo(){
 			var json = data;
 			document.getElementById("fullName").innerHTML = json.firstName + " " + json.lastName;
 			document.getElementById("description").innerHTML = json.description;
-			var src = "GetProfilePicture?email="+ json.email;
+			var src = ("GetProfilePicture?email="+ json.email).replace(" ", "%20");
 			document.getElementById("profilePicture").innerHTML = "<div class=\"round img bg-img-c square\" style=\"width: 150px; background-image: url("+src+")\"></div>";
 		}
 	)

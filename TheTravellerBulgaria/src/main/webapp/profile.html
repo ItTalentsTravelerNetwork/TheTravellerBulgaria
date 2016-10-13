@@ -260,7 +260,7 @@ function showDestinations(){
 				//var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"150\"/>";
 				//html+=imageLocation;
 				
-				var src = "getDestinationMainPicture?destinationName="+ json[item].name;
+				var src = ("getDestinationMainPicture?destinationName="+ json[item].name).replace(" ", "%20");
 				html +="<a href=\"Destination.html?destinationName="+ json[item].name +"\">";
 				html +="<div class=\"img bg-img-c\" style=\"width: 250px; background-image: url("+src+")\"></div></a>";
 				
