@@ -218,7 +218,7 @@ public class DestinationController {
 		TreeSet<Destination> destinations = new TreeSet<>(
 				(d1, d2) -> d1.getDateAndTimeToString().compareTo(d2.getDateAndTimeToString()));
 		for (Destination destination : DestinationsManager.getInstance().getAllDestinations().values()) {
-			if (destination.getName().toLowerCase().contains(search)) {
+			if (destination.getName().toLowerCase().contains(search.toLowerCase())) {
 				destinations.add(destination);
 			}
 		}

@@ -219,7 +219,8 @@ public class UserController {
 	public ArrayList<User> getUsersSearchResult(@RequestParam("search") String search) {
 		ArrayList<User> userSearch = new ArrayList<>();
 		for (User user : UsersManager.getInstance().getRegisterredUsers().values()) {
-			if (user.getFirstName().contains(search) || user.getLastName().contains(search)) {
+			if (user.getFirstName().toLowerCase().contains(search.toLowerCase())
+					|| user.getLastName().toLowerCase().contains(search.toLowerCase())) {
 				userSearch.add(user);
 			}
 		}

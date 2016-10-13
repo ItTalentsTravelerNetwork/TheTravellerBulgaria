@@ -282,7 +282,7 @@ $(function getSearchResults(){
 				var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <img src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"250\"/>";
 				html+=imageLocation;
 				html+="</td>";
-				destInfo+="<li><a href=\"Destination.html?destinationName"+ json[item].name +"\">"+ json[item].name +"</a><br><span class=\"small text-muted\">"+ json[item].description +"</span></li>";
+				destInfo+="<li><a href=\"Destination.html?destinationName="+ json[item].name +"\">"+ json[item].name +"</a><br><span class=\"small text-muted\">"+ json[item].description +"</span></li>";
 				
 				i++;
 			}
