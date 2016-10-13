@@ -19,7 +19,7 @@
 	<!-- Custom styles for our template -->
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
 	<link rel="stylesheet" href="assets/css/main.css">
-
+	<link rel="stylesheet" href="assets/css/search.css">
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
 	<script src="assets/js/html5shiv.js"></script>
@@ -68,6 +68,29 @@
 			</div>
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav pull-right">
+				<li>
+					<div class="button_box2">
+						<form class="form-wrapper-2 cf" action="SearchResults.html">
+							<input type="text" name="search" placeholder="Search here..." required>
+							<button type="submit">Search</button>
+						</form>
+					</div>
+					</li>
+				<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Select Category<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+							<li><a onclick="filter('MOUNTAINS')">Mountains</a></li>
+							<li><a onclick="filter('BEACHES')">Beaches</a></li>
+							<li><a onclick="filter('CITIES')">Cities</a></li>
+							<li><a onclick="filter('CAVES')">Caves</a></li>
+							<li><a onclick="filter('RIVERS')">Rivers</a></li>
+							<li><a onclick="filter('FORESTS')">Forests</a></li>
+							<li><a onclick="filter('WATERFALLS')">Waterfalls</a></li>
+							<li><a onclick="filter('LAKES')">Lakes</a></li>
+							<li><a onclick="filter('RURAL_AREAS')">Rural Areas</a></li>
+							<li><a onclick="filter('CAMPSITES')">Campsites</a></li>
+						</ul>
+				</li>
 					<li><a href="index.html">Home</a></li>					
 					<li><a href="AllDestinations.html">Destinations</a></li>
 					<li id="newsFeed"></li>									
@@ -96,7 +119,7 @@
 
 				<div class="row widget">
 					<div class="col-xs-12">											
-						
+						<div id="map" style="width:100% height:100%"></div>
 					</div>
 				</div>
 				<div class="row widget">
@@ -240,9 +263,78 @@ $(function showDestinations(){
 			}
 			html += "</tr></table>";
 			document.getElementById("allDestinations").innerHTML = html;
+			myMap(data);
 		}		
 	)
 })
-</script>
 
+function filter(data){
+	$.get(
+		"getDestinationsByCategory?category="+data,
+		function(data){
+			var json = data;
+			var html = "<header class=\"page-header\"><h1 class=\"page-title\">All Destinations</h1></header>";
+			html += "<table><tr>";
+			var i = 0;
+			for(var item in json){
+				
+				if(i%3==0){
+					html += "</tr><tr>";					
+				}
+				
+				html+="<td>";
+				var destName = "<h5 id=\"tempDestName\"><a class=\"btn\" href=\"Destination.html?destinationName="+ json[item].name +"\">" + json[item].name + "</a></h5>";
+				html += destName;
+				var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" />";
+				html+=imageLocation;
+				html+="</td>";
+				
+				i++;
+			}
+			html += "</tr></table>";
+			document.getElementById("allDestinations").innerHTML = html;
+		}
+	)
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQKyIgPewrgRCgagA1sDItFSRZh5hZlL4"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+	function myMap(data) {
+				
+			   var myCenter = new google.maps.LatLng(42.78, 25.33);
+			     var mapCanvas = document.getElementById("map");
+			     var mapOptions = {
+			       center: myCenter, zoom: 5,
+			        panControl: true,
+			        zoomControl: true,
+			        mapTypeControl: true,
+			        scaleControl: true,
+			        streetViewControl: true,
+			        overviewMapControl: true,
+			        rotateControl: true
+			    }
+			     
+			    var map = new google.maps.Map(mapCanvas, mapOptions);
+			    var infowindow = new google.maps.InfoWindow();
+		
+			    var i;
+			    for (i = 0; i < data.length; i++) {
+			    	var item = data[i];
+			    	var mark = new google.maps.LatLng(item.location.lattitude, item.location.longitude);
+			    	var marker = new google.maps.Marker({position:mark, map:map});
+			    	 google.maps.event.addListener(marker, 'click', (function(marker, i) {
+					        return function() {
+					          infowindow.setContent("<a href=\"Destination.html?destinationName="+data[i].name+"\">"+ data[i].name +"</a>");
+					          infowindow.open(map, marker);
+					        }
+					      })(marker, i));
+				    
+			    }
+			    
+			    
+			     
+			}
+	</script>
+	
 </html>

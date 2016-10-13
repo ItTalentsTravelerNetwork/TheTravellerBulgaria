@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -211,6 +212,18 @@ public class UserController {
 			return "VISITED";
 		}
 		return "NOT VISITED";
+	}
+
+	@RequestMapping(value = "/getUsersSearchResult", method = RequestMethod.GET)
+	@ResponseBody
+	public ArrayList<User> getUsersSearchResult(@RequestParam("search") String search) {
+		ArrayList<User> userSearch = new ArrayList<>();
+		for (User user : UsersManager.getInstance().getRegisterredUsers().values()) {
+			if (user.getFirstName().contains(search) || user.getLastName().contains(search)) {
+				userSearch.add(user);
+			}
+		}
+		return userSearch;
 	}
 
 	private static boolean validateData(String firstName, String lastName, String email, String password) {

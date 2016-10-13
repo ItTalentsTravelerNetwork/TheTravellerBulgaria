@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
@@ -6,34 +5,101 @@
 	<meta name="viewport"    content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="">
 	<meta name="author"      content="David & Yasen">
-	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-stale=0,post-check=0,pre-check=0" />
+	<meta http-equiv="Cache-Control" content="no-cache,no-store,private,must-revalidate,max-stale=0,post-check=0,pre-check=0" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />
 	
-	<title>Comment</title>
-
+	<title>The Traveler Bulgaria</title>
+	
 	<link rel="shortcut icon" href="assets/images/gt_favicon.png">
 	
 	<link rel="stylesheet" media="screen" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/font-awesome.min.css">
+	
 
 	<!-- Custom styles for our template -->
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
 	<link rel="stylesheet" href="assets/css/main.css">
 	<link rel="stylesheet" href="assets/css/search.css">
+	<style>
+		
+		.my-table {
+			width: 100%;
+			text-align: left;			
+			background: rgb(255,255,255);
+			background: -moz-linear-gradient(-45deg, rgba(255,255,255,1) 0%, rgba(243,243,243,1) 50%, rgba(237,237,237,1) 51%, rgba(255,255,255,1) 100%);
+			background: -webkit-linear-gradient(-45deg, rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%);
+			background: linear-gradient(135deg, rgba(255,255,255,1) 0%,rgba(243,243,243,1) 50%,rgba(237,237,237,1) 51%,rgba(255,255,255,1) 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff',GradientType=1 );
+		}
+		
+		
+		.my-table td {
+			padding:0px 15px;
+			vertical-align: top;
+		}
+		
+		.my-table .username {
+			float: left;
+			line-height: inherit;
+			color: #09c;
+			font-style: normal;
+			font-size: 14px;
+		}
+		
+		.my-table td:last-child {
+			border: 1px solid #ddd;
+			padding-bottom: 15px;
+			
+		}
+		
+		.my-table h6 {
+			text-align: right;
+			color: #777;
+			font-style: italic;
+		}
+		
+		.my-table .btn {
+			padding: 5px 40px;
+			background: rgba(15, 114, 185, 0.92);
+			color: white;
+		}
+		
+		.destination-main-picture {
+	   		width: 200px;
+    		height: auto;
+    		float: right;
+		}
+		
+		.profilePicture{
+			width : 80px;
+			height : 80px;
+			float: left;
+			border-radius: 50%;
+		}
 
+		
+		
+	</style>
+	
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
 	<script src="assets/js/html5shiv.js"></script>
 	<script src="assets/js/respond.min.js"></script>
 	<![endif]-->
-	
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	<script src="assets/js/headroom.min.js"></script>
+	<script src="assets/js/jQuery.headroom.min.js"></script>
+	<script src="assets/js/template.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="assets/js/checkForUser.js"></script>
+	<script>checkForUser()</script>	
 </head>
 
-<body>	
+<body>
 	<!-- Fixed navbar -->
-	
 	<div class="navbar navbar-inverse navbar-fixed-top headroom" >
 		<div class="container">
 			<div class="navbar-header">
@@ -51,11 +117,11 @@
 						</form>
 					</div>
 					</li>
-					<li><a href="index.html">Home</a></li>				
+					<li><a href="index.html">Home</a></li>					
 					<li><a href="AllDestinations.html">Destinations</a></li>
-					<li><a href="NewsFeed.html">News Feed</a></li>
-					<li><a class="btnc" onclick="logOut()">Logout</a></li>
-					<li><a class="btnc" href="profile.html">PROFILE</a></li>
+					<li id="newsFeed"></li>							
+					<li id="userButton"></li>
+					<li id="secondButton"></li>
 				</ul>
 			</div><!--/.nav-collapse -->
 		</div>
@@ -69,55 +135,46 @@
 
 		<ol class="breadcrumb">
 			<li><a href="index.html">Home</a></li>
-			<li class="active">Comment</li>
+			<li class="active">NewsFeed</li>
 		</ol>
 
 		<div class="row">
-		
 			
 			<!-- Article main content -->
-			<article class="col-sm-9 maincontent">
+			<article class="col-sm-8 maincontent">
 				<header class="page-header">
-					<h1 class="page-title">Comment</h1>
+					<h1 class="page-title">Destinations: </h1>
 				</header>
+				<div id="destinations">
 				
+				</div>
+				<header class="page-header">
+					<h1 class="page-title">Users: </h1>
+				</header>
+				<div id="users">
 				
-				<p id="shareExperience"> </p>
-				
-				
-				<br>
-					<form id="addCommentForm" action="javascript:addComment()">
-						
-						<div class="row">
-							<div class="col-sm-12">
-								<textarea id="commentText" name="commentText" placeholder="Type your comment here..." class="form-control" rows="9" maxlength="500" required></textarea>
-								<input type="hidden" name="destinationName" />
-							</div>
-						</div>
-						<br>
-						<div class="row">	
-							<div class="col-sm-6">
-								
-							</div>			
-							<div class="col-sm-6 text-right">
-								<input class="btn btn-action" type="submit" value="Submit Comment">
-							</div>
-						</div>
-					</form>
-
+				</div>
 			</article>
+			
+			
 			<!-- /Article -->
 			
 			<!-- Sidebar -->
-			<aside id="destinationPicture" class="col-sm-3 sidebar sidebar-right">
+			<aside class="col-sm-4 sidebar sidebar-right">
 
-				
+				<div class="widget">
+					<h4>Popular destinations</h4>
+					<ul id="popDest" class="list-unstyled list-spaces">
+					
+					</ul>
+				</div>
 
 			</aside>
 			<!-- /Sidebar -->
 
 		</div>
 	</div>	<!-- /container -->
+	
 
 	<footer id="footer" class="top-space">
 
@@ -160,7 +217,7 @@
             </div>
         </div>
 
-        <div class="footer2">
+		<div class="footer2">
             <div class="container">
                 <div class="row">
                     
@@ -200,76 +257,67 @@
 	<script src="assets/js/headroom.min.js"></script>
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
-	<script src="assets/js/checkForUser.js"></script>
-	<script>checkIfLoggedIn()</script>
-	
-	
+</body>
+
 <script>
 
-var params = location.search.substr(1).split("&").reduce(function(acc, element){
-	element=element.split("=");
-	acc[element[0]]=element[1];
-	return acc;
-}, {});
-
-$('[name="destinationName"]').val(params.destinationName)
-
-$(function shareExperienece(){
-	document.getElementById("shareExperience").innerHTML="Share your experience in "+params.destinationName;
-})
-
-
-function addComment(){
-	
-	var destinationName = location.search.split('destinationName=')[1];
-	
-	var form = $("#addCommentForm");
-	
-	$.post("addComment", form.serialize())
-	.then(showMessage);
-	
-	/*form.ajaxSubmit({
-		type : 'post',
-		url : 'addComment',
-		async: true,
-		success : function(results){
-			if(results!=null && results != ""){
-				showMessage(results);					
+var search = location.search.split('search=')[1];
+$(function getSearchResults(){
+	$.get(
+		"getDestinationSearchResults?search="+search,
+		function(data){
+			var destInfo = "";
+			var json = data;
+			var html = "<table><tr>";
+			var i = 0;
+			for(var item in json){
 				
-			}else{
-				alert("Some error occured, try again.");
+				if(i%3==0){
+					html += "</tr><tr>";					
+				}
+				
+				html+="<td>";
+				var destName = "<h5 id=\"tempDestName\"><a class=\"btn\" href=\"Destination.html?destinationName="+ json[item].name +"\">" + json[item].name + "</a></h5>";
+				html += destName;
+				var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <img src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"250\"/>";
+				html+=imageLocation;
+				html+="</td>";
+				destInfo+="<li><a href=\"Destination.html?destinationName"+ json[item].name +"\">"+ json[item].name +"</a><br><span class=\"small text-muted\">"+ json[item].description +"</span></li>";
+				
+				i++;
 			}
+			html += "</tr></table>";
+			document.getElementById('destinations').innerHTML = html;
+			document.getElementById("popDest").innerHTML = destInfo;
 		}
-	})
-	*/
-}
 	
-function showMessage(results){
-	var destinationName = location.search.split('destinationName=')[1];
-      if(results == 'Comment adding successful!'){
-          $('#message').html("<font color='green'>Comment successfully added. </font>")
-          setTimeout(function(){
-			window.location.href = "Destination.html?destinationName="+destinationName;
-		}, 500)
-      }else if(results == 'Comment adding failed!'){
-          $('#message').html("<font color='red'>Incorrect data! </font>")
-      }
- }
- 
- 
- $(
-	function() {
-		$("#destinationPicture").html('<img src="getDestinationMainPicture?destinationName='+params.destinationName+'"/>')
-	}		 
- )
- 
+	).then(
+			
+		$.get(
+			"getUsersSearchResult?search="+search,
+			function(data){
+				var html = "<table class=\"my-table\"><tr>";
+				var i = 0;
+				for ( var i in data) {
+					var user = data[i];
+					if(i%5==0){
+						html += "</tr><tr>";					
+					}
+					html+="<td>";
+					var userFullName = "<a href=\"foreignProfile.html?userEmail="+ user.email +"\">"+ user.firstName + " " + user.lastName +"</a>";
+					html+=userFullName;
+					html+="<img class=\"profilePicture\" src=\"GetProfilePicture?email="+ user.email +"\"height=\"100\" width=\"100\"/>";
+					html+="</td>";
+					i++;
+				}
+				html += "</tr></table>";
+				document.getElementById('users').innerHTML = html;
+			}
+		)		
+	)	
+			
+		}		
+	)
 
-
-	
-	
-	
 </script>
-	
-
-</body>
 </html>
