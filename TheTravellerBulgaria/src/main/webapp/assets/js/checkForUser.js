@@ -52,5 +52,53 @@ function logOut(){
 	
 }
 
+function checkIfActiveUser() {
+	var result = null;
+	$.ajax({
+		url: "GetUserInfo",
+		method: "GET",
+		async: false,
+		success: function (status) {
+			if(Object.keys(status).length==0){
+				result = 'No active user!';
+			}
+			else {
+				result = 'The user is active!';
+			}
+		}
+	})
+	return result;	
+}
+
+function getCurrentUserEmail() {
+	var result = null;
+	$.ajax({
+		url: "getCurrentUserEmail",
+		method: "GET",
+		async: false,
+		success: function (status) {
+			result = status;
+		}
+	})
+	return result;	
+}
+
+
+function showCommentVideoName(commentId){
+	var result = null;
+	$.ajax({
+		url: "showCommentVideoName?commentId=" + commentId,
+		method: "GET",
+		async: false,
+		success: function (commentVideoName) {
+			 result=commentVideoName;
+		}
+	})
+	return result;
+}
+
+
+
+
 
 

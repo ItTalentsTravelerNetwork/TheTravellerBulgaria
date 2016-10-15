@@ -21,6 +21,7 @@
 	<link rel="stylesheet" href="assets/css/bootstrap-theme.css" media="screen" >
 	<link rel="stylesheet" href="assets/css/main.css">
 	<link rel="stylesheet" href="assets/css/search.css">
+	<script src="assets/js/checkForUser.js"></script>
 	<style>
 		
 		.my-table {
@@ -82,6 +83,26 @@
 		
 		.wrapper {
 			opacity : 0;
+		}
+		
+		.bg-img-c {
+			-webkit-background-size: cover;
+			background-size: cover;
+			background-position: center;
+		}
+		.img {
+			//display: inline-block;
+		 }
+		.img:before {
+			content: '';
+			display: block;
+			padding-top: 75%;
+		}
+		.img.square:before {
+			padding-top: 100%;
+		}
+		.img.round {
+			border-radius: 50%;
 		}
 		
 		
@@ -316,7 +337,7 @@
 	<script src="assets/js/headroom.min.js"></script>
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
-	<script src="assets/js/checkForUser.js"></script>
+	
 	<script>checkForUser()</script>
 	
 	<script>
@@ -337,18 +358,16 @@
 	}
 	
 	function showLikeButtonStatus(commentId){
-			
-			var result = null;
-			$.ajax({
-				url: "showLikeButtonStatus?commentId=" + commentId,
-				method: "GET",
-				async: false,
-				success: function (status) {
-					 result=status;
-						}
-				}
-			)
-			return result;
+		var result = null;
+		$.ajax({
+			url: "showLikeButtonStatus?commentId=" + commentId,
+			method: "GET",
+			async: false,
+			success: function (status) {
+				result=status;
+			}
+		})
+		return result;
 	}
 	
 	
@@ -363,10 +382,6 @@
 			}
 		})
 		return result;
-	}
-	
-	function insertVideo(commentId, videoName) {
-		
 	}
 	
 	
@@ -426,7 +441,15 @@
 							html.push("<a href=\"foreignProfile.html?userEmail="+ user.email +"\">");
 						}
 						
-						html.push("<img src=\"GetProfilePicture?email="+ user.email + "\" height=\"60\" width=\"60\" style=\"border-radius: 50%;\"/>")
+						//html.push("<img src=\"GetProfilePicture?email="+ user.email + "\" height=\"60\" width=\"60\" style=\"border-radius: 50%;\"/>")
+						var src = ("GetProfilePicture?email="+ user.email).replace(" ", "%20");
+						if (user.email.valueOf() != getCurrentUserEmail().valueOf()) {
+							html.push("<a href=\"foreignProfile.html?userEmail="+ user.email +"\">");
+						}
+						else {
+							html.push("<a href=\"profile.html?userEmail="+ user.email +"\">");
+						}
+						html.push("<div class=\"round img bg-img-c square\" style=\"width: 60px; background-image: url("+src+")\"></div></a>");
 						html.push("</td>");
 						
 						html.push("<td>");
@@ -435,50 +458,65 @@
 						html.push("</form>");
 						
 						
-						var commentVideoName = showCommentVideoName(comment.id);
-						if (!commentVideoName) {
-							html.push('<form class="sideBySideForm">');
-							html.push("&nbsp;&nbsp;&nbsp;<label  for=\"videoButton-"+comment.id+"-1\" class=\"sideBySideForm\" type=\"file\" > <img src=\"assets/images/videoButton.png\" height=30px width=auto > </label>");
-							html.push("<div class=\"sideBySideForm\" style=\"display: none;\"> <input class=\"uploadVideo\" type=\"file\" data-id=\""+comment.id+"\" id=\"videoButton-"+comment.id+"-1\"/> </div>");
-							html.push('</form>');
-						}
-						
-						html.push("<h6 id=\"dislikeCounter-"+comment.id+"-2\" class=\"sideBySideForm\">Disliked: "+comment.numberOfDislikes+"</h6>");
-						html.push("<form id=\"dislikeUndislikeCommentForm-"+comment.id+"-2\" class=\"sideBySideForm\" action=\"javascript:dislikeComment("+comment.id+")\">");
-						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
-						html.push("<input id=\"dislikeButton-"+comment.id+"-2\" type=\"image\" ");
+					
 						
 						
-						var result = showDislikeButtonStatus(comment.id);
-						if (result.valueOf() == 'Comment already disliked!') {
-							html.push("src=\"assets/images/DislikeButtonActive.png\"");
-						}
-						else {
-							html.push("src=\"assets/images/DislikeButtonNonActive.png\"");
-						}
-						html.push("height=25px width=auto alt=\"Submit\">");
+						var userStatus=checkIfActiveUser();
+						if (userStatus.valueOf() == 'The user is active!') {
+							var currentUser = getCurrentUserEmail();
+							var commentAuthorEmail = comment.authorEmail;
+							var commentVideoName = showCommentVideoName(comment.id);
+							if (!commentVideoName && currentUser.valueOf() === commentAuthorEmail.valueOf()) {
+								html.push('<form id="commentVideoForm-'+comment.id+'" class="sideBySideForm">');
+								html.push("&nbsp;&nbsp;&nbsp;<label  for=\"videoButton-"+comment.id+"-1\" class=\"sideBySideForm\" type=\"file\" > <img src=\"assets/images/videoButton.png\" height=30px width=auto > </label>");
+								html.push("<div class=\"sideBySideForm\" style=\"display: none;\"> <input class=\"uploadVideo\" type=\"file\" data-id=\""+comment.id+"\" id=\"videoButton-"+comment.id+"-1\"/> </div>");
+								html.push('</form>');
+							}
+							
+							html.push("<h6 id=\"dislikeCounter-"+comment.id+"-2\" class=\"sideBySideForm\">Disliked: "+comment.numberOfDislikes+"</h6>");
+							html.push("<form id=\"dislikeUndislikeCommentForm-"+comment.id+"-2\" class=\"sideBySideForm\" action=\"javascript:dislikeComment("+comment.id+")\">");
+							html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
+							html.push("<input id=\"dislikeButton-"+comment.id+"-2\" type=\"image\" ");
+							
+							
+							var result = showDislikeButtonStatus(comment.id);
+							if (result.valueOf() == 'Comment already disliked!') {
+								html.push("src=\"assets/images/DislikeButtonActive.png\"");
+							}
+							else {
+								html.push("src=\"assets/images/DislikeButtonNonActive.png\"");
+							}
+							html.push("height=25px width=auto alt=\"Submit\">");
+							
+							html.push("</form>");
+							html.push("<form id=\"likeUnlikeCommentForm-"+comment.id+"-1\" class=\"sideBySideForm\" action=\"javascript:likeComment("+comment.id+")\">");
+							html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
+							html.push("<input id=\"likeButton-"+comment.id+"-1\" type=\"image\"");
+							
+							
+							var result = showLikeButtonStatus(comment.id);
+							if (result.valueOf() == 'Comment already liked!') {
+								html.push("src=\"assets/images/LikeButtonActive.png\"");
+							}
+							else {
+								html.push("src=\"assets/images/LikeButtonNonActive.png\"");
+							}
+							html.push("height=25px width=auto alt=\"Submit\">");
+							
+							html.push("</form>");
+							html.push("<h6 id=\"likeCounter-"+comment.id+"-1\" class=\"sideBySideForm\">Liked: "+comment.numberOfLikes+"</h6>");
+							
+							
+							if (commentVideoName) {
+								//html.push("<form id=\"commentVideoContainer-"+comment.id+"\" action=\"javascript:loadVideo("+comment.id +", "+ commentVideoName+")\">");
+								html.push('<video width="500" controls preload> <source  src="getVideo?commentId='+comment.id+'&video='+commentVideoName+'" type="video/mp4"></video>');
+								//html.push("<input id=\"video-commentId\" type=\"hidden\" name=\"video-commentId\" value=\""+comment.id+"\">");  
+								//html.push("<input id=\"video-name\" type=\"hidden\" name=\"video-name\" value=\""+commentVideoName+"\">");  
+								//html.push("<input type=\"image\" src=\"assets/images/videoIcon.png\" height=80px  alt=\"Submit\">");
+	
+								//html.push("</form>");
+							}
 						
-						html.push("</form>");
-						html.push("<form id=\"likeUnlikeCommentForm-"+comment.id+"-1\" class=\"sideBySideForm\" action=\"javascript:likeComment("+comment.id+")\">");
-						html.push("<input id=\"commentId\" type=\"hidden\" name=\"commentId\" value=\""+comment.id+"\">");  
-						html.push("<input id=\"likeButton-"+comment.id+"-1\" type=\"image\"");
-						
-						
-						var result = showLikeButtonStatus(comment.id);
-						if (result.valueOf() == 'Comment already liked!') {
-							html.push("src=\"assets/images/LikeButtonActive.png\"");
-						}
-						else {
-							html.push("src=\"assets/images/LikeButtonNonActive.png\"");
-						}
-						html.push("height=25px width=auto alt=\"Submit\">");
-						
-						html.push("</form>");
-						html.push("<h6 id=\"likeCounter-"+comment.id+"-1\" class=\"sideBySideForm\">Liked: "+comment.numberOfLikes+"</h6>");
-						
-						
-						if (commentVideoName) {
-							html.push('<video width="500" controls preload> <source  src="getVideo?commentId='+comment.id+'&video='+commentVideoName+'"type="video/mp4"></video>');
 						}
 						
 						html.push("</td>");
@@ -544,11 +582,11 @@ function likeComment(commentId){
 
 			 var ext = video.name.split('.').slice(-1)[0];
 
-			 if( !/^(mp4|webm|ogg)$/i.test(ext) ) 
-			  return alert('Wrong file type! Only mp4, webm and ogg are supported!');
+			 if( !/^(mp4|webm|ogv)$/i.test(ext) ) 
+			  return alert('Wrong file type! Only .mp4, .webm and .ogv are supported! Try again with a different one!');
 
 			 if(video.size > 314572800)
-			  return alert('File too big! Try again!');
+			  return alert('The uploaded file exceeds the maximum allowed size of 300Mb! Please, try again with a smaller one!');
 
 			 console.log(video);
 
@@ -564,13 +602,34 @@ function likeComment(commentId){
 			     type: 'POST'
 			 })
 			 .then(function(res){
-
-			  self.closest('td').append('<video width="500" controls preload> <source  src="getVideo?commentId='+id+'&video='+video.name+'"type="video/mp4"></video>');
-					
+				if (res.valueOf() == 'Success!') {
+			 		self.closest('td').append('<video width="500" controls preload> <source  src="getVideo?commentId='+id+'&video='+video.name+'"type="video/mp4"></video>');
+			 		document.getElementById("commentVideoForm-"+id).innerHTML="";
+				}
+				else {
+					 return alert('Nice try! But we are prepared! We love your sense of humour but still the only supported formats are .mp4, .webm and .ogv! ;)');
+				}
 			 }, err => console.log(err));
-		})
+		});
 	});
 	
+	
+	
+//function loadVideo(commentId, commentVideoName){
+	
+//var form = $("#commentVideoContainer-"+commentId+"");
+	
+//	$.post("getVideo", form.serialize())
+//	.then(
+//		function(result) {
+//			document.getElementById("commentVideoContainer-"+commentId+"").innerHTML="<video width=\"500\" controls preload> <source  src=\""+result+"\" type=\"video/mp4\"></video>";
+//		}
+//	);
+	
+	
+	
+	// // document.getElementById("commentVideoContainer-"+commentId+"").innerHTML="<video width=\"500\" controls preload> <source  src=\"getVideo?commentId="+commentId+"&video="+commentVideoName+"\" type=\"video/mp4\"></video>";
+//}
 	
 	
 
@@ -647,7 +706,7 @@ function showMessage(results){
       }else if(results == 'Comment adding failed!'){
           $('#message').html("<font color='red'>Incorrect data! </font>")
       }
- }
+}
  
  
 function showGallery(){

@@ -49,7 +49,7 @@
 		}
 		
 		.my-table td:last-child {
-			border: 1px solid #ddd;
+			//border: 1px solid #ddd;
 			padding-bottom: 15px;
 			
 		}
@@ -76,6 +76,26 @@
 			width : 80px;
 			height : 80px;
 			float: left;
+			border-radius: 50%;
+		}
+		
+		.bg-img-c {
+			-webkit-background-size: cover;
+			background-size: cover;
+			background-position: center;
+		}
+		.img {
+			//display: inline-block;
+		 }
+		.img:before {
+			content: '';
+			display: block;
+			padding-top: 75%;
+		}
+		.img.square:before {
+			padding-top: 100%;
+		}
+		.img.round {
 			border-radius: 50%;
 		}
 
@@ -279,7 +299,8 @@ $(function getSearchResults(){
 				html+="<td>";
 				var destName = "<h5 id=\"tempDestName\"><a class=\"btn\" href=\"Destination.html?destinationName="+ json[item].name +"\">" + json[item].name + "</a></h5>";
 				html += destName;
-				var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <img src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" height=\"150\" width=\"250\"/>";
+				var src = ("getDestinationMainPicture?destinationName="+ json[item].name).replace(" ", "%20");
+				var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <div class=\"img bg-img-c\" style=\"width: 250px; background-image: url("+src+")\"></div>";
 				html+=imageLocation;
 				html+="</td>";
 				destInfo+="<li><a href=\"Destination.html?destinationName="+ json[item].name +"\">"+ json[item].name +"</a><br><span class=\"small text-muted\">"+ json[item].description +"</span></li>";
@@ -304,9 +325,23 @@ $(function getSearchResults(){
 						html += "</tr><tr>";					
 					}
 					html+="<td>";
-					var userFullName = "<a href=\"foreignProfile.html?userEmail="+ user.email +"\">"+ user.firstName + " " + user.lastName +"</a>";
-					html+=userFullName;
-					html+="<img class=\"profilePicture\" src=\"GetProfilePicture?email="+ user.email +"\"height=\"100\" width=\"100\"/>";
+					
+					
+					var src = ("GetProfilePicture?email="+ user.email).replace(" ", "%20");
+					if (user.email.valueOf() != getCurrentUserEmail().valueOf()) {
+						var userFullName = "<a href=\"foreignProfile.html?userEmail="+ user.email +"\">"+ user.firstName + " " + user.lastName +"</a>";
+						html+=userFullName;
+						html+="<a href=\"foreignProfile.html?userEmail="+ user.email +"\">";
+						
+					}
+					else {
+						var userFullName = "<a href=\"profile.html?userEmail="+ user.email +"\">"+ user.firstName + " " + user.lastName +"</a>";
+						html+=userFullName;
+						html+="<a href=\"profile.html?userEmail="+ user.email +"\">";
+						
+					}
+					html+="<div class=\"round img bg-img-c square\" style=\"width: 80px; background-image: url("+src+")\"></div></a>";
+					//html+="<img class=\"profilePicture\" src=\"GetProfilePicture?email="+ user.email +"\"height=\"100\" width=\"100\"/>";
 					html+="</td>";
 					i++;
 				}

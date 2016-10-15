@@ -233,6 +233,19 @@
 	
 </body>
 <script>
+$( function () {
+	var params = location.search.substr(1).split("&").reduce(function(acc, element){
+		element=element.split("=");
+		acc[element[0]]=element[1];
+		return acc;
+	}, {});
+	if (params.userEmail.valueOf() == getCurrentUserEmail().valueOf()) {
+		window.location.href="profile.html?userEmail="+ params.userEmail +"";
+	}
+		
+})
+
+
 $(function showUnfollow(){
 	var userEmail = location.search.split('userEmail=')[1];
 	$.get(

@@ -226,6 +226,19 @@ public class UserController {
 		}
 		return userSearch;
 	}
+	
+	@RequestMapping(value = "/getCurrentUserEmail", method = RequestMethod.GET)
+	@ResponseBody
+	public String getCurrentUserEmail(HttpServletRequest request, HttpServletResponse response) {
+		User currentUser = (User) request.getSession().getAttribute("user");
+		if (currentUser!=null) {
+			String userEmail = currentUser.getEmail();
+			if (userEmail!=null && !userEmail.isEmpty()) {
+				return userEmail;
+			}
+		}
+		return null;
+	}
 
 	private static boolean validateData(String firstName, String lastName, String email, String password) {
 		if ((firstName != null && lastName != null && email != null && password != null)) {
