@@ -275,12 +275,10 @@
 
                     <div class="col-md-3 widget">
                         <h3 class="widget-title">Follow us</h3>
+                        <div> <h5> on Facebook</h5>  </div>
                         <div class="widget-body">
                             <p class="follow-me-icons">
-                                <a href=""><i class="fa fa-twitter fa-2"></i></a>
-                                <a href=""><i class="fa fa-dribbble fa-2"></i></a>
-                                <a href=""><i class="fa fa-github fa-2"></i></a>
-                                <a href="https://www.facebook.com/TheTravellerBulgaria/"><i class="fa fa-facebook fa-2"></i></a>
+                                 <a href="https://www.facebook.com/TheTravellerBulgaria/"><i class="fa fa-facebook fa-2"></i></a>
                             </p>    
                         </div>
                     </div>
@@ -297,33 +295,21 @@
             </div>
         </div>
 
-        <div class="footer2">
-            <div class="container">
-                <div class="row">
-                    
-                    <div class="col-md-6 widget">
-                        <div class="widget-body">
-                            <p class="simplenav">
-                                <a href="#">Home</a> | 
-                                <a href="SectionUnderConstructionPage.html">About</a> |
-                                <a href="SectionUnderConstructionPage.html">Sidebar</a> |
-                                <a href="SectionUnderConstructionPage.html">Contact</a> |
-                                <b><a href="SignUp.html">Sign up</a></b>
-                            </p>
-                        </div>
-                    </div>
+       <div class="footer2">
+			<div class="container">
+				<div class="row">
+					
+					<div class="col-md-6 widget" style="float:right;">
+						<div class="widget-body">
+							<p class="text-right">
+								Copyright &copy; 2016, The Traveler Bulgaria. Designed by David & Yasen</a> 
+							</p>
+						</div>
+					</div>
 
-                    <div class="col-md-6 widget">
-                        <div class="widget-body">
-                            <p class="text-right">
-                                Copyright &copy; 2016, The Traveler Bulgaria. Designed by David & Yasen</a> 
-                            </p>
-                        </div>
-                    </div>
-
-                </div> <!-- /row of widgets -->
-            </div>
-        </div>
+				</div> <!-- /row of widgets -->
+			</div>
+		</div>
 
     </footer>
 		
@@ -508,8 +494,8 @@
 							
 							
 							if (commentVideoName) {
-								var videoSrc="getVideo?commentId="+comment.id+"&video="+(commentVideoName).split(" ").join("%20")+"";
-								//html.push("<form id=\"commentVideoContainer-"+comment.id+"\" action=\"javascript:loadVideo("+comment.id +", "+ commentVideoName+")\">");
+								//var videoSrc="getVideo?commentId="+comment.id+"&video="+(commentVideoName).split(" ").join("%20")+"";
+								//html.push("<form id=\"commentVideoContainer-"+comment.id+"\" action=\"javascript:loadVideo("+comment.id+", "+commentVideoName+")\">");
 								html.push('<video width="500" controls preload> <source  src="getVideo?commentId='+comment.id+'&video='+commentVideoName+'" type="video/mp4"></video>');
 								//html.push("<input id=\"video-commentId\" type=\"hidden\" name=\"video-commentId\" value=\""+comment.id+"\">");  
 								//html.push("<input id=\"video-name\" type=\"hidden\" name=\"video-name\" value=\""+commentVideoName+"\">");  
@@ -616,21 +602,21 @@ function likeComment(commentId){
 	
 	
 	
-//function loadVideo(commentId, commentVideoName){
+function loadVideo(commentId, commentVideoName){
 	
-//var form = $("#commentVideoContainer-"+commentId+"");
+var form = $("#commentVideoContainer-"+commentId+"");
 	
-//	$.post("getVideo", form.serialize())
-//	.then(
-//		function(result) {
-//			document.getElementById("commentVideoContainer-"+commentId+"").innerHTML="<video width=\"500\" controls preload> <source  src=\""+result+"\" type=\"video/mp4\"></video>";
-//		}
-//	);
+	//$.post("getVideo", form.serialize())
+	//.then(
+	//	function(result) {
+	//		document.getElementById("commentVideoContainer-"+commentId+"").innerHTML="<video width=\"500\" controls preload> <source  src=\""+result+"\" type=\"video/mp4\"></video>";
+	//	}
+	//);
 	
 	
 	
-	// // document.getElementById("commentVideoContainer-"+commentId+"").innerHTML="<video width=\"500\" controls preload> <source  src=\"getVideo?commentId="+commentId+"&video="+commentVideoName+"\" type=\"video/mp4\"></video>";
-//}
+	document.getElementById("commentVideoContainer-"+commentId+"").innerHTML="<video width=\"500\" controls preload> <source  src=\"getVideo?commentId="+commentId+"&video="+commentVideoName+"\" type=\"video/mp4\"></video>";
+}
 	
 	
 
