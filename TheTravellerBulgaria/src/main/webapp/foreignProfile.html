@@ -252,11 +252,12 @@ function unFollow(){
 		"Unfollow",
 		{user : userEmail},
 		function(data){
+			var msg = JSON.parse(data).msg;
 			var name = document.getElementById('fullName').innerHTML;
-			if(data == 'SUCCESS'){				
+			if(msg == 'SUCCESS'){				
 				$('#followMessage').html("<font color='green'>You have stopped following " + name + ". </font>");
 				document.getElementById("follow").innerHTML = "<a class=\"btn btn-action\" onclick=\"follow()\">Follow</a>";
-			}else if(data == 'FAILURE'){
+			}else if(msg == 'FAILURE'){
 				$('#followMessage').html("<font color='red'>You don't follow " + name + ". </font>");
 			}
 		}
@@ -265,15 +266,17 @@ function unFollow(){
 
 function follow(){
 	var userEmail = location.search.split('userEmail=')[1];
+	
 	$.post(
 		"Follow",
 		{user : userEmail},
 		function(data){
+			var msg = JSON.parse(data).msg;
 			var name = document.getElementById('fullName').innerHTML;
-			if(data == 'SUCCESS'){				
+			if(msg == 'SUCCESS'){				
 				$('#followMessage').html("<font color='green'>You have successfully followed " + name + ". </font>");
 				document.getElementById("follow").innerHTML = "<a class=\"btn btn-action\" onclick=\"unFollow()\">Stop Following</a>";
-			}else if(data == 'FAILURE'){
+			}else if(msg == 'FAILURE'){
 				$('#followMessage').html("<font color='red'>You have already followed " + name + ". </font>");
 			}
 		}

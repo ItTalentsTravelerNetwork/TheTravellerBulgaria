@@ -35,6 +35,7 @@ public class SpringWebConfig extends WebMvcConfigurerAdapter {
 		registry.addResourceHandler("/assets/videos/**").addResourceLocations("/assets/videos/");
 		registry.addResourceHandler("/*.html").addResourceLocations("/").setCachePeriod(0)
 				.setCacheControl(CacheControl.noCache());
+		registry.addResourceHandler("/index.html").addResourceLocations("/").setCachePeriod(0);
 	}
 
 	@Bean(name = "multipartResolver")

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.tika.Tika;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,34 +36,46 @@ public class UserController {
 	private static final String NAME_PATTERN = "^[A-Za-z]+$";
 	private static final int MINIMUM_PASSWORD_LENGTH = 6;
 	private static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9]+.[a-z.]+$";
+	private static final String[] availablePictureTypes = { "image/jpeg", "image/x-ms-bmp", "image/gif", "image/png" };
 
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
 	@ResponseBody
-	public String register(@RequestParam("profilePic") MultipartFile multipartFile, HttpServletRequest request)
-			throws IOException {
-		String inputPassword = request.getParameter("userPassword");
-
-		String firstName = request.getParameter("userFirstName");
-		String lastName = request.getParameter("userLastName");
-		String email = request.getParameter("userEmailAddress");
-		String description = request.getParameter("userDescription");
-
-		if (validateData(firstName, lastName, email, inputPassword)) {
-			if (UsersManager.getInstance().getUserFromCache(email) != null) {
-				return "USER EXISTS";
+	public String register(@RequestParam("profilePic") MultipartFile multipartFile, HttpServletRequest request) {
+		Tika tika = new Tika();
+		String realFileType;
+		try {
+			realFileType = tika.detect(multipartFile.getBytes());
+			for (String type: availablePictureTypes) {
+				if (type.equals(realFileType)) { // if the real picture type is one of the available
+					String inputPassword = request.getParameter("userPassword");
+			
+					String firstName = request.getParameter("userFirstName");
+					String lastName = request.getParameter("userLastName");
+					String email = request.getParameter("userEmailAddress");
+					String description = request.getParameter("userDescription");
+			
+					if (validateData(firstName, lastName, email, inputPassword)) {
+						if (UsersManager.getInstance().getUserFromCache(email) != null) {
+							return "{\"msg\" : \"USER EXISTS\"}";
+						}
+						File dir = new File("userPics");
+						if (!dir.exists()) {
+							dir.mkdir();
+						}
+						File profilePicFile = new File(dir, email + "-profilePic." + multipartFile.getOriginalFilename());
+						Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						UsersManager.getInstance().registerUser(email, inputPassword, firstName, lastName, description,
+								profilePicFile.getName());
+						return "{\"msg\" : \"User Registration Successful!\"}";
+					}
+					return "{\"msg\" : \"Wrong data!\"}";
+				}	
 			}
-			File dir = new File("userPics");
-			if (!dir.exists()) {
-				dir.mkdir();
-			}
-			File profilePicFile = new File(dir, email + "-profilePic." + multipartFile.getOriginalFilename());
-			Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			UsersManager.getInstance().registerUser(email, inputPassword, firstName, lastName, description,
-					profilePicFile.getName());
-			return "User Registration Successful!";
+			return "{\"msg\" : \"Wrong picture format!\"}";
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "{\"msg\" : \"Registration failed!\"}";
 		}
-
-		return "Registration failed!";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -72,16 +85,16 @@ public class UserController {
 		try {
 			user = UsersManager.getInstance().logIn(email, password);
 		} catch (InvalidEmailException e) {
-			return "INVALID EMAIL";
+			return "{\"msg\" : \"INVALID EMAIL\"}";
 
 		} catch (InvalidPasswordException e) {
-			return "INVALID PASSWORD";
+			return "{\"msg\" : \"INVALID PASSWORD\"}";
 		}
 		if (user != null) {
 			session.setAttribute("user", user);
-			return "SUCCESS";
+			return "{\"msg\" : \"SUCCESS\"}";
 		}
-		return "FAILURE";
+		return "{\"msg\" : \"FAILURE\"}";
 	}
 
 	@RequestMapping(value = "/GetUserInfo", method = RequestMethod.GET)
@@ -143,9 +156,9 @@ public class UserController {
 		User user = (User) request.getSession().getAttribute("user");
 		boolean isFollowed = UsersManager.getInstance().addToFollowedUsers(user, foreignUserEmail);
 		if (isFollowed) {
-			return "SUCCESS";
+			return "{\"msg\" : \"SUCCESS\"}";
 		} else {
-			return "FAILURE";
+			return "{\"msg\" : \"FAILURE\"}";
 		}
 	}
 
@@ -155,9 +168,9 @@ public class UserController {
 		User user = (User) request.getSession().getAttribute("user");
 		boolean isFollowed = UsersManager.getInstance().removeFromFollowedUsers(user, foreignUserEmail);
 		if (isFollowed) {
-			return "SUCCESS";
+			return "{\"msg\" : \"SUCCESS\"}";
 		} else {
-			return "FAILURE";
+			return "{\"msg\" : \"FAILURE\"}";
 		}
 	}
 
@@ -189,9 +202,9 @@ public class UserController {
 		User user = (User) request.getSession().getAttribute("user");
 		String email = request.getParameter("user");
 		if (user.getFollowedUsers().contains(email)) {
-			return "followed";
+			return "{\"msg\" : \"followed\"}";
 		}
-		return "notFollowed";
+		return "{\"msg\" : \"notFollowed\"}";
 	}
 
 	@RequestMapping(value = "/addToVisited", method = RequestMethod.POST)
@@ -200,13 +213,13 @@ public class UserController {
 		String place = request.getParameter("destinationName").replaceAll("%20", " ");
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
-			return "FAILURE";
+			return "{\"msg\" : \"FAILURE\"}";
 		}
 		boolean isAdded = UsersManager.getInstance().addVidsitedDestination(user, place);
 		if (!isAdded) {
-			return "VISITED";
+			return "{\"msg\" : \"VISITED\"}";
 		}
-		return "SUCCESS";
+		return "{\"msg\" : \"SUCCESS\"}";
 	}
 
 	@RequestMapping(value = "/isVisited", method = RequestMethod.GET)
@@ -215,13 +228,13 @@ public class UserController {
 		String place = request.getParameter("destinationName").replaceAll("%20", " ");
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
-			return "FAILURE";
+			return "{\"msg\" : \"FAILURE\"}";
 		}
 		boolean isVisited = user.getVisitedPlaces().contains(place);
 		if (isVisited) {
-			return "VISITED";
+			return "{\"msg\" : \"VISITED\"}";
 		}
-		return "NOT VISITED";
+		return "{\"msg\" : \"NOT VISITED\"}";
 	}
 
 	@RequestMapping(value = "/getUsersSearchResult", method = RequestMethod.GET)
@@ -236,14 +249,14 @@ public class UserController {
 		}
 		return userSearch;
 	}
-	
+
 	@RequestMapping(value = "/getCurrentUserEmail", method = RequestMethod.GET)
 	@ResponseBody
 	public String getCurrentUserEmail(HttpServletRequest request, HttpServletResponse response) {
 		User currentUser = (User) request.getSession().getAttribute("user");
-		if (currentUser!=null) {
+		if (currentUser != null) {
 			String userEmail = currentUser.getEmail();
-			if (userEmail!=null && !userEmail.isEmpty()) {
+			if (userEmail != null && !userEmail.isEmpty()) {
 				return userEmail;
 			}
 		}
@@ -256,7 +269,6 @@ public class UserController {
 					&& password.length() >= MINIMUM_PASSWORD_LENGTH;
 		}
 		return false;
-
 	}
 
 }
