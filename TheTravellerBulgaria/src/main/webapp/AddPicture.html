@@ -209,15 +209,16 @@
 			
 		}
 		
-		function showMessage(results){		
-	        if(results == 'SUCCESS'){
+		function showMessage(results){
+			var msg = JSON.parse(result).msg;
+	        if(msg == 'SUCCESS'){
 	            $('#message').html("<font color='green'>You have successfully added the picture. </font>")
 	            setTimeout(function(){
 						window.location.href = "Destination.html?destinationName="+destinationName;
 					}, 500)
-	        }else if(results == 'NOT EXISTING'){
+	        }else if(msg == 'NOT EXISTING'){
 	            $('#message').html("<font color='red'>The destination does not exist. </font>");
-	        }else if(results == 'PICTURE EXISTS'){
+	        }else if(msg == 'PICTURE EXISTS'){
 	        	$('#message').html("<font color='red'>The picture already exists. </font>");
 	        }else{
 	        	$('#message').html("<font color='red'>Some error occured, try again. </font>");

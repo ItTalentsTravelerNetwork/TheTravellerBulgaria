@@ -218,16 +218,17 @@
 		}
 		
 		function showMessage(results){
-                if(results == 'SUCCESS'){
+				var msg = JSON.parse(results).msg;
+                if(msg == 'SUCCESS'){
                     $('#message').html("<font color='green'>You are successfully logged in. </font>")
                     setTimeout(function(){
 							window.location.href = "index.html";
 						}, 500)
-                }else if(results == 'FAILURE'){
+                }else if(msg == 'FAILURE'){
                     $('#message').html("<font color='red'>Username or password incorrect </font>")
-                }else if(results =='INVALID EMAIL'){
+                }else if(msg =='INVALID EMAIL'){
                 	$('#message').html("<font color='red'>Invalid email entered !</font>")
-                }else if(results =='INVALID PASSWORD'){
+                }else if(msg =='INVALID PASSWORD'){
                 	$('#message').html("<font color='red'>Invalid password entered !</font>")
                 }
             }

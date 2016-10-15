@@ -49,7 +49,7 @@ public class UserController {
 
 		if (validateData(firstName, lastName, email, inputPassword)) {
 			if (UsersManager.getInstance().getUserFromCache(email) != null) {
-				return "USER EXISTS";
+				return "{\"msg\" : \"USER EXISTS\"}";
 			}
 			File dir = new File("userPics");
 			if (!dir.exists()) {
@@ -59,10 +59,10 @@ public class UserController {
 			Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			UsersManager.getInstance().registerUser(email, inputPassword, firstName, lastName, description,
 					profilePicFile.getName());
-			return "User Registration Successful!";
+			return "{\"msg\" : \"User Registration Successful!\"}";
 		}
 
-		return "Registration failed!";
+		return "{\"msg\" : \"Registration failed!\"}";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -72,16 +72,16 @@ public class UserController {
 		try {
 			user = UsersManager.getInstance().logIn(email, password);
 		} catch (InvalidEmailException e) {
-			return "INVALID EMAIL";
+			return "{\"msg\" : \"INVALID EMAIL\"}";
 
 		} catch (InvalidPasswordException e) {
-			return "INVALID PASSWORD";
+			return "{\"msg\" : \"INVALID PASSWORD\"}";
 		}
 		if (user != null) {
 			session.setAttribute("user", user);
-			return "SUCCESS";
+			return "{\"msg\" : \"SUCCESS\"}";
 		}
-		return "FAILURE";
+		return "{\"msg\" : \"FAILURE\"}";
 	}
 
 	@RequestMapping(value = "/GetUserInfo", method = RequestMethod.GET)
@@ -143,9 +143,9 @@ public class UserController {
 		User user = (User) request.getSession().getAttribute("user");
 		boolean isFollowed = UsersManager.getInstance().addToFollowedUsers(user, foreignUserEmail);
 		if (isFollowed) {
-			return "SUCCESS";
+			return "{\"msg\" : \"SUCCESS\"}";
 		} else {
-			return "FAILURE";
+			return "{\"msg\" : \"FAILURE\"}";
 		}
 	}
 
@@ -155,9 +155,9 @@ public class UserController {
 		User user = (User) request.getSession().getAttribute("user");
 		boolean isFollowed = UsersManager.getInstance().removeFromFollowedUsers(user, foreignUserEmail);
 		if (isFollowed) {
-			return "SUCCESS";
+			return "{\"msg\" : \"SUCCESS\"}";
 		} else {
-			return "FAILURE";
+			return "{\"msg\" : \"FAILURE\"}";
 		}
 	}
 
@@ -189,9 +189,9 @@ public class UserController {
 		User user = (User) request.getSession().getAttribute("user");
 		String email = request.getParameter("user");
 		if (user.getFollowedUsers().contains(email)) {
-			return "followed";
+			return "{\"msg\" : \"followed\"}";
 		}
-		return "notFollowed";
+		return "{\"msg\" : \"notFollowed\"}";
 	}
 
 	@RequestMapping(value = "/addToVisited", method = RequestMethod.POST)
@@ -200,13 +200,13 @@ public class UserController {
 		String place = request.getParameter("destinationName").replaceAll("%20", " ");
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
-			return "FAILURE";
+			return "{\"msg\" : \"FAILURE\"}";
 		}
 		boolean isAdded = UsersManager.getInstance().addVidsitedDestination(user, place);
 		if (!isAdded) {
-			return "VISITED";
+			return "{\"msg\" : \"VISITED\"}";
 		}
-		return "SUCCESS";
+		return "{\"msg\" : \"SUCCESS\"}";
 	}
 
 	@RequestMapping(value = "/isVisited", method = RequestMethod.GET)
@@ -215,13 +215,13 @@ public class UserController {
 		String place = request.getParameter("destinationName").replaceAll("%20", " ");
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
-			return "FAILURE";
+			return "{\"msg\" : \"FAILURE\"}";
 		}
 		boolean isVisited = user.getVisitedPlaces().contains(place);
 		if (isVisited) {
-			return "VISITED";
+			return "{\"msg\" : \"VISITED\"}";
 		}
-		return "NOT VISITED";
+		return "{\"msg\" : \"NOT VISITED\"}";
 	}
 
 	@RequestMapping(value = "/getUsersSearchResult", method = RequestMethod.GET)
@@ -236,14 +236,14 @@ public class UserController {
 		}
 		return userSearch;
 	}
-	
+
 	@RequestMapping(value = "/getCurrentUserEmail", method = RequestMethod.GET)
 	@ResponseBody
 	public String getCurrentUserEmail(HttpServletRequest request, HttpServletResponse response) {
 		User currentUser = (User) request.getSession().getAttribute("user");
-		if (currentUser!=null) {
+		if (currentUser != null) {
 			String userEmail = currentUser.getEmail();
-			if (userEmail!=null && !userEmail.isEmpty()) {
+			if (userEmail != null && !userEmail.isEmpty()) {
 				return userEmail;
 			}
 		}

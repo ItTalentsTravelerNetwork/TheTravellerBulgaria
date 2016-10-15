@@ -231,13 +231,13 @@ function addComment(){
 }
 	
 function showMessage(results){
-	
-      if(results == 'Comment adding successful!'){
+	var msg = JSON.parse(results).msg;
+      if(msg == 'Comment adding successful!'){
           $('#message').html("<font color='green'>Comment successfully added. </font>")
           setTimeout(function(){
 			window.location.href = "Destination.html?destinationName="+destinationName;
 		}, 500)
-      }else if(results == 'Comment adding failed!'){
+      }else if(msg == 'Comment adding failed!'){
           $('#message').html("<font color='red'>Incorrect data! </font>")
       }
  }

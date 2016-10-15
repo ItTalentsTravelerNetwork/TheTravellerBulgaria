@@ -218,16 +218,17 @@ function add(){
 }
 	
 function showMessage(results){
-      if(results == 'Destination Registration Successful!'){
+	var msg = JSON.parse(result).msg;
+      if(msg == 'Destination Registration Successful!'){
           $('#message').html("<font color='green'>Destination successfully added. </font>");
           setTimeout(function(){
 			window.location.href = "AllDestinations.html";
 		}, 500)
-      }else if(results == 'Destination registration failed!'){
+      }else if(msg == 'Destination registration failed!'){
           $('#message').html("<font color='red'>Incorrect data or picture format! </font>");
-      }else if(results == 'EXISTS'){
+      }else if(msg == 'EXISTS'){
     	  $('#message').html("<font color='red'>Destination already exists! </font>");
-      }else if(results == 'Adding destination failed!'){
+      }else if(msg == 'Adding destination failed!'){
     	  $('#message').html("<font color='red'>Adding destination failed! </font>");
       }
  }

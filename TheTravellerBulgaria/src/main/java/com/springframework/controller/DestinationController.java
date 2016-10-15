@@ -44,7 +44,7 @@ public class DestinationController {
 		String description = request.getParameter("description");
 		String category = request.getParameter("category");
 		if (DestinationsManager.getInstance().getDestinationFromCache(name) != null) {
-			return "EXISTS";
+			return "{\"msg\" : \"EXISTS\"}";
 		}
 		if (validateData(name, lattitude, longitude, description, category)) {
 
@@ -62,14 +62,14 @@ public class DestinationController {
 						destinationMainPicFile.getName(), category)) {
 					session.setAttribute("destination",
 							DestinationsManager.getInstance().getDestinationFromCache(name));
-					return "Destination added successfully!";
+					return "{\"msg\" : \"Destination added successfully!\"}";
 				}
 			} catch (BeansException | InvalidCoordinatesException | IllegalArgumentException e) {
 
-				return "Destination registration failed!";
+				return "{\"msg\" : \"Destination registration failed!\"}";
 			}
 		}
-		return "Adding destination failed!";
+		return "{\"msg\" : \"Adding destination failed!\"}";
 	}
 
 	private static boolean validateData(String name, String lattitude, String longitude, String description,
@@ -159,7 +159,7 @@ public class DestinationController {
 
 		Destination dest = DestinationsManager.getInstance().getDestinationFromCache(destName);
 		if (dest == null) {
-			return "NOT EXISTING";
+			return "{\"msg\" : \"NOT EXISTING\"}";
 		}
 		File dir = new File("destinationPics");
 		if (!dir.exists()) {
@@ -171,13 +171,13 @@ public class DestinationController {
 			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
 					StandardCopyOption.REPLACE_EXISTING);
 			DestinationsManager.getInstance().addPicture(dest.getName(), destinationMainPicFile.getName());
-			return "SUCCESS";
+			return "{\"msg\" : \"SUCCESS\"}";
 		} catch (IOException e) {
 			System.out.println("IO exception occured");
 		} catch (InvalidDataException e) {
-			return "PICTURE EXISTS";
+			return "{\"msg\" : \"PICTURE EXISTS\"}";
 		}
-		return "FAILURE";
+		return "{\"msg\" : \"FAILURE\"}";
 	}
 
 	@RequestMapping(value = "/getDestinationAuthor", method = RequestMethod.GET)

@@ -254,15 +254,16 @@ function add(){
 	}
 	
 	
-function showMessage(results){		
-        if(results == 'User Registration Successful!'){
+function showMessage(results){
+	var msg = JSON.parse(results).msg;
+        if(msg == 'User Registration Successful!'){
             $('#message').html("<font color='green'>You have successfully registered. </font>")
             setTimeout(function(){
 					window.location.href = "SignIn.html";
 				}, 500)
-        }else if(results == 'Registration failed!'){
+        }else if(msg == 'Registration failed!'){
             $('#message').html("<font color='red'>Incorrect data or picture format </font>")
-        }else if(results== 'USER EXISTS'){
+        }else if(msg== 'USER EXISTS'){
         	$('#message').html("<font color='red'>User with this email already exits.</font>")
         }
     }

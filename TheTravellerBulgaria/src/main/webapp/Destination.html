@@ -466,7 +466,8 @@
 							
 							
 							var result = showDislikeButtonStatus(comment.id);
-							if (result.valueOf() == 'Comment already disliked!') {
+							var msg = JSON.parse(result).msg;
+							if (msg.valueOf() == 'Comment already disliked!') {
 								html.push("src=\"assets/images/DislikeButtonActive.png\"");
 							}
 							else {
@@ -481,7 +482,8 @@
 							
 							
 							var result = showLikeButtonStatus(comment.id);
-							if (result.valueOf() == 'Comment already liked!') {
+							var msg = JSON.parse(result).msg;
+							if (msg.valueOf() == 'Comment already liked!') {
 								html.push("src=\"assets/images/LikeButtonActive.png\"");
 							}
 							else {
@@ -528,10 +530,11 @@ function likeComment(commentId){
 	$.post("likeUnlikeComment", form.serialize())
 	.then(
 		function(result) {
-			if (result.valueOf() == 'Comment liked!') {
+			var msg = JSON.parse(result).msg;
+			if (msg.valueOf() == 'Comment liked!') {
 				document.getElementById("likeButton-"+commentId+"-1").src="assets/images/LikeButtonActive.png";
 				document.getElementById("dislikeButton-"+commentId+"-2").src="assets/images/DislikeButtonNonActive.png";
-			} else if (result.valueOf() == 'Comment unliked!') {
+			} else if (msg.valueOf() == 'Comment unliked!') {
 				document.getElementById("likeButton-"+commentId+"-1").src="assets/images/LikeButtonNonActive.png";
 			}
 			return $.get("getCommentById?commentId=" + commentId);
@@ -589,7 +592,8 @@ function likeComment(commentId){
 			     type: 'POST'
 			 })
 			 .then(function(res){
-				if (res.valueOf() == 'Success!') {
+				var msg = JSON.parse(res).msg;
+				if (msg.valueOf() == 'Success!') {
 			 		self.closest('td').append('<video width="500" controls preload> <source  src="getVideo?commentId='+id+'&video='+video.name+'"type="video/mp4"></video>');
 			 		document.getElementById("commentVideoForm-"+id).innerHTML="";
 				}
@@ -627,10 +631,11 @@ function dislikeComment(commentId) {
 	$.post("dislikeUndislikeComment", form.serialize())
 	.then(
 		function(result) {
-			if (result.valueOf() == 'Comment disliked!') {
+			var msg = JSON.parse(result).msg;
+			if (msg.valueOf() == 'Comment disliked!') {
 				document.getElementById("dislikeButton-"+commentId+"-2").src="assets/images/DislikeButtonActive.png";
 				document.getElementById("likeButton-"+commentId+"-1").src="assets/images/LikeButtonNonActive.png";
-			} else if (result.valueOf() == 'Comment undisliked!') {
+			} else if (msg.valueOf() == 'Comment undisliked!') {
 				document.getElementById("dislikeButton-"+commentId+"-2").src="assets/images/DislikeButtonNonActive.png";
 			}
 			return $.get("getCommentById?commentId=" + commentId);
@@ -652,15 +657,16 @@ function addToVisited(){
 		"addToVisited",
 		{destinationName : destinationName},
 		function(result){
-			if(result == 'SUCCESS'){
+			var msg = JSON.parse(result).msg;
+			if(msg == 'SUCCESS'){
 				$('#message').html("<font color='green'>You have added "+ destinationName.replace('%20', ' ') +" to visited places.</font>")
 				$('#visit').html("Visited"); 
-			}else if(result == 'FAILURE'){
+			}else if(msg == 'FAILURE'){
 				$('#message').html("<font color='red'>You have to sign in first. </font>")
 				setTimeout(function(){
 					window.location.href = "SignIn.html";
 				}, 1000)
-			}else if(result == 'VISITED'){
+			}else if(msg == 'VISITED'){
 				$('#message').html("<font color='black'>You have already added "+ destinationName.replace('%20', ' ') +" </font>")
 			}
 		}
@@ -673,7 +679,8 @@ $(function isVisited(){
 		"isVisited",
 		{destinationName : destinationName},
 		function(result){
-			if(result=='VISITED'){
+			var msg = JSON.parse(result).msg;
+			if(msg=='VISITED'){
 				$('#visit').html("Visited"); 
 			}
 		}
