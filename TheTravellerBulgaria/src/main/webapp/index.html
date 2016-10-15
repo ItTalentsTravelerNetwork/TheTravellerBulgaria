@@ -1,6 +1,6 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="en"  manifest="manifest.appcache">
+<html lang="en">
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport"    content="width=device-width, initial-scale=1.0">
@@ -35,11 +35,12 @@
 	<script src="assets/js/headroom.min.js"></script>
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
+
 </head>
 
 
      
-<body class="home" >
+<body class="home">
 	<script>$.get("initializeManager")</script>
 	<!-- Fixed navbar -->
 	<div class="navbar navbar-inverse navbar-fixed-top headroom" >
@@ -246,6 +247,8 @@
 	<!-- JavaScript libs are placed at the end of the document so the pages load faster -->
 	
 	
+	<script>checkForUser()</script>
 </body>
-	<script>$(checkForUser())</script>
+
+<script>$(function reload(){})</script>
 </html>

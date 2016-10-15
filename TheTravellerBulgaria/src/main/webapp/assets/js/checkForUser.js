@@ -1,5 +1,6 @@
 
 function checkForUser() {
+	$.ajaxSetup({cache:false})
 	$.get(
 		"GetUserInfo",
 		function(data){

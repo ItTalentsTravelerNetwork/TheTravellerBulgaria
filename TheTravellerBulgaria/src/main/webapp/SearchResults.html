@@ -288,7 +288,7 @@ $(function getSearchResults(){
 				html+="<td>";
 				var destName = "<h5 id=\"tempDestName\"><a class=\"btn\" href=\"Destination.html?destinationName="+ json[item].name +"\">" + json[item].name + "</a></h5>";
 				html += destName;
-				var src = ("getDestinationMainPicture?destinationName="+ json[item].name).replace(" ", "%20");
+				var src = ("getDestinationMainPicture?destinationName="+ (json[item].name).split(" ").join("%20"));
 				var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <div class=\"img bg-img-c\" style=\"width: 250px; background-image: url("+src+")\"></div>";
 				html+=imageLocation;
 				html+="</td>";
