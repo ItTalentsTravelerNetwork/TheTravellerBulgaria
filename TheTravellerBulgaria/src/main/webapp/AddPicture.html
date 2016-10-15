@@ -199,7 +199,7 @@
 </body>
 
 <script>
-		var destinationName = location.search.split('destinationName=')[1];
+		var destinationName = decodeURIComponent(location.search.split('destinationName=')[1]);
 		$('#dName').val(destinationName);
 		function submitPic(){
 			
