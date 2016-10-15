@@ -379,7 +379,7 @@
 		return acc;
 	}, {});
 	var destinationName = decodeURIComponent(location.search.split('destinationName=')[1]);
-	$('[name="destinationName"]').val(params.destinationName)
+	$('[name="destinationName"]').val(destinationName)
 	
 		$(function showDestination(){
 			
@@ -651,7 +651,7 @@ function dislikeComment(commentId) {
 
 
 function addToVisited(){
-	var destinationName = location.search.split('destinationName=')[1];
+	
 	$.post(
 		"addToVisited",
 		{destinationName : destinationName},
@@ -672,7 +672,7 @@ function addToVisited(){
 }	
 	
 $(function isVisited(){
-	var destinationName = location.search.split('destinationName=')[1];
+	
 	$.get(
 		"isVisited",
 		{destinationName : destinationName},
@@ -712,7 +712,7 @@ function showGallery(){
 	<script>
 	function myMap() {
 			
-		$.get("getDestination?destinationName=" + params.destinationName)
+		$.get("getDestination?destinationName=" + destinationName)
 		.then (
 			function (destination) {
 				

@@ -269,13 +269,12 @@ $(function loadFeed(){
 				var userVisited = data[i+1];
 				var dateTime = data[i+2];
 				html+="<td>";
-				html+="<h4><a href=\"foreignProfile.html?userEmail=" + userVisited.email + "\">" + userVisited.firstName + " " + userVisited.lastName +"</a> has visited "+ "<a href=Destination.html?destinationName="+ place.name +">"+ place.name +"</a>" +"</h4>";
+				html+="<h4><a href=\"foreignProfile.html?userEmail=" + userVisited.email + "\">" + userVisited.firstName + " " + userVisited.lastName +"</a> has visited "+ "<a href=Destination.html?destinationName="+ (place.name).split(" ").join("%20") +">"+ place.name +"</a>" +"</h4>";
 				html+="<h6>Visited on "+dateTime+"<h6>";
 				
 				var destinationPicSrc = ("getDestinationMainPicture?destinationName="+ (place.name).split(" ").join("%20"));
 				html +="<a href=\"Destination.html?destinationName="+ place.name +"\">";
 				html +="<div class=\"img bg-img-c\" style=\"width: 200px; background-image: url("+destinationPicSrc+")\"></div></a>";
-				
 				
 				var src = ("GetProfilePicture?email="+ userVisited.email).replace(" ", "%20");
 				if (userVisited.email.valueOf() != getCurrentUserEmail().valueOf()) {

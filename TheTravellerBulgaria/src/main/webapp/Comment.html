@@ -198,7 +198,7 @@ var params = location.search.substr(1).split("&").reduce(function(acc, element){
 	return acc;
 }, {});
 
-$('[name="destinationName"]').val(params.destinationName)
+$('[name="destinationName"]').val(destinationName)
 
 $(function shareExperienece(){
 	document.getElementById("shareExperience").innerHTML="Share your experience in "+destinationName;

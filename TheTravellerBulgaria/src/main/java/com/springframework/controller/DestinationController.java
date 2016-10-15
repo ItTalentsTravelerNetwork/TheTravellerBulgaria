@@ -38,7 +38,7 @@ public class DestinationController {
 	public String addDestination(@RequestParam("mainPicture") MultipartFile multipartFile, HttpServletRequest request,
 			HttpSession session) throws IOException {
 
-		String name = request.getParameter("name").replaceAll("%20", " ");
+		String name = request.getParameter("name").replaceAll("%20", " ").trim();
 		String lattitude = request.getParameter("lattitude");
 		String longitude = request.getParameter("longitude");
 		String description = request.getParameter("description");
