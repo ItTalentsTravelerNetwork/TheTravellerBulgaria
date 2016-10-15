@@ -415,6 +415,7 @@
 		
 			.then(
 				function(data){
+					var numberOfComments = data.length/2;
 					var html = [];
 					for(var i=0; i<data.length; i+=2){
 						html.push("<tr>");
@@ -433,7 +434,7 @@
 							html.push("<a href=\"foreignProfile.html?userEmail="+ user.email +"\">");
 						}
 						else {
-							html.push("<a href=\"profile.html?userEmail="+ user.email +"\">");
+							html.push("<a href=\"profile.html\">");
 						}
 						html.push("<div class=\"round img bg-img-c square\" style=\"width: 60px; background-image: url("+src+")\"></div></a>");
 						html.push("</td>");
@@ -513,6 +514,9 @@
 					}
 					
 					$('#commentsTitle').html("Comments");
+					if (numberOfComments==0) {
+						html.push('<h5 style="text-align:left; color:gray; font-style: italic;"> No comments yet. Would you like to write the first <a href="Comment.html?destinationName='+destinationName+'"> comment </a>?</h5>');
+					}
 					$('#commentsTable').html(html.join(" "));
 				}	
 			)			

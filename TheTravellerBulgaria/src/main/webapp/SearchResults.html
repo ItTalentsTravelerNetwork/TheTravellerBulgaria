@@ -182,11 +182,13 @@
 			<!-- Sidebar -->
 			<aside class="col-sm-4 sidebar sidebar-right">
 
-				<div class="widget">
+				<div id="popularDestinationsSection" class="widget">
+					<!-- 
 					<h4>Popular destinations</h4>
 					<ul id="popDest" class="list-unstyled list-spaces">
 					
 					</ul>
+					-->
 				</div>
 
 			</aside>
@@ -272,6 +274,7 @@ $(function getSearchResults(){
 	$.get(
 		"getDestinationSearchResults?search="+search,
 		function(data){
+			var numberOfMatches = data.length;
 			var destInfo = "";
 			var json = data;
 			var html = "<table><tr>";
@@ -293,9 +296,15 @@ $(function getSearchResults(){
 				
 				i++;
 			}
+			if (numberOfMatches==0) {
+				html+="<h5 style=\"text-align:left; color:gray; font-style: italic;\"> No matching destination results found. Try again with a different search input!</h5>";
+			}
+			else {
+				document.getElementById("popularDestinationsSection").innerHTML= "<h4>Additional information about destinations:</h4><ul id=\"popDest\" class=\"list-unstyled list-spaces\"></ul>";
+				document.getElementById("popDest").innerHTML = destInfo;
+			}
 			html += "</tr></table>";
 			document.getElementById('destinations').innerHTML = html;
-			document.getElementById("popDest").innerHTML = destInfo;
 		}
 	
 	).then(
@@ -303,6 +312,7 @@ $(function getSearchResults(){
 		$.get(
 			"getUsersSearchResult?search="+search,
 			function(data){
+				var numberOfMatches = data.length;
 				var html = "<table class=\"my-table\"><tr>";
 				var i = 0;
 				for ( var i in data) {
@@ -330,6 +340,9 @@ $(function getSearchResults(){
 					//html+="<img class=\"profilePicture\" src=\"GetProfilePicture?email="+ user.email +"\"height=\"100\" width=\"100\"/>";
 					html+="</td>";
 					i++;
+				}
+				if (numberOfMatches==0) {
+					html+="<h5 style=\"text-align:left; color:gray; font-style: italic;\"> No matching user results found. Try again with a different search input!</h5>";
 				}
 				html += "</tr></table>";
 				document.getElementById('users').innerHTML = html;
