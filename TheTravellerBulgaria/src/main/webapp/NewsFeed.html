@@ -271,7 +271,7 @@ $(function loadFeed(){
 				html+="<td>";
 				html+="<h4><a href=\"foreignProfile.html?userEmail=" + userVisited.email + "\">" + userVisited.firstName + " " + userVisited.lastName +"</a> has visited "+ "<a href=Destination.html?destinationName="+ (place.name).split(" ").join("%20") +">"+ place.name +"</a>" +"</h4>";
 				html+="<h6>Visited on "+dateTime+"<h6>";
-				html+="<img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+ place.name +"\"height=\"100\" width=\"250\"/>"
+				html+="<img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+ (place.name).trim() +"\"height=\"100\" width=\"250\"/>"
 				var src = ("GetProfilePicture?email="+ userVisited.email).replace(" ", "%20");
 				html+= "<div class=\"round img bg-img-c square profilePicture\" style=\"background-image: url("+src+")\"></div>";
 				
