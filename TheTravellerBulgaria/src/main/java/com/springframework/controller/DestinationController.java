@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.tika.Tika;
 import org.springframework.beans.BeansException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,44 +33,50 @@ import com.springframework.model.User;
 @RestController
 @MultipartConfig
 public class DestinationController {
+	private static final String[] availablePictureTypes = { "image/jpeg", "image/x-ms-bmp", "image/gif", "image/png" };
 
 	@RequestMapping(value = "/addDestination", method = RequestMethod.POST)
 	@ResponseBody
 	public String addDestination(@RequestParam("mainPicture") MultipartFile multipartFile, HttpServletRequest request,
 			HttpSession session) throws IOException {
-
-		String name = request.getParameter("name").replaceAll("%20", " ").trim();
-		String lattitude = request.getParameter("lattitude");
-		String longitude = request.getParameter("longitude");
-		String description = request.getParameter("description");
-		String category = request.getParameter("category");
-		if (DestinationsManager.getInstance().getDestinationFromCache(name) != null) {
-			return "EXISTS";
-		}
-		if (validateData(name, lattitude, longitude, description, category)) {
-
-			File dir = new File("destinationPics");
-			if (!dir.exists()) {
-				dir.mkdir();
-			}
-			File destinationMainPicFile = new File(dir,
-					name + "-destinationMainPic." + multipartFile.getOriginalFilename());
-			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
-					StandardCopyOption.REPLACE_EXISTING);
-			try {
-				if (DestinationsManager.getInstance().addDestination(((User) session.getAttribute("user")), name,
-						description, Double.parseDouble(lattitude), Double.parseDouble(longitude),
-						destinationMainPicFile.getName(), category)) {
-					session.setAttribute("destination",
-							DestinationsManager.getInstance().getDestinationFromCache(name));
-					return "Destination added successfully!";
+		Tika tika = new Tika();
+		String realFileType = tika.detect(multipartFile.getBytes());
+		for (String type: availablePictureTypes) {
+			if (type.equals(realFileType)) { // if the real pic type is one of the available ones
+				String name = request.getParameter("name").replaceAll("%20", " ").trim();
+				String lattitude = request.getParameter("lattitude");
+				String longitude = request.getParameter("longitude");
+				String description = request.getParameter("description");
+				String category = request.getParameter("category");
+				if (DestinationsManager.getInstance().getDestinationFromCache(name) != null) {
+					return "EXISTS";
 				}
-			} catch (BeansException | InvalidCoordinatesException | IllegalArgumentException e) {
+				if (validateData(name, lattitude, longitude, description, category)) {
 
-				return "Destination registration failed!";
+					File dir = new File("destinationPics");
+					if (!dir.exists()) {
+						dir.mkdir();
+					}
+					File destinationMainPicFile = new File(dir,
+							name + "-destinationMainPic." + multipartFile.getOriginalFilename());
+					Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
+							StandardCopyOption.REPLACE_EXISTING);
+					try {
+						if (DestinationsManager.getInstance().addDestination(((User) session.getAttribute("user")), name,
+								description, Double.parseDouble(lattitude), Double.parseDouble(longitude),
+								destinationMainPicFile.getName(), category)) {
+							session.setAttribute("destination",
+									DestinationsManager.getInstance().getDestinationFromCache(name));
+							return "Destination added successfully!";
+						}
+					} catch (BeansException | InvalidCoordinatesException | IllegalArgumentException e) {
+
+						return "Destination registration failed!";
+					}
+				}
 			}
 		}
-		return "Adding destination failed!";
+		return "Wrong picture format!";
 	}
 
 	private static boolean validateData(String name, String lattitude, String longitude, String description,
