@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.tika.Tika;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,34 +36,46 @@ public class UserController {
 	private static final String NAME_PATTERN = "^[A-Za-z]+$";
 	private static final int MINIMUM_PASSWORD_LENGTH = 6;
 	private static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9]+.[a-z.]+$";
+	private static final String[] availablePictureTypes = { "image/jpeg", "image/x-ms-bmp", "image/gif", "image/png" };
 
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
 	@ResponseBody
-	public String register(@RequestParam("profilePic") MultipartFile multipartFile, HttpServletRequest request)
-			throws IOException {
-		String inputPassword = request.getParameter("userPassword");
-
-		String firstName = request.getParameter("userFirstName");
-		String lastName = request.getParameter("userLastName");
-		String email = request.getParameter("userEmailAddress");
-		String description = request.getParameter("userDescription");
-
-		if (validateData(firstName, lastName, email, inputPassword)) {
-			if (UsersManager.getInstance().getUserFromCache(email) != null) {
-				return "{\"msg\" : \"USER EXISTS\"}";
+	public String register(@RequestParam("profilePic") MultipartFile multipartFile, HttpServletRequest request) {
+		Tika tika = new Tika();
+		String realFileType;
+		try {
+			realFileType = tika.detect(multipartFile.getBytes());
+			for (String type: availablePictureTypes) {
+				if (type.equals(realFileType)) { // if the real picture type is one of the available
+					String inputPassword = request.getParameter("userPassword");
+			
+					String firstName = request.getParameter("userFirstName");
+					String lastName = request.getParameter("userLastName");
+					String email = request.getParameter("userEmailAddress");
+					String description = request.getParameter("userDescription");
+			
+					if (validateData(firstName, lastName, email, inputPassword)) {
+						if (UsersManager.getInstance().getUserFromCache(email) != null) {
+							return "{\"msg\" : \"USER EXISTS\"}";
+						}
+						File dir = new File("userPics");
+						if (!dir.exists()) {
+							dir.mkdir();
+						}
+						File profilePicFile = new File(dir, email + "-profilePic." + multipartFile.getOriginalFilename());
+						Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						UsersManager.getInstance().registerUser(email, inputPassword, firstName, lastName, description,
+								profilePicFile.getName());
+						return "{\"msg\" : \"User Registration Successful!\"}";
+					}
+					return "{\"msg\" : \"Wrong data!\"}";
+				}	
 			}
-			File dir = new File("userPics");
-			if (!dir.exists()) {
-				dir.mkdir();
-			}
-			File profilePicFile = new File(dir, email + "-profilePic." + multipartFile.getOriginalFilename());
-			Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			UsersManager.getInstance().registerUser(email, inputPassword, firstName, lastName, description,
-					profilePicFile.getName());
-			return "{\"msg\" : \"User Registration Successful!\"}";
+			return "{\"msg\" : \"Wrong picture format!\"}";
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "{\"msg\" : \"Registration failed!\"}";
 		}
-
-		return "{\"msg\" : \"Registration failed!\"}";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -256,7 +269,6 @@ public class UserController {
 					&& password.length() >= MINIMUM_PASSWORD_LENGTH;
 		}
 		return false;
-
 	}
 
 }

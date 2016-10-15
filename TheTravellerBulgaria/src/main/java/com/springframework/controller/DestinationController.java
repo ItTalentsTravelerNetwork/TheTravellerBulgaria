@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.tika.Tika;
 import org.springframework.beans.BeansException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,52 +33,79 @@ import com.springframework.model.User;
 @RestController
 @MultipartConfig
 public class DestinationController {
+	private static final String[] availablePictureTypes = { "image/jpeg", "image/x-ms-bmp", "image/gif", "image/png" };
 
 	@RequestMapping(value = "/addDestination", method = RequestMethod.POST)
 	@ResponseBody
 	public String addDestination(@RequestParam("mainPicture") MultipartFile multipartFile, HttpServletRequest request,
-			HttpSession session) throws IOException {
-
-		String name = request.getParameter("name").replaceAll("%20", " ").trim();
-		String lattitude = request.getParameter("lattitude");
-		String longitude = request.getParameter("longitude");
-		String description = request.getParameter("description");
-		String category = request.getParameter("category");
-		if (DestinationsManager.getInstance().getDestinationFromCache(name) != null) {
-			return "{\"msg\" : \"EXISTS\"}";
-		}
-		if (validateData(name, lattitude, longitude, description, category)) {
-
-			File dir = new File("destinationPics");
-			if (!dir.exists()) {
-				dir.mkdir();
-			}
-			File destinationMainPicFile = new File(dir,
-					name + "-destinationMainPic." + multipartFile.getOriginalFilename());
-			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
-					StandardCopyOption.REPLACE_EXISTING);
-			try {
-				if (DestinationsManager.getInstance().addDestination(((User) session.getAttribute("user")), name,
-						description, Double.parseDouble(lattitude), Double.parseDouble(longitude),
-						destinationMainPicFile.getName(), category)) {
-					session.setAttribute("destination",
-							DestinationsManager.getInstance().getDestinationFromCache(name));
-					return "{\"msg\" : \"Destination added successfully!\"}";
+			HttpSession session) {
+		Tika tika = new Tika();
+		String realFileType;
+		try {
+			realFileType = tika.detect(multipartFile.getBytes());
+			for (String type: availablePictureTypes) {
+				if (type.equals(realFileType)) { // if the real picture type is one of the available
+					String name = request.getParameter("name").replaceAll("%20", " ").trim();
+					String lattitude = request.getParameter("lattitude");
+					String longitude = request.getParameter("longitude");
+					String description = request.getParameter("description");
+					String category = request.getParameter("category");
+					if (DestinationsManager.getInstance().getDestinationFromCache(name) != null) {
+						return "{\"msg\" : \"EXISTS\"}";
+					}
+					if (validateData(name, lattitude, longitude, description, category)) {
+						File dir = new File("destinationPics");
+						if (!dir.exists()) {
+							dir.mkdir();
+						}
+						File destinationMainPicFile = new File(dir,
+								name + "-destinationMainPic." + multipartFile.getOriginalFilename());
+						Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
+								StandardCopyOption.REPLACE_EXISTING);
+						try {
+							if (DestinationsManager.getInstance().addDestination(((User) session.getAttribute("user")), name,
+									description, Double.parseDouble(lattitude), Double.parseDouble(longitude),
+									destinationMainPicFile.getName(), category)) {
+								session.setAttribute("destination",
+										DestinationsManager.getInstance().getDestinationFromCache(name));
+								return "{\"msg\" : \"Destination added successfully!\"}";
+							}
+						} catch (BeansException | InvalidCoordinatesException | IllegalArgumentException e) {
+							e.printStackTrace();
+							return "{\"msg\" : \"Destination registration failed!\"}";
+						}
+					}
+					return "{\"msg\" : \"Wrong data!\"}";
 				}
-			} catch (BeansException | InvalidCoordinatesException | IllegalArgumentException e) {
-
-				return "{\"msg\" : \"Destination registration failed!\"}";
 			}
+			return "{\"msg\" : \"Wrong picture format!\"}";
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			return "{\"msg\" : \"Destination registration failed!\"}";
 		}
-		return "{\"msg\" : \"Adding destination failed!\"}";
 	}
 
 	private static boolean validateData(String name, String lattitude, String longitude, String description,
 			String category) {
-		if ((name != null && lattitude != null && longitude != null && description != null && category != null)) {
-
-			return true;
-
+		if ((name != null && lattitude != null && longitude != null && description != null && category != null
+				&& !name.isEmpty() && !lattitude.isEmpty() && !longitude.isEmpty() && !description.isEmpty() && !category.isEmpty())) {
+			try {
+				double destinationLattitude = Double.parseDouble(lattitude);
+				double destinationLongitude = Double.parseDouble(longitude);
+				if (destinationLattitude>=0 && destinationLattitude<=90 && destinationLongitude>=0 
+						&& destinationLongitude<=180) {
+					for (Destination.Category c : Destination.Category.values()) {
+						if (c.name().equals(category)) {
+							return true;
+						}
+					}
+				}
+				return false;	
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+				return false;
+			}
 		}
 		return false;
 	}
@@ -155,29 +183,44 @@ public class DestinationController {
 	@RequestMapping(value = "/AddPic", method = RequestMethod.POST)
 	@ResponseBody
 	public String addPicture(@RequestParam("pic") MultipartFile multipartFile, HttpServletRequest request) {
-		String destName = request.getParameter("destinationName").replaceAll("%20", " ");
-
-		Destination dest = DestinationsManager.getInstance().getDestinationFromCache(destName);
-		if (dest == null) {
-			return "{\"msg\" : \"NOT EXISTING\"}";
-		}
-		File dir = new File("destinationPics");
-		if (!dir.exists()) {
-			dir.mkdir();
-		}
-		File destinationMainPicFile = new File(dir,
-				dest.getName() + "-destinationMainPic." + multipartFile.getOriginalFilename());
+		Tika tika = new Tika();
+		String realFileType;
 		try {
-			Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
-					StandardCopyOption.REPLACE_EXISTING);
-			DestinationsManager.getInstance().addPicture(dest.getName(), destinationMainPicFile.getName());
-			return "{\"msg\" : \"SUCCESS\"}";
-		} catch (IOException e) {
-			System.out.println("IO exception occured");
-		} catch (InvalidDataException e) {
-			return "{\"msg\" : \"PICTURE EXISTS\"}";
+			realFileType = tika.detect(multipartFile.getBytes());
+			for (String type: availablePictureTypes) {
+				if (type.equals(realFileType)) { // if the real picture type is one of the available
+			
+					String destName = request.getParameter("destinationName").replaceAll("%20", " ");
+			
+					Destination dest = DestinationsManager.getInstance().getDestinationFromCache(destName);
+					if (dest == null) {
+						return "{\"msg\" : \"NOT EXISTING\"}";
+					}
+					File dir = new File("destinationPics");
+					if (!dir.exists()) {
+						dir.mkdir();
+					}
+					File destinationMainPicFile = new File(dir,
+							dest.getName() + "-destinationMainPic." + multipartFile.getOriginalFilename());
+					try {
+						Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
+								StandardCopyOption.REPLACE_EXISTING);
+						DestinationsManager.getInstance().addPicture(dest.getName(), destinationMainPicFile.getName());
+						return "{\"msg\" : \"SUCCESS\"}";
+					} catch (IOException e) {
+						System.out.println("IO exception occured");
+						return "{\"msg\" : \"FAILURE\"}";
+					} catch (InvalidDataException e) {
+						return "{\"msg\" : \"PICTURE EXISTS\"}";
+					}
+				}
+			}
+			return "{\"msg\" : \"Wrong picture format!\"}";
 		}
-		return "{\"msg\" : \"FAILURE\"}";
+		catch (IOException e) {
+			e.printStackTrace();
+			return "{\"msg\" : \"FAILURE\"}";
+		}
 	}
 
 	@RequestMapping(value = "/getDestinationAuthor", method = RequestMethod.GET)

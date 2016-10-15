@@ -262,7 +262,11 @@ function showMessage(results){
 					window.location.href = "SignIn.html";
 				}, 500)
         }else if(msg == 'Registration failed!'){
-            $('#message').html("<font color='red'>Incorrect data or picture format </font>")
+            $('#message').html("<font color='red'>An error occured, try again. </font>")
+        }else if(msg == 'Wrong data!'){
+            $('#message').html("<font color='red'>Incorrect data </font>")
+        }else if(msg == 'Wrong picture format!'){
+            $('#message').html("<font color='red'>Wrong picture format! Only .jpg, .jpeg, .bmp, .gif and .png are supported! </font>")
         }else if(msg== 'USER EXISTS'){
         	$('#message').html("<font color='red'>User with this email already exits.</font>")
         }

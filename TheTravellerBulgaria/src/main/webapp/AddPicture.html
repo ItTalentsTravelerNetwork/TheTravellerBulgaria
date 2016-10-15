@@ -220,6 +220,8 @@
 	            $('#message').html("<font color='red'>The destination does not exist. </font>");
 	        }else if(msg == 'PICTURE EXISTS'){
 	        	$('#message').html("<font color='red'>The picture already exists. </font>");
+	        }else if(msg == 'Wrong picture format!'){
+	        	$('#message').html("<font color='red'>Incorrect picture format! Only .jpg, .jpeg, .bmp, .gif and .png are supported! </font>");
 	        }else{
 	        	$('#message').html("<font color='red'>Some error occured, try again. </font>");
 	        }
