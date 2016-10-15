@@ -1,6 +1,6 @@
  var _validFileExtensions = [".jpg", ".jpeg", ".bmp", ".gif", ".png"];
     function Validate(oForm) {
-        var arrInputs = oForm.getElementsByTagName("input");
+        var arrInputs = oForm.find('input');
         for (var i = 0; i < arrInputs.length; i++) {
             var oInput = arrInputs[i];
             if (oInput.type == "file") {

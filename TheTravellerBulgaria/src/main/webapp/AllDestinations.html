@@ -253,7 +253,7 @@ $(function showDestinations(){
 				//var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" />";
 				// html+=imageLocation;
 				
-				var src = ("getDestinationMainPicture?destinationName="+ json[item].name).replace(" ", "%20");
+				var src = ("getDestinationMainPicture?destinationName="+ (json[item].name).split(" ").join("%20"));
 				html +="<a href=\"Destination.html?destinationName="+ json[item].name +"\">";
 				html +="<div class=\"img bg-img-c\" style=\"width: 250px; background-image: url("+src+")\"></div>";
 				
@@ -288,7 +288,7 @@ function filter(data){
 				
 				//var imageLocation = "<a href=\"Destination.html?destinationName="+ json[item].name +"\"> <img class=\"destination-main-picture\" src=\"getDestinationMainPicture?destinationName="+ json[item].name +"\" />";
 				//html+=imageLocation;
-				var src = ("getDestinationMainPicture?destinationName="+ json[item].name).replace(" ", "%20");
+				var src = ("getDestinationMainPicture?destinationName="+ (json[item].name).split(" ").join("%20"));
 				html +="<a href=\"Destination.html?destinationName="+ json[item].name +"\">";
 				html +="<div class=\"img bg-img-c\" style=\"width: 250px; background-image: url("+src+")\"></div></a>";
 				
@@ -323,8 +323,8 @@ function filter(data){
 			    var map = new google.maps.Map(mapCanvas, mapOptions);
 			    var infowindow = new google.maps.InfoWindow();
 		
-			    var i;
-			    for (i = 0; i < data.length; i++) {
+			    
+			    for (var i = 0; i < data.length; i++) {
 			    	var item = data[i];
 			    	var mark = new google.maps.LatLng(item.location.lattitude, item.location.longitude);
 			    	var marker = new google.maps.Marker({position:mark, map:map});

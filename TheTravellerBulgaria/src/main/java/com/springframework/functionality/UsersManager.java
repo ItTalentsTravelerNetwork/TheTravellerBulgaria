@@ -18,6 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.springframework.dbModels.UserDao;
 import com.springframework.exceptions.InvalidCoordinatesException;
 import com.springframework.exceptions.InvalidDataException;
+import com.springframework.exceptions.InvalidEmailException;
+import com.springframework.exceptions.InvalidPasswordException;
 import com.springframework.model.Comment;
 import com.springframework.model.Destination;
 import com.springframework.model.User;
@@ -50,29 +52,19 @@ public class UsersManager {
 		return instance;
 	}
 
-	public synchronized boolean validateUser(String email, String password) { // validation
-																				// of
-																				// login
-																				// input
-		if (!registerredUsers.containsKey(email)) { // no such user
-			return false;
-		}
-		return registerredUsers.get(email).getPassword().equals(MD5PasswordConvert(password)); // returns
-		// the
-		// result
+	public synchronized boolean validateUser(String email, String password)
+			throws InvalidEmailException, InvalidPasswordException { // validation
 		// of
-		// the
-		// comparing
-		// of
-		// the
 		// login
-		// pass
-		// and
-		// the
-		// pass
-		// in
-		// the
-		// collection
+		// input
+		if (!registerredUsers.containsKey(email)) { // no such user
+			throw new InvalidEmailException();
+		}
+		if (!registerredUsers.get(email).getPassword().equals(MD5PasswordConvert(password))) {
+			throw new InvalidPasswordException();
+		}
+		return true;
+
 	}
 
 	public synchronized boolean validateLoggedInUser(String email, String password) { // validation
@@ -271,7 +263,8 @@ public class UsersManager {
 		return false;
 	}
 
-	public synchronized User logIn(String email, String password) {
+	public synchronized User logIn(String email, String password)
+			throws InvalidEmailException, InvalidPasswordException {
 		if (validateUser(email, password)) { // valid input
 			User user = registerredUsers.get(email);
 			return user;

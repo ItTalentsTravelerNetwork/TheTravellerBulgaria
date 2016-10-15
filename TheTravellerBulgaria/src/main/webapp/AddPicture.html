@@ -204,6 +204,9 @@
 		function submitPic(){
 			
 			var form = $("#addPictureF");
+			if(!Validate(form)){
+				return;
+			};
 			form.ajaxSubmit({
 				type : 'post',
 				url : 'AddPic',

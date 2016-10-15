@@ -38,13 +38,16 @@ public class DestinationController {
 	public String addDestination(@RequestParam("mainPicture") MultipartFile multipartFile, HttpServletRequest request,
 			HttpSession session) throws IOException {
 
-		String name = request.getParameter("name");
+		String name = request.getParameter("name").replaceAll("%20", " ");
 		String lattitude = request.getParameter("lattitude");
 		String longitude = request.getParameter("longitude");
 		String description = request.getParameter("description");
 		String category = request.getParameter("category");
-
+		if (DestinationsManager.getInstance().getDestinationFromCache(name) != null) {
+			return "EXISTS";
+		}
 		if (validateData(name, lattitude, longitude, description, category)) {
+
 			File dir = new File("destinationPics");
 			if (!dir.exists()) {
 				dir.mkdir();
@@ -72,9 +75,9 @@ public class DestinationController {
 	private static boolean validateData(String name, String lattitude, String longitude, String description,
 			String category) {
 		if ((name != null && lattitude != null && longitude != null && description != null && category != null)) {
-			if (!DestinationsManager.getInstance().chechDestinationInCache(name)) {
-				return true;
-			}
+
+			return true;
+
 		}
 		return false;
 	}
@@ -82,7 +85,7 @@ public class DestinationController {
 	@RequestMapping(value = "/getDestinationMainPicture", method = RequestMethod.GET)
 	@ResponseBody
 	public void getPicture(HttpServletRequest request, HttpServletResponse response) {
-		String destinationName = request.getParameter("destinationName");
+		String destinationName = request.getParameter("destinationName").replaceAll("%20", " ");
 		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
 		File mainPicFile = new File("destinationPics", destination.getMainPicture());
 
@@ -99,7 +102,7 @@ public class DestinationController {
 	@RequestMapping(value = "/GetDestinationPicture", method = RequestMethod.GET)
 	@ResponseBody
 	public void getDestPicture(HttpServletRequest request, HttpServletResponse response) {
-		String pic = request.getParameter("pic");
+		String pic = request.getParameter("pic").replaceAll("%20", " ");
 
 		File mainPicFile = new File("destinationPics", pic);
 
@@ -126,7 +129,7 @@ public class DestinationController {
 	@RequestMapping(value = "/getDestination", method = RequestMethod.GET)
 	@ResponseBody
 	public Destination showDestination(HttpServletRequest request, HttpServletResponse response) {
-		String destinationName = request.getParameter("destinationName");
+		String destinationName = request.getParameter("destinationName").replaceAll("%20", " ");
 		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
 		return destination;
 	}
@@ -135,7 +138,7 @@ public class DestinationController {
 
 	public @ResponseBody ArrayList<Object> getDestinationCommentsUsers(HttpServletRequest request) {
 
-		String destinationName = request.getParameter("destinationName");
+		String destinationName = request.getParameter("destinationName").replaceAll("%20", " ");
 
 		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
 
@@ -180,7 +183,7 @@ public class DestinationController {
 	@RequestMapping(value = "/getDestinationAuthor", method = RequestMethod.GET)
 	@ResponseBody
 	public User getDestinationAuthor(HttpServletRequest request, HttpServletResponse response) {
-		String destinationName = request.getParameter("destinationName");
+		String destinationName = request.getParameter("destinationName").replaceAll("%20", " ");
 		Destination destination = DestinationsManager.getInstance().getDestinationFromCache(destinationName);
 		User user = UsersManager.getInstance().getUserFromCache(destination.getAuthorEmail());
 		return user;
