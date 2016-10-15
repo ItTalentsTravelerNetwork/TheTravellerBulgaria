@@ -232,6 +232,10 @@
 						}, 500)
                 }else if(results == 'FAILURE'){
                     $('#message').html("<font color='red'>Username or password incorrect </font>")
+                }else if(results =='INVALID EMAIL'){
+                	$('#message').html("<font color='red'>Invalid email entered !</font>")
+                }else if(results =='INVALID PASSWORD'){
+                	$('#message').html("<font color='red'>Invalid password entered !</font>")
                 }
             }
 	

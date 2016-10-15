@@ -24,6 +24,14 @@
 	<script src="assets/js/html5shiv.js"></script>
 	<script src="assets/js/respond.min.js"></script>
 	<![endif]-->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	<script src="assets/js/headroom.min.js"></script>
+	<script src="assets/js/jQuery.headroom.min.js"></script>
+	<script src="assets/js/template.js"></script>
+	<script src="assets/js/PictureValidate.js"></script>
+	<script src="http://malsup.github.com/jquery.form.js"></script> 
+	<script src="assets/js/checkForUser.js"></script>
 </head>
 
 <body>
@@ -95,23 +103,32 @@
 							        <input id="userEmailAddress" type="text" name="userEmailAddress" class="form-control" maxlength="40" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9]+.[a-z.]+$" required>
 							    </div>
 							
-							    <div class="row top-margin">
+							    <div class="top-margin">						       
+							        
 							        <div class="col-sm-6">
 							            <label>Password <span class="text-danger">*</span></label>
-							            <input id="userPassword" type="password" name="userPassword" class="form-control" maxlength="40" pattern="(.+){6,}" required>
+							            <input id="userPassword" type="password" name="userPassword" class="form-control" maxlength="40" pattern="(.+){6,}" required autocomplete="off">
+							        </div>
+							         <div class="col-sm-6">
+							            <label>Confirm Password <span class="text-danger">*</span></label>
+							            <input id="confirmPass" type="password" name="pass" class="form-control" maxlength="40" pattern="(.+){6,}" required autocomplete="off">
 							        </div>
 							    </div>
 							    
-							    <div class="row top-margin">
+							    <div class="top-margin">
+							    	
 							        <label>Description <span class="text-danger">*</span></label>
-							        <input id="userDescription" type="textarea" name="userDescription" class="form-control" maxlength="500" required>
+							        <input id="userDescription" type="textarea" name="userDescription" class="form-control" maxlength="500" required >
+							    	
 							    </div>
 							    
 							   
 							
-							    <div class="row">
+							    <div class="top-margin">
+							    	
 							        <label>Picture <span class="text-danger">*</span></label>
 							        <input id="profilePic" type="file" name="profilePic" class="form-control" accept="image/*" required="">
+							    	
 							    </div>
 							     <div id="message" class="row top-margin">
 							        
@@ -120,7 +137,7 @@
 							
 							    <div class="row">
 							        <div class="col-lg-4 text-right">
-							            <button class="btn btn-action" type="submit">Register</button>
+							            <button id="submitBut" class="btn btn-action" type="submit">Register</button>
 							        </div>
 							    </div>
 							</form>
@@ -212,33 +229,44 @@
 
 
 	<!-- JavaScript libs are placed at the end of the document so the pages load faster -->
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-	<script src="assets/js/headroom.min.js"></script>
-	<script src="assets/js/jQuery.headroom.min.js"></script>
-	<script src="assets/js/template.js"></script>
-	<script src="assets/js/PictureValidate.js"></script>
-	<script src="http://malsup.github.com/jquery.form.js"></script> 
-	<script src="assets/js/checkForUser.js"></script>
+	
 </body>
 
 <script>
+document.getElementById('submitBut').addEventListener("click", function(event){
+	var pass = $('#userPassword').val();
+	var confirmPass = $('#confirmPass').val()
+	if(pass!=confirmPass){
+		$('#confirmPass').get(0).setCustomValidity('Passwords Don\'t match!');
+		$('#confirmPass').get(0).reportValidity();
+		
+	}else{
+		add();
+	}
+}, false);
+
 function add(){
-	var form = $("#regForm");
-	form.ajaxSubmit({
-		type : 'post',
-		url : 'registration',
-		async: true,
-		success : function(results){
-			if(results!=null && results != ""){
-				showMessage(results);					
-				
-			}else{
-				alert("Some error occured, try again.");
+		
+		$('#confirmPass').get(0).setCustomValidity('');
+		var form = $('#regForm');		
+		if(!Validate(form)){
+			return;
+		};
+		form.ajaxSubmit({
+			type : 'post',
+			url : 'registration',
+			async: true,
+			success : function(results){
+				if(results!=null && results != ""){
+					showMessage(results);					
+					
+				}else{
+					alert("Some error occured, try again.");
+				}
 			}
-		}
-	})
-}
+		})
+	}
+	
 	
 function showMessage(results){		
         if(results == 'User Registration Successful!'){
@@ -248,6 +276,8 @@ function showMessage(results){
 				}, 500)
         }else if(results == 'Registration failed!'){
             $('#message').html("<font color='red'>Incorrect data or picture format </font>")
+        }else if(results== 'USER EXISTS'){
+        	$('#message').html("<font color='red'>User with this email already exits.</font>")
         }
     }
 </script>

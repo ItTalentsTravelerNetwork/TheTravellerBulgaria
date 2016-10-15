@@ -377,11 +377,11 @@
 		acc[element[0]]=element[1];
 		return acc;
 	}, {});
-
+	var destinationName = decodeURIComponent(location.search.split('destinationName=')[1]);
 	$('[name="destinationName"]').val(params.destinationName)
 	
 		$(function showDestination(){
-			var destinationName = location.search.split('destinationName=')[1];
+			
 			
 			$.get("getDestination?destinationName="+destinationName)  
 			.then (

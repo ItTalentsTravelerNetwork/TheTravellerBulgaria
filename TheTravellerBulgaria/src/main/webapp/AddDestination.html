@@ -187,7 +187,7 @@
 	<script src="assets/js/headroom.min.js"></script>
 	<script src="assets/js/jQuery.headroom.min.js"></script>
 	<script src="assets/js/template.js"></script>
-	<script src="js/PictureValidate.js"></script>
+	<script src="assets/js/PictureValidate.js"></script>
 	<script src="http://malsup.github.com/jquery.form.js"></script> 
 	<script src="assets/js/checkForUser.js"></script>
 	<script>checkIfLoggedIn()</script>
@@ -199,6 +199,9 @@
 <script>
 function add(){
 	var form = $("#addDestForm");
+	if(!Validate(form)){
+		return;
+	}
 	form.ajaxSubmit({
 		type : 'post',
 		url : 'addDestination',
@@ -216,12 +219,16 @@ function add(){
 	
 function showMessage(results){
       if(results == 'Destination Registration Successful!'){
-          $('#message').html("<font color='green'>Destination successfully added. </font>")
+          $('#message').html("<font color='green'>Destination successfully added. </font>");
           setTimeout(function(){
 			window.location.href = "AllDestinations.html";
 		}, 500)
       }else if(results == 'Destination registration failed!'){
-          $('#message').html("<font color='red'>Incorrect data or picture format! </font>")
+          $('#message').html("<font color='red'>Incorrect data or picture format! </font>");
+      }else if(results == 'EXISTS'){
+    	  $('#message').html("<font color='red'>Destination already exists! </font>");
+      }else if(results == 'Adding destination failed!'){
+    	  $('#message').html("<font color='red'>Adding destination failed! </font>");
       }
  }
 </script>

@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springframework.exceptions.InvalidEmailException;
+import com.springframework.exceptions.InvalidPasswordException;
 import com.springframework.functionality.DestinationsManager;
 import com.springframework.functionality.UsersManager;
 import com.springframework.model.Destination;
@@ -47,7 +49,7 @@ public class UserController {
 
 		if (validateData(firstName, lastName, email, inputPassword)) {
 			if (UsersManager.getInstance().getUserFromCache(email) != null) {
-				return "Registration failed!";
+				return "USER EXISTS";
 			}
 			File dir = new File("userPics");
 			if (!dir.exists()) {
@@ -66,7 +68,15 @@ public class UserController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login(@RequestParam("userEmail") String email, @RequestParam("userPassword") String password,
 			HttpSession session) {
-		User user = UsersManager.getInstance().logIn(email, password);
+		User user = null;
+		try {
+			user = UsersManager.getInstance().logIn(email, password);
+		} catch (InvalidEmailException e) {
+			return "INVALID EMAIL";
+
+		} catch (InvalidPasswordException e) {
+			return "INVALID PASSWORD";
+		}
 		if (user != null) {
 			session.setAttribute("user", user);
 			return "SUCCESS";
