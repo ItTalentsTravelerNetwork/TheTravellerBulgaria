@@ -222,6 +222,7 @@ $(function showDestinations(){
 	$.get(
 		"getAllDestinations", 
 		function(data){
+			var numberOfDestinations = data.length;
 			var json = data;
 			var html = "<header class=\"page-header\"><h1 class=\"page-title\">All Destinations</h1></header>";
 			html += "<table><tr>";
@@ -247,6 +248,9 @@ $(function showDestinations(){
 				
 				i++;
 			}
+			if (numberOfDestinations==0) {
+				html+="<h5 style=\"text-align:left; color:gray; font-style: italic;\"> No added destinations yet. Enter your <a href=\"profile.html\"> profile </a> to add the first one.</h5>";
+			}
 			html += "</tr></table>";
 			document.getElementById("allDestinations").innerHTML = html;
 			myMap(data);
@@ -258,6 +262,7 @@ function filter(data){
 	$.get(
 		"getDestinationsByCategory?category="+data,
 		function(data){
+			var numberOfDestinations = data.length;
 			var json = data;
 			var html = "<header class=\"page-header\"><h1 class=\"page-title\">All Destinations</h1></header>";
 			html += "<table><tr>";
@@ -281,6 +286,9 @@ function filter(data){
 				html+="</td>";
 				
 				i++;
+			}
+			if (numberOfDestinations==0) {
+				html+="<h5 style=\"text-align:left; color:gray; font-style: italic;\"> There are no destinations with this category. You can enter your <a href=\"profile.html\"> profile </a> and add one.</h5>";
 			}
 			html += "</tr></table>";
 			document.getElementById("allDestinations").innerHTML = html;
