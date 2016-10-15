@@ -508,6 +508,7 @@
 							
 							
 							if (commentVideoName) {
+								var videoSrc="getVideo?commentId="+comment.id+"&video="+(commentVideoName).split(" ").join("%20")+"";
 								//html.push("<form id=\"commentVideoContainer-"+comment.id+"\" action=\"javascript:loadVideo("+comment.id +", "+ commentVideoName+")\">");
 								html.push('<video width="500" controls preload> <source  src="getVideo?commentId='+comment.id+'&video='+commentVideoName+'" type="video/mp4"></video>');
 								//html.push("<input id=\"video-commentId\" type=\"hidden\" name=\"video-commentId\" value=\""+comment.id+"\">");  
@@ -607,7 +608,7 @@ function likeComment(commentId){
 			 		document.getElementById("commentVideoForm-"+id).innerHTML="";
 				}
 				else {
-					 return alert('Nice try! But we are prepared! We love your sense of humour but still the only supported formats are .mp4, .webm and .ogv! ;)');
+					 return alert('Nice try! But we are prepared! We love your sense of humour but the only supported formats are .mp4, .webm and .ogv! ;)');
 				}
 			 }, err => console.log(err));
 		});
