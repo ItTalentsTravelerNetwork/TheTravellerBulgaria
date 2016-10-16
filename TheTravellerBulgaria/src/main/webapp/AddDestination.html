@@ -90,10 +90,10 @@
             					<input  id="name" name="name" class="form-control" type="text" placeholder="Name" maxlength="64" required>
        				 		</div>
        				 		<div class="col-sm-4">
-	         				   <input id="lattitude" name="lattitude" class="form-control" type="text" placeholder="Lattitude" maxlength="20" required>
+	         				   <input id="lattitude" name="lattitude" class="form-control" type="text" placeholder="Lattitude" maxlength="20" pattern="[0-9]+.[0-9]+" required>
 	      					</div>
         					<div class="col-sm-4">
-           						 <input id="longitude" name="longitude" class="form-control" type="text" placeholder="Longitude" maxlength="20" required>
+           						 <input id="longitude" name="longitude" class="form-control" type="text" placeholder="Longitude" maxlength="20" pattern="[0-9]+.[0-9]+" required>
         					</div>
     					</div>
    					 	<br>
@@ -217,23 +217,6 @@ function add(){
 	})
 }
 	
-function showMessage(results){
-	var msg = JSON.parse(result).msg;
-      if(msg == 'Destination added successfully!'){
-          $('#message').html("<font color='green'>Destination successfully added. </font>");
-          setTimeout(function(){
-			window.location.href = "AllDestinations.html";
-		}, 500)
-      }else if(msg == 'Wrong data!'){
-          $('#message').html("<font color='red'>Incorrect data! </font>");
-      }else if(msg == 'EXISTS'){
-    	  $('#message').html("<font color='red'>Destination already exists! </font>");
-      }else if(msg == 'Destination registration failed!'){
-    	  $('#message').html("<font color='red'>Destination registration failed! </font>");
-      }else if(msg == 'Wrong picture format!'){
-    	  $('#message').html("<font color='red'>Incorrect picture format! Only .jpg, .jpeg, .bmp, .gif and .png are supported! </font>");
-      }
- }
 </script>
 </html>
 
@@ -366,6 +349,11 @@ function showMessage(results){
           $('#message').html("<font color='red'>Incorrect data! </font>");
       }else if(msg == 'Wrong picture format!'){
     	  $('#message').html("<font color='red'>Wrong picture format! Only .jpg, .jpeg, .bmp, .gif and .png are supported! </font>");
+      }else if(msg=='No user in session'){
+    	  $('#message').html("<font color='red'>Session expired, please log in again</font>");
+    	  setTimeout(function(){
+  			window.location.href = "SignIn.html";
+  		}, 1000)
       }
  }
 //]]>

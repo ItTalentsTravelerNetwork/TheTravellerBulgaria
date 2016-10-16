@@ -12,11 +12,10 @@ import com.springframework.exceptions.InvalidDataException;
 import com.springframework.exceptions.InvalidLocationException;
 import com.springframework.model.Sight;
 
-
 public class SightDao {
-	
+
 	private static SightDao instance;
-	
+
 	public static SightDao getInstance() {
 		if (instance == null) {
 			instance = new SightDao();
@@ -27,9 +26,7 @@ public class SightDao {
 	private SightDao() {
 	}
 
-	
-
-	public Set<Sight> getAllSights() {
+	public synchronized Set<Sight> getAllSights() {
 
 		Set<Sight> sights = new HashSet<>();
 		Statement st = null;

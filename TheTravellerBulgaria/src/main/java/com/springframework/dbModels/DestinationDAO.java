@@ -39,7 +39,7 @@ public class DestinationDao {
 		this.destinationPictures = this.getAllDestPictures();
 	}
 
-	private ConcurrentHashMap<String, ArrayList<String>> getAllDestPictures() {
+	private synchronized ConcurrentHashMap<String, ArrayList<String>> getAllDestPictures() {
 
 		ConcurrentHashMap<String, ArrayList<String>> allPics = new ConcurrentHashMap<>();
 		Statement statement = null;
@@ -66,7 +66,7 @@ public class DestinationDao {
 		return allPics;
 	}
 
-	public Set<Destination> getAllDestinations() {
+	public synchronized Set<Destination> getAllDestinations() {
 		Set<Destination> destinations = new HashSet<Destination>();
 		Statement statement = null;
 		ResultSet result = null;
@@ -82,7 +82,8 @@ public class DestinationDao {
 							Double.parseDouble(result.getString("longitude")), result.getString("main_picture"),
 							result.getString("author_email"),
 							Destination.Category.valueOf(result.getString("category")),
-							result.getInt("number_of_likes"), result.getInt("number_of_dislikes"), result.getString("date_and_time"));
+							result.getInt("number_of_likes"), result.getInt("number_of_dislikes"),
+							result.getString("date_and_time"));
 
 					destinations.add(dest);
 				}
@@ -204,18 +205,18 @@ public class DestinationDao {
 		}
 	}
 
-	public ConcurrentHashMap<String, ArrayList<String>> getDestinationPictures() {
+	public synchronized ConcurrentHashMap<String, ArrayList<String>> getDestinationPictures() {
 		ConcurrentHashMap<String, ArrayList<String>> newCol = new ConcurrentHashMap<>();
 		newCol.putAll(destinationPictures);
 		return newCol;
 	}
 
-	public void removeDestination(String destinationName) {
+	public synchronized void removeDestination(String destinationName) {
 		// TODO remove from 2 tables
 
 	}
 
-	public boolean addLike(String userEmail, String destinationName) {
+	public synchronized boolean addLike(String userEmail, String destinationName) {
 		// TODO update like (userLiker and number Of likes; +/- userDisliker and
 		// number of dislikes)
 		try {
@@ -233,7 +234,7 @@ public class DestinationDao {
 		return true;
 	}
 
-	public boolean addDislike(String userEmail, String destinationName) {
+	public synchronized boolean addDislike(String userEmail, String destinationName) {
 		try {
 			PreparedStatement ps = DBManager.getInstance().getConnection()
 					.prepareStatement("INSERT INTO destination_dislikes(user_email, destination_name) VALUES (?,?);");
@@ -248,7 +249,7 @@ public class DestinationDao {
 		return true;
 	}
 
-	public boolean removeLike(String userEmail, String destinationName) {
+	public synchronized boolean removeLike(String userEmail, String destinationName) {
 		// TODO update dislike (userDisliker and number Of dislikes; +/-
 		// userLiker and number of likes)
 		try {
@@ -265,7 +266,7 @@ public class DestinationDao {
 		return true;
 	}
 
-	public boolean removeDislike(String userEmail, String destinationName) {
+	public synchronized boolean removeDislike(String userEmail, String destinationName) {
 		// TODO update dislike (userDisliker and number Of dislikes; +/-
 		// userLiker and number of likes)
 		try {
@@ -282,7 +283,7 @@ public class DestinationDao {
 		return true;
 	}
 
-	public ConcurrentHashMap<String, ArrayList<String>> getLikes() {
+	public synchronized ConcurrentHashMap<String, ArrayList<String>> getLikes() {
 		ConcurrentHashMap<String, ArrayList<String>> userLikes = new ConcurrentHashMap<String, ArrayList<String>>();
 		Statement st = null;
 		ResultSet rs = null;
@@ -312,7 +313,7 @@ public class DestinationDao {
 		return userLikes;
 	}
 
-	public ConcurrentHashMap<String, ArrayList<String>> getDisLikes() {
+	public synchronized ConcurrentHashMap<String, ArrayList<String>> getDisLikes() {
 		ConcurrentHashMap<String, ArrayList<String>> userDisLikes = new ConcurrentHashMap<String, ArrayList<String>>();
 		Statement st = null;
 		ResultSet rs = null;
@@ -342,7 +343,7 @@ public class DestinationDao {
 		return userDisLikes;
 	}
 
-	public ConcurrentHashMap<String, ArrayList<String>> getVideos() {
+	public synchronized ConcurrentHashMap<String, ArrayList<String>> getVideos() {
 		ConcurrentHashMap<String, ArrayList<String>> videos = new ConcurrentHashMap<String, ArrayList<String>>();
 		Statement st = null;
 		ResultSet rs = null;
@@ -371,7 +372,7 @@ public class DestinationDao {
 		return videos;
 	}
 
-	public void addPicture(String destName, String pic) {
+	public synchronized void addPicture(String destName, String pic) {
 		try {
 			PreparedStatement ps = DBManager.getInstance().getConnection()
 					.prepareStatement("INSERT INTO destination_pictures(destination_name, picture) VALUES(?, ?);");
@@ -385,7 +386,7 @@ public class DestinationDao {
 
 	}
 
-	public void addVideo(String destName, String video) {
+	public synchronized void addVideo(String destName, String video) {
 		try {
 			PreparedStatement ps = DBManager.getInstance().getConnection()
 					.prepareStatement("INSERT INTO destination_videos(video, destination_name) VALUES(?, ?);");

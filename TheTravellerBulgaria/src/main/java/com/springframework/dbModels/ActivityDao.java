@@ -7,19 +7,18 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.exceptions.InvalidDataException;
 import com.springframework.exceptions.InvalidLocationException;
 import com.springframework.model.Activity;
 
 public class ActivityDao {
-	
+
 	private static ActivityDao instance;
 
 	private ActivityDao() {
 	}
-	
+
 	public static ActivityDao getInstance() {
 		if (instance == null) {
 			instance = new ActivityDao();
@@ -27,7 +26,7 @@ public class ActivityDao {
 		return instance;
 	}
 
-	public Set<Activity> getAllActivities() {
+	public synchronized Set<Activity> getAllActivities() {
 		Set<Activity> activities = new HashSet<>();
 		Statement st = null;
 		ResultSet rs = null;

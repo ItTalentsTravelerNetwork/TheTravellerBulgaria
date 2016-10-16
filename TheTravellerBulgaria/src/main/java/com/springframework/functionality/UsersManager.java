@@ -16,12 +16,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.springframework.dbModels.UserDao;
-import com.springframework.exceptions.InvalidCoordinatesException;
 import com.springframework.exceptions.InvalidDataException;
 import com.springframework.exceptions.InvalidEmailException;
 import com.springframework.exceptions.InvalidPasswordException;
 import com.springframework.model.Comment;
-import com.springframework.model.Destination;
 import com.springframework.model.User;
 
 public class UsersManager {
@@ -157,25 +155,6 @@ public class UsersManager {
 			}
 		}
 		return false;
-	}
-
-	public synchronized boolean addDestination(User user, Destination destination) throws InvalidCoordinatesException {
-		String destName = destination.getName();
-		String destDescription = destination.getDescription();
-		double destLattitude = destination.getLocation().getLattitude();
-		double destLongitude = destination.getLocation().getLongitude();
-		String destMainPicture = destination.getMainPicture();
-		String category = destination.getCategory().toString();
-		if (DestinationsManager.getInstance().addDestination(user, destName, destDescription, destLattitude,
-				destLongitude, destMainPicture, category)) {
-
-			userVisitors.add(0, user.getEmail());
-			userVisitors.add(1, destName);
-			userVisitors.add(2, LocalDateTime.now().format(DATE_AND_TIME_FORMAT));
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public synchronized void addDestinationToUser(String userEmail, String destinationName) {
@@ -350,7 +329,7 @@ public class UsersManager {
 		}
 	}
 
-	public CopyOnWriteArrayList<String> getUserVisitors() {
+	public synchronized CopyOnWriteArrayList<String> getUserVisitors() {
 		CopyOnWriteArrayList<String> copy = new CopyOnWriteArrayList<>();
 		copy.addAll(userVisitors);
 		return copy;
@@ -378,7 +357,7 @@ public class UsersManager {
 		}
 	}
 
-	private String MD5PasswordConvert(String password) {
+	private synchronized String MD5PasswordConvert(String password) {
 		MessageDigest md;
 		StringBuffer encodedPassword = null;
 		try {

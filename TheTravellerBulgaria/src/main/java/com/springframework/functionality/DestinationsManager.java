@@ -66,7 +66,7 @@ public class DestinationsManager {
 		return instance;
 	}
 
-	private void fillDestinationsWithPics() {
+	private synchronized void fillDestinationsWithPics() {
 		for (Entry<String, ArrayList<String>> destPics : DestinationDao.getInstance().getDestinationPictures()
 				.entrySet()) {
 			String destName = destPics.getKey();
@@ -77,7 +77,9 @@ public class DestinationsManager {
 
 	}
 
-	public boolean chechDestinationInCache(String name) { // validation of input
+	public synchronized boolean chechDestinationInCache(String name) { // validation
+																		// of
+																		// input
 		if (allDestinations.containsKey(name) && allDestinationsAndAuthors.containsKey(name)) { // destination
 																								// exists
 																								// already
@@ -86,8 +88,8 @@ public class DestinationsManager {
 		return false;
 	}
 
-	public boolean addDestination(User user, String name, String description, double lattitude, double longitude,
-			String mainPicture, String category) throws InvalidCoordinatesException {
+	public synchronized boolean addDestination(User user, String name, String description, double lattitude,
+			double longitude, String mainPicture, String category) throws InvalidCoordinatesException {
 		if (UsersManager.getInstance().validateLoggedInUser(user.getEmail(), user.getPassword())
 				&& !chechDestinationInCache(name)) { // if
 														// the
@@ -117,7 +119,7 @@ public class DestinationsManager {
 		return false; // no such user
 	}
 
-	public boolean removeDestination(String destinationName) {
+	public synchronized boolean removeDestination(String destinationName) {
 		if (chechDestinationInCache(destinationName)) { // if there is such
 														// destination
 			allDestinations.remove(destinationName);
@@ -135,15 +137,15 @@ public class DestinationsManager {
 		return false;
 	}
 
-	public Destination getDestinationFromCache(String destinationName) {
+	public synchronized Destination getDestinationFromCache(String destinationName) {
 		if (!allDestinations.containsKey(destinationName)) {
 			return null; // no such destination
 		}
 		return allDestinations.get(destinationName); // returns the destination
 	}
 
-	public boolean updateDestinationInfo(String name, String description, double longitude, double lattitude,
-			String mainPicture, ConcurrentSkipListSet<PlaceToSleep> placesToSleep,
+	public synchronized boolean updateDestinationInfo(String name, String description, double longitude,
+			double lattitude, String mainPicture, ConcurrentSkipListSet<PlaceToSleep> placesToSleep,
 			ConcurrentSkipListSet<PlaceToEat> placesToEat, String category, CopyOnWriteArrayList<String> pictures,
 			CopyOnWriteArrayList<String> videos, ConcurrentSkipListSet<Activity> activities,
 			ConcurrentSkipListSet<Sight> sights) throws InvalidCoordinatesException {
@@ -178,7 +180,7 @@ public class DestinationsManager {
 		return false;
 	}
 
-	public boolean like(String userEmail, String destinationName) {
+	public synchronized boolean like(String userEmail, String destinationName) {
 		if (allDestinations.containsKey(destinationName)
 				&& UsersManager.getInstance().getUserFromCache(userEmail) != null) {
 			if (allDestinations.get(destinationName).like(userEmail)) { // if
@@ -193,7 +195,7 @@ public class DestinationsManager {
 		return false;
 	}
 
-	public boolean dislike(String userEmail, String destinationName) {
+	public synchronized boolean dislike(String userEmail, String destinationName) {
 		if (allDestinations.containsKey(destinationName)
 				&& UsersManager.getInstance().getUserFromCache(userEmail) != null) {
 			if (allDestinations.get(destinationName).dislike(userEmail)) { // if
@@ -208,23 +210,23 @@ public class DestinationsManager {
 		return false;
 	}
 
-	public String getDestinationAuthor(String destinationName) {
+	public synchronized String getDestinationAuthor(String destinationName) {
 		return allDestinationsAndAuthors.get(destinationName);
 	}
 
-	public ConcurrentHashMap<String, String> getAllDestinationsAndAuthors() {
+	public synchronized ConcurrentHashMap<String, String> getAllDestinationsAndAuthors() {
 		ConcurrentHashMap<String, String> copy = new ConcurrentHashMap<>();
 		copy.putAll(allDestinationsAndAuthors);
 		return copy;
 	}
 
-	public ConcurrentHashMap<String, Destination> getAllDestinations() {
+	public synchronized ConcurrentHashMap<String, Destination> getAllDestinations() {
 		ConcurrentHashMap<String, Destination> copy = new ConcurrentHashMap<>();
 		copy.putAll(allDestinations);
 		return copy;
 	}
 
-	private void fillDestinationsWithPlaces() {
+	private synchronized void fillDestinationsWithPlaces() {
 		Set<Activity> activities = ActivityDao.getInstance().getAllActivities();
 		Set<PlaceToSleep> placesToSleep = HotelDao.getInstance().getAllHotels();
 		Set<PlaceToEat> placesToEat = PlaceToEatDao.getInstance().getAllPlacesToEat();
@@ -247,7 +249,7 @@ public class DestinationsManager {
 		}
 	}
 
-	private void fillDestinationsWithLikesAndDislikes() {
+	private synchronized void fillDestinationsWithLikesAndDislikes() {
 		for (Entry<String, ArrayList<String>> entry : DestinationDao.getInstance().getLikes().entrySet()) {
 			for (String email : entry.getValue()) {
 				this.allDestinations.get(entry.getKey()).like(email);
@@ -260,7 +262,7 @@ public class DestinationsManager {
 		}
 	}
 
-	private void fillDestinationsWithVideos() {
+	private synchronized void fillDestinationsWithVideos() {
 		for (Entry<String, ArrayList<String>> entry : DestinationDao.getInstance().getVideos().entrySet()) {
 			for (String video : entry.getValue()) {
 				this.allDestinations.get(entry.getKey()).addVideo(video);
@@ -268,27 +270,27 @@ public class DestinationsManager {
 		}
 	}
 
-	public void addActivity(String destName, Activity a) throws CloneNotSupportedException {
+	public synchronized void addActivity(String destName, Activity a) throws CloneNotSupportedException {
 		this.allDestinations.get(destName).addActivity(a);
 		ActivityDao.getInstance().saveActivityToDb(a);
 	}
 
-	public void addSight(String destName, Sight sight) throws CloneNotSupportedException {
+	public synchronized void addSight(String destName, Sight sight) throws CloneNotSupportedException {
 		this.allDestinations.get(destName).addSight(sight);
 		SightDao.getInstance().saveSightToDB(sight);
 	}
 
-	public void addHotel(String destName, PlaceToSleep p) throws CloneNotSupportedException {
+	public synchronized void addHotel(String destName, PlaceToSleep p) throws CloneNotSupportedException {
 		this.allDestinations.get(destName).addPlaceToSleep(p);
 		HotelDao.getInstance().saveHotelInDB(p);
 	}
 
-	public void addPlaceToEat(String destName, PlaceToEat e) throws CloneNotSupportedException {
+	public synchronized void addPlaceToEat(String destName, PlaceToEat e) throws CloneNotSupportedException {
 		this.allDestinations.get(destName).addPlaceToEat(e);
 		PlaceToEatDao.getInstance().savePlaceToEatInDB(e);
 	}
 
-	public void addPicture(String destName, String pic) throws InvalidDataException {
+	public synchronized void addPicture(String destName, String pic) throws InvalidDataException {
 		if (this.allDestinations.get(destName).getPictures().contains(pic)
 				|| this.allDestinations.get(destName).getMainPicture().equals(pic)) {
 			throw new InvalidDataException();
@@ -297,12 +299,12 @@ public class DestinationsManager {
 		DestinationDao.getInstance().addPicture(destName, pic);
 	}
 
-	public void addVideo(String destName, String video) {
+	public synchronized void addVideo(String destName, String video) {
 		this.allDestinations.get(destName).addVideo(video);
 		DestinationDao.getInstance().addVideo(destName, video);
 	}
 
-	public void addLike(String userEmail, String destinationName) {
+	public synchronized void addLike(String userEmail, String destinationName) {
 		Destination dest = this.allDestinations.get(destinationName);
 		if (dest.getUserLikers().contains(userEmail)) {
 			return;
@@ -315,7 +317,7 @@ public class DestinationsManager {
 		DestinationDao.getInstance().addLike(userEmail, destinationName);
 	}
 
-	public void addDislike(String userEmail, String destinationName) {
+	public synchronized void addDislike(String userEmail, String destinationName) {
 		Destination dest = this.allDestinations.get(destinationName);
 		if (dest.getUserDislikers().contains(userEmail)) {
 			return;
@@ -328,7 +330,7 @@ public class DestinationsManager {
 		DestinationDao.getInstance().addDislike(userEmail, destinationName);
 	}
 
-	public void removeLike(String userEmail, String destinationName) {
+	public synchronized void removeLike(String userEmail, String destinationName) {
 		Destination dest = this.allDestinations.get(destinationName);
 		if (!dest.getUserLikers().contains(userEmail)) {
 			return;
@@ -337,7 +339,7 @@ public class DestinationsManager {
 		DestinationDao.getInstance().removeLike(userEmail, destinationName);
 	}
 
-	public void removeDisike(String userEmail, String destinationName) {
+	public synchronized void removeDisike(String userEmail, String destinationName) {
 		Destination dest = this.allDestinations.get(destinationName);
 		if (!dest.getUserDislikers().contains(userEmail)) {
 			return;
@@ -346,7 +348,7 @@ public class DestinationsManager {
 		DestinationDao.getInstance().removeDislike(userEmail, destinationName);
 	}
 
-	public boolean deleteAllUserData(User user) {
+	public synchronized boolean deleteAllUserData(User user) {
 		String userEmail = user.getEmail();
 		ArrayList<Destination> destinationsToRemove = new ArrayList<>();
 		for (Entry<String, String> authorDestination : this.allDestinationsAndAuthors.entrySet()) {

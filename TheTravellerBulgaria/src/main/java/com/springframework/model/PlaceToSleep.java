@@ -29,73 +29,73 @@ public class PlaceToSleep {
 		this.destinationName = destinationName;
 	}
 
-	public synchronized String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public synchronized String getContact() {
+	public String getContact() {
 		return contact;
 	}
 
-	public synchronized Location getLocation() throws CloneNotSupportedException {
+	public Location getLocation() throws CloneNotSupportedException {
 		return location;
 	}
 
-	public synchronized String getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public synchronized void setDescription(String description) {
+	public void setDescription(String description) {
 		if (description != null && !description.isEmpty())
 			this.description = description;
 	}
 
-	public synchronized double getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public synchronized void setPrice(double price) {
+	public void setPrice(double price) {
 		if (price >= 0)
 			this.price = price;
 	}
 
-	public synchronized double getAuthorRating() {
+	public double getAuthorRating() {
 		return authorRating;
 	}
 
-	public synchronized void setAuthorRating(double authorRating) {
+	public void setAuthorRating(double authorRating) {
 		if (authorRating >= 0)
 			this.authorRating = authorRating;
 	}
 
-	public synchronized void setName(String name) {
+	public void setName(String name) {
 		if (name != null && !name.isEmpty())
 			this.name = name;
 	}
 
-	public synchronized void setLocation(Location location) {
+	public void setLocation(Location location) {
 		if (location != null)
 			this.location = location;
 	}
 
-	public synchronized void setContact(String contact) {
+	public void setContact(String contact) {
 		if (contact != null && !contact.isEmpty())
 			this.contact = contact;
 	}
 
-	public synchronized void setType(Type type) {
+	public void setType(Type type) {
 		this.type = type;
 	}
 
-	public synchronized Type getType() {
+	public Type getType() {
 		return type;
 	}
 
-	public synchronized String getPicture() {
+	public String getPicture() {
 		return picture;
 	}
 
-	public synchronized void setPicture(String picture) {
+	public void setPicture(String picture) {
 		if (picture != null && !picture.isEmpty())
 			this.picture = picture;
 	}

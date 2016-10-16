@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.tika.Tika;
 import org.springframework.beans.BeansException;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,16 +40,20 @@ public class DestinationController {
 	@ResponseBody
 	public String addDestination(@RequestParam("mainPicture") MultipartFile multipartFile, HttpServletRequest request,
 			HttpSession session) {
+		if (session.getAttribute("user") == null) {
+			return "{\"msg\" : \"No user in session\"}";
+		}
 		Tika tika = new Tika();
 		String realFileType;
 		try {
 			realFileType = tika.detect(multipartFile.getBytes());
-			for (String type: availablePictureTypes) {
-				if (type.equals(realFileType)) { // if the real picture type is one of the available
+			for (String type : availablePictureTypes) {
+				if (type.equals(realFileType)) { // if the real picture type is
+													// one of the available
 					String name = request.getParameter("name").replaceAll("%20", " ").trim();
 					String lattitude = request.getParameter("lattitude");
 					String longitude = request.getParameter("longitude");
-					String description = request.getParameter("description");
+					String description = StringEscapeUtils.escapeHtml(request.getParameter("description"));
 					String category = request.getParameter("category");
 					if (DestinationsManager.getInstance().getDestinationFromCache(name) != null) {
 						return "{\"msg\" : \"EXISTS\"}";
@@ -63,8 +68,8 @@ public class DestinationController {
 						Files.copy(multipartFile.getInputStream(), destinationMainPicFile.toPath(),
 								StandardCopyOption.REPLACE_EXISTING);
 						try {
-							if (DestinationsManager.getInstance().addDestination(((User) session.getAttribute("user")), name,
-									description, Double.parseDouble(lattitude), Double.parseDouble(longitude),
+							if (DestinationsManager.getInstance().addDestination(((User) session.getAttribute("user")),
+									name, description, Double.parseDouble(lattitude), Double.parseDouble(longitude),
 									destinationMainPicFile.getName(), category)) {
 								session.setAttribute("destination",
 										DestinationsManager.getInstance().getDestinationFromCache(name));
@@ -88,22 +93,22 @@ public class DestinationController {
 	private static boolean validateData(String name, String lattitude, String longitude, String description,
 			String category) {
 		if ((name != null && lattitude != null && longitude != null && description != null && category != null
-				&& !name.isEmpty() && !lattitude.isEmpty() && !longitude.isEmpty() && !description.isEmpty() && !category.isEmpty())) {
+				&& !name.isEmpty() && !lattitude.isEmpty() && !longitude.isEmpty() && !description.isEmpty()
+				&& !category.isEmpty())) {
 			try {
 				double destinationLattitude = Double.parseDouble(lattitude);
 				double destinationLongitude = Double.parseDouble(longitude);
-				if (destinationLattitude>=0 && destinationLattitude<=90 && destinationLongitude>=0 
-						&& destinationLongitude<=180) {
+				if (destinationLattitude >= 0 && destinationLattitude <= 90 && destinationLongitude >= 0
+						&& destinationLongitude <= 180) {
 					for (Destination.Category c : Destination.Category.values()) {
 						if (c.name().equals(category)) {
 							return true;
 						}
 					}
 				}
-				return false;	
-			}
-			catch (NumberFormatException e) {
-				e.printStackTrace();
+				return false;
+			} catch (NumberFormatException e) {
+
 				return false;
 			}
 		}
@@ -187,11 +192,12 @@ public class DestinationController {
 		String realFileType;
 		try {
 			realFileType = tika.detect(multipartFile.getBytes());
-			for (String type: availablePictureTypes) {
-				if (type.equals(realFileType)) { // if the real picture type is one of the available
-			
+			for (String type : availablePictureTypes) {
+				if (type.equals(realFileType)) { // if the real picture type is
+													// one of the available
+
 					String destName = request.getParameter("destinationName").replaceAll("%20", " ");
-			
+
 					Destination dest = DestinationsManager.getInstance().getDestinationFromCache(destName);
 					if (dest == null) {
 						return "{\"msg\" : \"NOT EXISTING\"}";
@@ -216,8 +222,7 @@ public class DestinationController {
 				}
 			}
 			return "{\"msg\" : \"Wrong picture format!\"}";
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return "{\"msg\" : \"FAILURE\"}";
 		}

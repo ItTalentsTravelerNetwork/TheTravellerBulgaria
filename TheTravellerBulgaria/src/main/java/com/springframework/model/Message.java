@@ -31,42 +31,42 @@ public class Message {
 		setDateAndTime(date);
 	}
 
-	public synchronized String getAuthor() {
+	public String getAuthor() {
 		return author;
 	}
 
-	public synchronized void setAuthor(String author) {
+	public void setAuthor(String author) {
 		if (author != null)
 			this.author = author;
 	}
 
-	public synchronized String getRecipiant() {
+	public String getRecipiant() {
 		return recipiant;
 	}
 
-	public synchronized void setRecipiant(String recipiant) {
+	public void setRecipiant(String recipiant) {
 		if (recipiant != null)
 			this.recipiant = recipiant;
 	}
 
-	public synchronized String getText() {
+	public String getText() {
 		return text;
 	}
 
-	public synchronized void setText(String text) {
+	public void setText(String text) {
 		if (text != null)
 			this.text = text;
 	}
 
-	public synchronized void setDateAndTime(LocalDateTime dateAndTime) {
+	public void setDateAndTime(LocalDateTime dateAndTime) {
 		this.dateAndTime = dateAndTime;
 	}
 
-	public synchronized LocalDateTime getDateAndTime() {
+	public LocalDateTime getDateAndTime() {
 		return dateAndTime;
 	}
 
-	public synchronized String getDateAndTimeToString() {
+	public String getDateAndTimeToString() {
 		String dateAndTimeToString = dateAndTime.format(DATE_AND_TIME_FORMAT);
 		return dateAndTimeToString;
 	}

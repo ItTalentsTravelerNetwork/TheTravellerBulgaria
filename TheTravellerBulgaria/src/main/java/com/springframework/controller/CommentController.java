@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.tika.Tika;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,7 +33,8 @@ public class CommentController {
 	@RequestMapping(value = "/addComment", method = RequestMethod.POST)
 	@ResponseBody
 	public String addComment(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		String text = request.getParameter("commentText");
+		String text = StringEscapeUtils.escapeHtml(request.getParameter("commentText"));
+
 		String destName = request.getParameter("destinationName").replaceAll("%20", " ");
 		if (session.getAttribute("user") != null) {
 			try {
@@ -225,8 +227,7 @@ public class CommentController {
 					OutputStream out = response.getOutputStream();
 					Files.copy(video.toPath(), out);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					System.out.println("Connection lost");
 				}
 			}
 		}

@@ -10,11 +10,10 @@ import java.util.Set;
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.model.PlaceToSleep;
 
-
 public class HotelDao {
-	
+
 	private static HotelDao instance;
-	
+
 	public static HotelDao getInstance() {
 		if (instance == null) {
 			instance = new HotelDao();
@@ -25,7 +24,7 @@ public class HotelDao {
 	private HotelDao() {
 	}
 
-	public Set<PlaceToSleep> getAllHotels() {
+	public synchronized Set<PlaceToSleep> getAllHotels() {
 		Set<PlaceToSleep> hotels = new HashSet<>();
 		Statement st = null;
 		ResultSet rs = null;

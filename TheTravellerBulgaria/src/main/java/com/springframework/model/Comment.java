@@ -2,13 +2,9 @@ package com.springframework.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.springframework.exceptions.InvalidAuthorException;
 import com.springframework.exceptions.InvalidDataException;
-
 
 public class Comment {
 
@@ -27,8 +23,9 @@ public class Comment {
 	private boolean hasVideo;
 	private String video;
 
-	public Comment(String authorEmail, String placeName, String text, int numberOfLikes, int numberOfDislikes, String dateAndTime,
-			String video) throws InvalidDataException { // without id
+	public Comment(String authorEmail, String placeName, String text, int numberOfLikes, int numberOfDislikes,
+			String dateAndTime, String video) throws InvalidDataException { // without
+																			// id
 		setAuthorEmail(authorEmail);
 		setPlaceName(placeName);
 		this.setText(text);
@@ -41,8 +38,9 @@ public class Comment {
 		setVideo(video); // can be null -> hasVideo=false
 	}
 
-	public Comment(long id, String authorEmail, String placeName, String text, int numberOfLikes, int numberOfDislikes, String dateAndTime,
-			String video) throws InvalidDataException { // with id
+	public Comment(long id, String authorEmail, String placeName, String text, int numberOfLikes, int numberOfDislikes,
+			String dateAndTime, String video) throws InvalidDataException { // with
+																			// id
 		setId(id);
 		setAuthorEmail(authorEmail);
 		setPlaceName(placeName);
@@ -56,53 +54,48 @@ public class Comment {
 		setVideo(video); // can be null -> hasVideo=false
 	}
 
-//	public Comment(String authorEmail, String placeName, String text, int numberOfLikes, ArrayList<String> userLikers,
-//			Date date) throws InvalidDataException, InvalidAuthorException {
-//
-//	}
-
-	public synchronized void setAuthorEmail(String authorEmail) {
+	public void setAuthorEmail(String authorEmail) {
 		if (authorEmail != null)
 			this.authorEmail = authorEmail;
 	}
 
-	public synchronized String getAuthorEmail() {
+	public String getAuthorEmail() {
 		return authorEmail;
 	}
 
-	public synchronized LocalDateTime getDateAndTime() {
+	public LocalDateTime getDateAndTime() {
 		return dateAndTime;
 	}
 
-	public synchronized String getDateAndTimeToString() {
+	public String getDateAndTimeToString() {
 		String dateAndTimeToString = dateAndTime.format(DATE_AND_TIME_FORMAT);
 		return dateAndTimeToString;
 	}
 
-	public synchronized void setDateAndTimeFromString(String dateAndTimeString) {
+	public void setDateAndTimeFromString(String dateAndTimeString) {
 		LocalDateTime dateAndTime = LocalDateTime.parse(dateAndTimeString, DATE_AND_TIME_FORMAT);
 		this.dateAndTime = dateAndTime;
 	}
 
-	public synchronized void setDateAndTime(LocalDateTime dateAndTime) {
+	public void setDateAndTime(LocalDateTime dateAndTime) {
 		this.dateAndTime = dateAndTime;
 	}
 
-	public synchronized void setUserLikers(CopyOnWriteArrayList<String> userLikers) {
+	public void setUserLikers(CopyOnWriteArrayList<String> userLikers) {
 		if (userLikers != null)
 			this.userLikers = userLikers;
 	}
-	
-	public synchronized void setUserDislikers(CopyOnWriteArrayList<String> userDislikers) {
+
+	public void setUserDislikers(CopyOnWriteArrayList<String> userDislikers) {
 		if (userDislikers != null)
 			this.userDislikers = userDislikers;
 	}
 
-	public synchronized String getText() {
+	public String getText() {
 		return text;
 	}
 
-	private synchronized void setText(String text) throws InvalidDataException {
+	private void setText(String text) throws InvalidDataException {
 		if (text != null && !text.isEmpty()) {
 			this.text = text;
 		} else {
@@ -110,15 +103,15 @@ public class Comment {
 		}
 	}
 
-	public synchronized int getNumberOfLikes() {
+	public int getNumberOfLikes() {
 		return numberOfLikes;
 	}
-	
-	public synchronized int getNumberOfDislikes() {
+
+	public int getNumberOfDislikes() {
 		return numberOfDislikes;
 	}
 
-	public synchronized int like(String userEmail) {
+	public int like(String userEmail) {
 		if (userEmail != null && !userEmail.isEmpty()) { // if correct data
 			if (!userLikers.contains(userEmail)) { // if not liked yet
 				if (userDislikers.contains(userEmail)) { // if already disliked
@@ -136,7 +129,7 @@ public class Comment {
 		return 3; // false data
 	}
 
-	public synchronized boolean unlike(String userEmail) {
+	public boolean unlike(String userEmail) {
 		if (userEmail != null && !userEmail.isEmpty()) {
 			if (userLikers.contains(userEmail)) {
 				userLikers.remove(userEmail);
@@ -147,7 +140,7 @@ public class Comment {
 		return false;
 	}
 
-	public synchronized int dislike(String userEmail) {
+	public int dislike(String userEmail) {
 		if (userEmail != null && !userEmail.isEmpty()) { // if correct data
 			if (!userDislikers.contains(userEmail)) { // if not disliked yet
 				if (userLikers.contains(userEmail)) { // if already liked
@@ -165,7 +158,7 @@ public class Comment {
 		return 3; // false data
 	}
 
-	public synchronized boolean undislike(String userEmail) {
+	public boolean undislike(String userEmail) {
 		if (userEmail != null && !userEmail.isEmpty()) {
 			if (userDislikers.contains(userEmail)) {
 				userDislikers.remove(userEmail);
@@ -176,50 +169,50 @@ public class Comment {
 		return false;
 	}
 
-	public synchronized CopyOnWriteArrayList<String> getUserLikers() {
+	public CopyOnWriteArrayList<String> getUserLikers() {
 		CopyOnWriteArrayList<String> copy = new CopyOnWriteArrayList<>();
 		copy.addAll(userLikers);
 		return copy;
 	}
-	
-	public synchronized CopyOnWriteArrayList<String> getUserDislikers() {
+
+	public CopyOnWriteArrayList<String> getUserDislikers() {
 		CopyOnWriteArrayList<String> copy = new CopyOnWriteArrayList<>();
 		copy.addAll(userDislikers);
 		return copy;
 	}
 
-	public synchronized String getPlaceName() {
+	public String getPlaceName() {
 		return placeName;
 	}
 
-	public synchronized void setPlaceName(String placeName) {
+	public void setPlaceName(String placeName) {
 		if (placeName != null && !placeName.isEmpty())
 			this.placeName = placeName;
 	}
 
-	public synchronized void setNumberOfLikes(int numberOfLikes) {
+	public void setNumberOfLikes(int numberOfLikes) {
 		if (numberOfLikes >= 0)
 			this.numberOfLikes = numberOfLikes;
 	}
-	
-	public synchronized void setNumberOfDislikes(int numberOfDislikes) {
+
+	public void setNumberOfDislikes(int numberOfDislikes) {
 		if (numberOfDislikes >= 0)
 			this.numberOfDislikes = numberOfDislikes;
 	}
 
-	public synchronized boolean hasVideo() {
+	public boolean hasVideo() {
 		return hasVideo;
 	}
 
-	public synchronized void setHasVideo(boolean hasVideo) {
+	public void setHasVideo(boolean hasVideo) {
 		this.hasVideo = hasVideo;
 	}
 
-	public synchronized String getVideo() {
+	public String getVideo() {
 		return video;
 	}
 
-	public synchronized void setVideo(String video) {
+	public void setVideo(String video) {
 		if (video != null && !video.isEmpty()) {
 			this.video = video;
 			setHasVideo(true);
@@ -228,11 +221,11 @@ public class Comment {
 		}
 	}
 
-	public synchronized long getId() {
+	public long getId() {
 		return id;
 	}
 
-	public synchronized void setId(long id) {
+	public void setId(long id) {
 		if (id >= 0)
 			this.id = id;
 	}

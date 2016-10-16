@@ -33,7 +33,7 @@ import com.springframework.model.User;
 @RestController
 @MultipartConfig(maxFileSize = 200000000)
 public class UserController {
-	private static final String NAME_PATTERN = "^[A-Za-z]+$";
+	private static final String NAME_PATTERN = "^[A-Za-zА-Яа-я]+$";
 	private static final int MINIMUM_PASSWORD_LENGTH = 6;
 	private static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9]+.[a-z.]+$";
 	private static final String[] availablePictureTypes = { "image/jpeg", "image/x-ms-bmp", "image/gif", "image/png" };
@@ -45,15 +45,16 @@ public class UserController {
 		String realFileType;
 		try {
 			realFileType = tika.detect(multipartFile.getBytes());
-			for (String type: availablePictureTypes) {
-				if (type.equals(realFileType)) { // if the real picture type is one of the available
+			for (String type : availablePictureTypes) {
+				if (type.equals(realFileType)) { // if the real picture type is
+													// one of the available
 					String inputPassword = request.getParameter("userPassword");
-			
+
 					String firstName = request.getParameter("userFirstName");
 					String lastName = request.getParameter("userLastName");
 					String email = request.getParameter("userEmailAddress");
 					String description = request.getParameter("userDescription");
-			
+
 					if (validateData(firstName, lastName, email, inputPassword)) {
 						if (UsersManager.getInstance().getUserFromCache(email) != null) {
 							return "{\"msg\" : \"USER EXISTS\"}";
@@ -62,14 +63,16 @@ public class UserController {
 						if (!dir.exists()) {
 							dir.mkdir();
 						}
-						File profilePicFile = new File(dir, email + "-profilePic." + multipartFile.getOriginalFilename());
-						Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						File profilePicFile = new File(dir,
+								email + "-profilePic." + multipartFile.getOriginalFilename());
+						Files.copy(multipartFile.getInputStream(), profilePicFile.toPath(),
+								StandardCopyOption.REPLACE_EXISTING);
 						UsersManager.getInstance().registerUser(email, inputPassword, firstName, lastName, description,
 								profilePicFile.getName());
 						return "{\"msg\" : \"User Registration Successful!\"}";
 					}
 					return "{\"msg\" : \"Wrong data!\"}";
-				}	
+				}
 			}
 			return "{\"msg\" : \"Wrong picture format!\"}";
 		} catch (IOException e) {

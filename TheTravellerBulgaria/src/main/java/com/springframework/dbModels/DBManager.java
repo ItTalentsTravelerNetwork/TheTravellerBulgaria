@@ -6,10 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.springframework.stereotype.Component;
-
 import com.springframework.exceptions.CannotConnectToDBException;
-
 
 public class DBManager {
 
@@ -22,9 +19,9 @@ public class DBManager {
 	private static final String URL = "jdbc:mysql://" + DB_IP + ":" + DB_PORT + "/" + DB_NAME;
 
 	private Connection connection;
-	
+
 	private static DBManager instance;
-	
+
 	public static DBManager getInstance() {
 		if (instance == null) {
 			instance = new DBManager();
@@ -52,7 +49,7 @@ public class DBManager {
 		}
 	}
 
-	Connection getConnection() throws CannotConnectToDBException {
+	synchronized Connection getConnection() throws CannotConnectToDBException {
 		if (connection == null) {
 			System.out.println("getting DBManager conncetion instance = not null!");
 			throw new CannotConnectToDBException();
@@ -94,7 +91,7 @@ public class DBManager {
 		return false;
 	}
 
-	private void makeDBAndTables() {
+	private synchronized void makeDBAndTables() {
 		Statement st = null;
 		try {
 			this.getConnection().setAutoCommit(false); // stop auto committing
@@ -114,8 +111,7 @@ public class DBManager {
 					+ "CONSTRAINT FK_author_email FOREIGN KEY (author_email)\r\n" + "REFERENCES users (email)\r\n"
 					+ "ON DELETE CASCADE,\r\n" + "category VARCHAR(50) NOT NULL,\r\n"
 					+ "number_of_likes INT NOT NULL,\r\n" + "number_of_dislikes INT NOT NULL,\r\n"
-					+ "date_and_time VARCHAR(20) NOT NULL\r\n"
-					+ ") ENGINE=InnoDB;\r\n" + "";
+					+ "date_and_time VARCHAR(20) NOT NULL\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createVisitedDestinationsTable = "CREATE TABLE visited_destinations (\r\n"
 					+ "destination_name VARCHAR(64) NOT NULL,\r\n"
@@ -123,8 +119,8 @@ public class DBManager {
 					+ "REFERENCES destinations (name)\r\n" + "ON DELETE CASCADE,\r\n"
 					+ "user_email VARCHAR(64) NOT NULL,\r\n" + "CONSTRAINT FK_user_email FOREIGN KEY (user_email)\r\n"
 					+ "REFERENCES users (email)\r\n" + "ON DELETE CASCADE,\r\n"
-					+ "date_and_time VARCHAR(20) NOT NULL, \r\n"
-					+ "PRIMARY KEY (destination_name, user_email)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
+					+ "date_and_time VARCHAR(20) NOT NULL, \r\n" + "PRIMARY KEY (destination_name, user_email)\r\n"
+					+ ") ENGINE=InnoDB;\r\n" + "";
 
 			String createCommentsTable = "CREATE TABLE comments (\r\n"
 					+ "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\r\n" + "author_email VARCHAR(64) NOT NULL,\r\n"
@@ -132,9 +128,8 @@ public class DBManager {
 					+ "ON DELETE CASCADE,\r\n" + "place_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_place_name FOREIGN KEY (place_name)\r\n" + "REFERENCES destinations (name)\r\n"
 					+ "ON DELETE CASCADE,\r\n" + "text VARCHAR(500) NOT NULL,\r\n" + "number_of_likes INT NOT NULL,\r\n"
-					+ "number_of_dislikes INT NOT NULL,\r\n"
-					+ "date_and_time VARCHAR(20) NOT NULL,\r\n" + "video VARCHAR(100)\r\n" + ") ENGINE=InnoDB;\r\n"
-					+ "";
+					+ "number_of_dislikes INT NOT NULL,\r\n" + "date_and_time VARCHAR(20) NOT NULL,\r\n"
+					+ "video VARCHAR(100)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createCommentLikesTable = "CREATE TABLE comment_likes (\r\n"
 					+ "commenter_email VARCHAR(64) NOT NULL,\r\n" + "comment_id INT NOT NULL,\r\n"
@@ -263,7 +258,7 @@ public class DBManager {
 		}
 	}
 
-	private void setConnection(Connection con) {
+	private synchronized void setConnection(Connection con) {
 		this.connection = con;
 	}
 

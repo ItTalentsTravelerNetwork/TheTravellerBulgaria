@@ -6,27 +6,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.springframework.exceptions.CannotConnectToDBException;
 import com.springframework.exceptions.InvalidDataException;
-import com.springframework.functionality.CommentsManager;
-import com.springframework.model.Activity;
 import com.springframework.model.Comment;
-import com.springframework.model.PlaceToEat;
-import com.springframework.model.PlaceToSleep;
-import com.springframework.model.Sight;
-import com.springframework.model.Destination.Category;
-
 
 public class CommentDao {
-	
+
 	private static CommentDao instance;
 
 	private CommentDao() {
 	}
-	
+
 	public static CommentDao getInstance() {
 		if (instance == null) {
 			instance = new CommentDao();
@@ -48,8 +40,8 @@ public class CommentDao {
 					try {
 						Comment comment = new Comment(result.getLong("id"), result.getString("author_email"),
 								result.getString("place_name"), result.getString("text"),
-								result.getInt("number_of_likes"), result.getInt("number_of_dislikes"), result.getString("date_and_time"),
-								result.getString("video"));
+								result.getInt("number_of_likes"), result.getInt("number_of_dislikes"),
+								result.getString("date_and_time"), result.getString("video"));
 						comments.add(comment);
 					} catch (InvalidDataException e) {
 						// TODO Auto-generated catch block
@@ -89,8 +81,8 @@ public class CommentDao {
 		PreparedStatement statement = null;
 		ResultSet result = null;
 		try {
-			statement = DBManager.getInstance().getConnection()
-					.prepareStatement(insertCommentIntoDB, Statement.RETURN_GENERATED_KEYS);
+			statement = DBManager.getInstance().getConnection().prepareStatement(insertCommentIntoDB,
+					Statement.RETURN_GENERATED_KEYS);
 			statement.setString(1, comment.getAuthorEmail());
 			statement.setString(2, comment.getPlaceName());
 			statement.setString(3, comment.getText());
@@ -147,15 +139,12 @@ public class CommentDao {
 			}
 		}
 	}
-	
-	
-	
+
 	public synchronized void addVideo(long commentId, String video) {
 		PreparedStatement ps = null;
 		String updateCommentNumberOfLikesStatement = "UPDATE comments SET video=? WHERE id=?;";
 		try {
-			ps = DBManager.getInstance().getConnection()
-					.prepareStatement(updateCommentNumberOfLikesStatement);
+			ps = DBManager.getInstance().getConnection().prepareStatement(updateCommentNumberOfLikesStatement);
 			ps.setString(1, video);
 			ps.setLong(2, commentId);
 			ps.executeUpdate();
@@ -173,17 +162,13 @@ public class CommentDao {
 			}
 		}
 	}
-	
-	
-	
-	
+
 	public synchronized void updateNumberOfLikesAndDislikes(long commentId, int numberOfLikes, int numberOfDislikes) {
 		PreparedStatement ps = null;
 		PreparedStatement ps2 = null;
 		String updateCommentNumberOfLikesStatement = "UPDATE comments SET number_of_likes=?, number_of_dislikes=? WHERE id=?;";
 		try {
-			ps = DBManager.getInstance().getConnection()
-					.prepareStatement(updateCommentNumberOfLikesStatement);
+			ps = DBManager.getInstance().getConnection().prepareStatement(updateCommentNumberOfLikesStatement);
 			ps.setInt(1, numberOfLikes);
 			ps.setInt(2, numberOfDislikes);
 			ps.setLong(3, commentId);
@@ -210,8 +195,6 @@ public class CommentDao {
 			}
 		}
 	}
-	
-	
 
 	public synchronized void removeLike(long commentId, String userEmail) {
 		try {
@@ -225,7 +208,7 @@ public class CommentDao {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public synchronized void addDislike(long commentId, String userEmail) {
 		try {
 			PreparedStatement ps = DBManager.getInstance().getConnection()
@@ -252,7 +235,7 @@ public class CommentDao {
 		}
 	}
 
-	public void deleteComment(Comment comment) {
+	public synchronized void deleteComment(Comment comment) {
 		try {
 			PreparedStatement ps = DBManager.getInstance().getConnection()
 					.prepareStatement("DELETE FROM comments WHERE comment_id=?");
@@ -301,7 +284,7 @@ public class CommentDao {
 		}
 		return allComentLikers;
 	}
-	
+
 	public synchronized ConcurrentHashMap<Long, CopyOnWriteArrayList<String>> getAllCommentUserDislikersFromDB() {
 		ConcurrentHashMap<Long, CopyOnWriteArrayList<String>> allComentLikers = new ConcurrentHashMap<>(); // comment->user
 																											// likers

@@ -382,7 +382,7 @@ public class UserDao {
 		System.out.println("Vendor error: " + e.getErrorCode());
 	}
 
-	public CopyOnWriteArrayList<String> getUserVisitors() {
+	public synchronized CopyOnWriteArrayList<String> getUserVisitors() {
 		CopyOnWriteArrayList<String> userVisitors = new CopyOnWriteArrayList<>();
 
 		String selectAllVisitedPlacesFromDB = "SELECT destination_name, user_email, date_and_time FROM visited_destinations ORDER BY date_and_time desc;";

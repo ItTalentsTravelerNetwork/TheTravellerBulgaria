@@ -22,11 +22,11 @@ public class Sight {
 		setAuthorRating(authorRating);
 	}
 
-	public synchronized String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public synchronized void setName(String name) throws InvalidDataException {
+	public void setName(String name) throws InvalidDataException {
 		if (name != null && !name.isEmpty()) {
 			this.name = name;
 		} else {
@@ -34,11 +34,11 @@ public class Sight {
 		}
 	}
 
-	public synchronized Location getLocation() throws CloneNotSupportedException {
+	public Location getLocation() throws CloneNotSupportedException {
 		return location;
 	}
 
-	public synchronized void setLocation(Location location) throws InvalidLocationException {
+	public void setLocation(Location location) throws InvalidLocationException {
 		if (location != null) {
 			this.location = location;
 		} else {
@@ -46,30 +46,30 @@ public class Sight {
 		}
 	}
 
-	public synchronized String getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public synchronized void setDescription(String description) {
+	public void setDescription(String description) {
 		if (description != null && !description.isEmpty()) {
 			this.description = description;
 		}
 	}
 
-	public synchronized String getPicture() {
+	public String getPicture() {
 		return picture;
 	}
 
-	public synchronized void setPicture(String picture) {
+	public void setPicture(String picture) {
 		if (picture != null && !picture.isEmpty())
 			this.picture = picture;
 	}
 
-	public synchronized double getAuthorRating() {
+	public double getAuthorRating() {
 		return authorRating;
 	}
 
-	public synchronized void setAuthorRating(double authorRating) {
+	public void setAuthorRating(double authorRating) {
 		if (authorRating >= 0)
 			this.authorRating = authorRating;
 	}

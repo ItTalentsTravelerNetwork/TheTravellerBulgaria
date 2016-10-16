@@ -26,31 +26,31 @@ public class Activity {
 		this.destinationName = destinationName;
 	}
 
-	public synchronized String getPicture() {
+	public String getPicture() {
 		return this.picture;
 	}
 
-	public synchronized void setPicture(String picture) {
+	public void setPicture(String picture) {
 		if (picture != null && !picture.isEmpty()) {
 			this.picture = picture;
 		}
 	}
 
-	public synchronized double getAuthorRating() {
+	public double getAuthorRating() {
 		return authorRating;
 	}
 
-	public synchronized void setAuthorRating(double authorRating) {
+	public void setAuthorRating(double authorRating) {
 		if (authorRating >= 0) {
 			this.authorRating = authorRating;
 		}
 	}
 
-	public synchronized String getName() {
+	public String getName() {
 		return name;
 	}
 
-	private synchronized void setName(String name) throws InvalidDataException {
+	private void setName(String name) throws InvalidDataException {
 		if (name != null && !name.isEmpty()) {
 			this.name = name;
 		} else {
@@ -58,21 +58,21 @@ public class Activity {
 		}
 	}
 
-	public synchronized double getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public synchronized void setPrice(double price) {
+	public void setPrice(double price) {
 		if (price >= 0) {
 			this.price = price;
 		}
 	}
 
-	public synchronized Location getLocation() throws CloneNotSupportedException {
+	public Location getLocation() throws CloneNotSupportedException {
 		return location;
 	}
 
-	public synchronized void setLocation(Location location) throws InvalidLocationException {
+	public void setLocation(Location location) throws InvalidLocationException {
 		if (location != null) {
 			this.location = location;
 		} else {
@@ -80,11 +80,11 @@ public class Activity {
 		}
 	}
 
-	public synchronized String getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public synchronized void setDescription(String description) {
+	public void setDescription(String description) {
 		if (description != null && !description.isEmpty()) {
 			this.description = description;
 		}

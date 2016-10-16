@@ -59,7 +59,7 @@ public class User {
 		setTimesLiked(timesLiked);
 	}
 
-	public synchronized void addPlace(String destinationName) {
+	public void addPlace(String destinationName) {
 		if (destinationName != null && !destinationName.isEmpty() && !addedPlaces.contains(destinationName)) {
 			this.visitedPlaces.add(destinationName);
 			this.addedPlaces.add(destinationName);
@@ -67,153 +67,153 @@ public class User {
 
 	}
 
-	public synchronized void removePlace(String destinationName) {
+	public void removePlace(String destinationName) {
 		if (destinationName != null && !destinationName.isEmpty() && addedPlaces.contains(destinationName))
 			this.addedPlaces.remove(destinationName);
 	}
 
-	public synchronized void addVisitedPlace(String destinationName) {
+	public void addVisitedPlace(String destinationName) {
 		if (destinationName != null && !destinationName.isEmpty() && !visitedPlaces.contains(destinationName))
 			this.visitedPlaces.add(destinationName);
 	}
 
-	public synchronized void removeVisitedPlace(String destinationName) {
+	public void removeVisitedPlace(String destinationName) {
 		if (destinationName != null && !destinationName.isEmpty() && visitedPlaces.contains(destinationName))
 			this.visitedPlaces.remove(destinationName);
 	}
 
-	public synchronized void follow(String followedUserEmail) {
+	public void follow(String followedUserEmail) {
 		if (followedUserEmail != null && !followedUserEmail.isEmpty() && !followedUsers.contains(followedUserEmail))
 			followedUsers.add(followedUserEmail);
 	}
 
-	public synchronized void unFollow(String followedUserEmail) {
+	public void unFollow(String followedUserEmail) {
 		if (followedUserEmail != null && !followedUserEmail.isEmpty() && followedUsers.contains(followedUserEmail))
 			followedUsers.remove(followedUserEmail);
 	}
 
-	public synchronized void addChat(Chat chat) {
+	public void addChat(Chat chat) {
 		if (chat != null && !chatHistory.containsKey(chat.getUser2()))
 			chatHistory.put(chat.getUser2(), chat);
 	}
 
-	public synchronized void removeChat(Chat chat) {
+	public void removeChat(Chat chat) {
 		if (chat != null && chatHistory.containsKey(chat.getUser2()))
 			chatHistory.remove(chat);
 	}
 
-	public synchronized String getProfilePicture() {
+	public String getProfilePicture() {
 		return profilePicture;
 	}
 
-	public synchronized void setProfilePicture(String profilePicture) {
+	public void setProfilePicture(String profilePicture) {
 		if (profilePicture != null && !profilePicture.isEmpty())
 			this.profilePicture = profilePicture;
 	}
 
-	public synchronized CopyOnWriteArrayList<String> getVisitedPlaces() {
+	public CopyOnWriteArrayList<String> getVisitedPlaces() {
 		CopyOnWriteArrayList<String> copy = new CopyOnWriteArrayList<>();
 		copy.addAll(visitedPlaces);
 		return copy;
 	}
 
-	public synchronized void setVisitedPlaces(CopyOnWriteArrayList<String> visitedPlaces) {
+	public void setVisitedPlaces(CopyOnWriteArrayList<String> visitedPlaces) {
 		if (visitedPlaces != null)
 			this.visitedPlaces = visitedPlaces;
 	}
 
-	public synchronized CopyOnWriteArrayList<String> getFollowedUsers() {
+	public CopyOnWriteArrayList<String> getFollowedUsers() {
 		CopyOnWriteArrayList<String> copy = new CopyOnWriteArrayList<String>();
 		copy.addAll(followedUsers);
 		return copy;
 	}
 
-	public synchronized void setFollowedUsers(CopyOnWriteArrayList<String> followedUsers) {
+	public void setFollowedUsers(CopyOnWriteArrayList<String> followedUsers) {
 		if (followedUsers != null)
 			this.followedUsers = followedUsers;
 	}
 
-	public synchronized ConcurrentHashMap<String, Chat> getChatHistory() {
+	public ConcurrentHashMap<String, Chat> getChatHistory() {
 		ConcurrentHashMap<String, Chat> copy = new ConcurrentHashMap<>();
 		copy.putAll(chatHistory);
 		return copy;
 	}
 
-	public synchronized void setChatHistory(ConcurrentHashMap<String, Chat> chatHistory) {
+	public void setChatHistory(ConcurrentHashMap<String, Chat> chatHistory) {
 		if (chatHistory != null)
 			this.chatHistory = chatHistory;
 	}
 
-	public synchronized int getTimesLiked() {
+	public int getTimesLiked() {
 		return timesLiked;
 	}
 
-	public synchronized void setTimesLiked(int timesLiked) {
+	public void setTimesLiked(int timesLiked) {
 		if (timesLiked >= 0)
 			this.timesLiked = timesLiked;
 	}
 
-	public synchronized double getRating() {
+	public double getRating() {
 		return rating;
 	}
 
-	public synchronized void setRating(double rating) {
+	public void setRating(double rating) {
 		if (rating >= 0)
 			this.rating = rating;
 	}
 
-	public synchronized void setAddedPlaces(CopyOnWriteArrayList<String> addedPlaces) {
+	public void setAddedPlaces(CopyOnWriteArrayList<String> addedPlaces) {
 		if (addedPlaces != null)
 			this.addedPlaces = addedPlaces;
 	}
 
-	public synchronized String getFirstName() {
+	public String getFirstName() {
 		return firstName;
 	}
 
-	public synchronized String getLastName() {
+	public String getLastName() {
 		return lastName;
 	}
 
-	public synchronized String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
-	public synchronized String getEmail() {
+	public String getEmail() {
 		return email;
 	}
 
-	public synchronized String getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public synchronized CopyOnWriteArrayList<String> getAddedPlaces() {
+	public CopyOnWriteArrayList<String> getAddedPlaces() {
 		CopyOnWriteArrayList<String> copy = new CopyOnWriteArrayList<>();
 		copy.addAll(addedPlaces);
 		return addedPlaces;
 	}
 
-	public synchronized void setFirstName(String firstName) {
+	public void setFirstName(String firstName) {
 		if (firstName != null && !firstName.isEmpty())
 			this.firstName = firstName;
 	}
 
-	public synchronized void setLastName(String lastName) {
+	public void setLastName(String lastName) {
 		if (lastName != null && !lastName.isEmpty())
 			this.lastName = lastName;
 	}
 
-	public synchronized void setPassword(String password) {
+	public void setPassword(String password) {
 		if (password != null && !password.isEmpty())
 			this.password = password;
 	}
 
-	public synchronized void setEmail(String email) {
+	public void setEmail(String email) {
 		if (email != null && !email.isEmpty())
 			this.email = email;
 	}
 
-	public synchronized void setDescription(String description) {
+	public void setDescription(String description) {
 		if (description != null && !description.isEmpty())
 			this.description = description;
 	}

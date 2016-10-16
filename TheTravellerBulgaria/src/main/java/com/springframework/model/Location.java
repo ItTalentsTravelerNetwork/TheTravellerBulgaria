@@ -9,21 +9,21 @@ public class Location {
 		this.setLongitude(longitude);
 	}
 
-	public synchronized double getLattitude() {
+	public double getLattitude() {
 		return lattitude;
 	}
 
-	private synchronized void setLattitude(double lattitude) {
+	private void setLattitude(double lattitude) {
 		if (lattitude >= 0 && lattitude <= 90) {
 			this.lattitude = lattitude;
 		}
 	}
 
-	public synchronized double getLongitude() {
+	public double getLongitude() {
 		return longitude;
 	}
 
-	private synchronized void setLongitude(double longitude) {
+	private void setLongitude(double longitude) {
 		if (longitude >= 0 && longitude <= 180) {
 			this.longitude = longitude;
 		}
