@@ -126,8 +126,7 @@ public class DestinationController {
 			OutputStream out = response.getOutputStream();
 			Files.copy(mainPicFile.toPath(), out);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("IO exception on File copy happened");
 		}
 
 	}
@@ -143,8 +142,7 @@ public class DestinationController {
 			OutputStream out = response.getOutputStream();
 			Files.copy(mainPicFile.toPath(), out);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("IO exception on File copy happened");
 		}
 
 	}

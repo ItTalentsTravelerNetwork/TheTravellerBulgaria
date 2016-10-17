@@ -14,13 +14,9 @@ public class InitializeController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public void initialize(HttpServletResponse response) {
-		ControllerUtils.setHeaders(response);
+
 		ProjectManager.getInstance();
 		return;
 	}
 
-	// @RequestMapping(value = "/index", method = RequestMethod.GET)
-	// public void getHomePage() {
-	//
-	// }
 }

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.tika.Tika;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,9 +54,9 @@ public class UserController {
 					String firstName = request.getParameter("userFirstName");
 					String lastName = request.getParameter("userLastName");
 					String email = request.getParameter("userEmailAddress");
-					String description = request.getParameter("userDescription");
+					String description = StringEscapeUtils.escapeHtml(request.getParameter("userDescription"));
 
-					if (validateData(firstName, lastName, email, inputPassword)) {
+					if (validateData(firstName, lastName, email, inputPassword, description)) {
 						if (UsersManager.getInstance().getUserFromCache(email) != null) {
 							return "{\"msg\" : \"USER EXISTS\"}";
 						}
@@ -103,7 +104,7 @@ public class UserController {
 	@RequestMapping(value = "/GetUserInfo", method = RequestMethod.GET)
 	@ResponseBody
 	public User checkForUser(HttpServletRequest request, HttpServletResponse response) {
-		ControllerUtils.setHeaders(response);
+
 		User user = (User) request.getSession().getAttribute("user");
 		return user;
 	}
@@ -111,7 +112,7 @@ public class UserController {
 	@RequestMapping(value = "/GetUser", method = RequestMethod.GET)
 	@ResponseBody
 	public User getUser(HttpServletRequest request, HttpServletResponse response) {
-		ControllerUtils.setHeaders(response);
+
 		User user = UsersManager.getInstance().getUserFromCache(request.getParameter("user"));
 		return user;
 	}
@@ -127,8 +128,7 @@ public class UserController {
 			OutputStream out = response.getOutputStream();
 			Files.copy(profilePicFile.toPath(), out);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("IO exception on File copy happened");
 		}
 
 	}
@@ -266,10 +266,11 @@ public class UserController {
 		return null;
 	}
 
-	private static boolean validateData(String firstName, String lastName, String email, String password) {
+	private static boolean validateData(String firstName, String lastName, String email, String password,
+			String description) {
 		if ((firstName != null && lastName != null && email != null && password != null)) {
-			return firstName.matches(NAME_PATTERN) && lastName.matches(NAME_PATTERN) && email.matches(EMAIL_PATTERN)
-					&& password.length() >= MINIMUM_PASSWORD_LENGTH;
+			return description != null && firstName.matches(NAME_PATTERN) && lastName.matches(NAME_PATTERN)
+					&& email.matches(EMAIL_PATTERN) && password.length() >= MINIMUM_PASSWORD_LENGTH;
 		}
 		return false;
 	}

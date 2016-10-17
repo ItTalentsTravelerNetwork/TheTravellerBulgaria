@@ -497,14 +497,8 @@
 							
 							
 							if (commentVideoName) {
-								//var videoSrc="getVideo?commentId="+comment.id+"&video="+(commentVideoName).split(" ").join("%20")+"";
-								//html.push("<form id=\"commentVideoContainer-"+comment.id+"\" action=\"javascript:loadVideo("+comment.id+", "+commentVideoName+")\">");
 								html.push('<video width="500" controls preload> <source  src="getVideo?commentId='+comment.id+'&video='+commentVideoName+'" type="video/mp4"></video>');
-								//html.push("<input id=\"video-commentId\" type=\"hidden\" name=\"video-commentId\" value=\""+comment.id+"\">");  
-								//html.push("<input id=\"video-name\" type=\"hidden\" name=\"video-name\" value=\""+commentVideoName+"\">");  
-								//html.push("<input type=\"image\" src=\"assets/images/videoIcon.png\" height=80px  alt=\"Submit\">");
-	
-								//html.push("</form>");
+								
 							}
 						
 						}
@@ -610,21 +604,7 @@ function likeComment(commentId){
 	
 	
 	
-function loadVideo(commentId, commentVideoName){
-	
-var form = $("#commentVideoContainer-"+commentId+"");
-	
-	//$.post("getVideo", form.serialize())
-	//.then(
-	//	function(result) {
-	//		document.getElementById("commentVideoContainer-"+commentId+"").innerHTML="<video width=\"500\" controls preload> <source  src=\""+result+"\" type=\"video/mp4\"></video>";
-	//	}
-	//);
-	
-	
-	
-	document.getElementById("commentVideoContainer-"+commentId+"").innerHTML="<video width=\"500\" controls preload> <source  src=\"getVideo?commentId="+commentId+"&video="+commentVideoName+"\" type=\"video/mp4\"></video>";
-}
+
 	
 	
 

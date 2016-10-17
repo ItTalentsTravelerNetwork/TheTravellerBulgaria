@@ -237,7 +237,8 @@ $(function showUnfollow(){
 	$.get(
 		"isFollowed?user="+userEmail,
 		function(data){
-			if(data=="followed"){
+			var msg = JSON.parse(data).msg;
+			if(msg=="followed"){
 				document.getElementById("follow").innerHTML = "<a class=\"btn btn-action\" onclick=\"unFollow()\">Stop Following</a>";
 			}else{
 				document.getElementById("follow").innerHTML = "<a class=\"btn btn-action\" onclick=\"follow()\">Follow</a>";
