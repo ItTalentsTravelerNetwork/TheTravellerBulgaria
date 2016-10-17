@@ -77,7 +77,6 @@ public class UserController {
 			}
 			return "{\"msg\" : \"Wrong picture format!\"}";
 		} catch (IOException e) {
-			e.printStackTrace();
 			return "{\"msg\" : \"Registration failed!\"}";
 		}
 	}

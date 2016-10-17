@@ -224,9 +224,11 @@ document.getElementById('submitBut').addEventListener("click", function(event){
 	var confirmPass = $('#confirmPass').val()
 	if(pass!=confirmPass){
 		$('#confirmPass').get(0).setCustomValidity('Passwords Don\'t match!');
-		$('#confirmPass').get(0).reportValidity();
 		
+	}else{
+		$('#confirmPass').get(0).setCustomValidity('');
 	}
+	
 }, false);
 
 function add(){

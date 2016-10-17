@@ -19,6 +19,7 @@ function checkForUser() {
 }
 
 function checkIfLoggedIn() {
+	$.ajaxSetup({cache:false})
 	$.get(
 			"GetUserInfo",
 			function(data){
