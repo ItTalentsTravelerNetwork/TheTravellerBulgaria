@@ -76,12 +76,6 @@
 		    <version>1.13</version>
 		</dependency>
 
-
-		
-
-
-
-		
 		<dependency>
 		    <groupId>org.apache.tika</groupId>
 		    <artifactId>tika-serialization</artifactId>

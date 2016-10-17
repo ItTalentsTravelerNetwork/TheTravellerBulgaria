@@ -34,7 +34,9 @@ public class CommentController {
 	@ResponseBody
 	public String addComment(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		String text = StringEscapeUtils.escapeHtml(request.getParameter("commentText"));
-
+		if (text.length() >= 2000) {
+			return "{\"msg\" : \"Comment adding failed!\"}";
+		}
 		String destName = request.getParameter("destinationName").replaceAll("%20", " ");
 		if (session.getAttribute("user") != null) {
 			try {

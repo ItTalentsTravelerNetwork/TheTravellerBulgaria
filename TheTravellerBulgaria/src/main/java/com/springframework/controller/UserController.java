@@ -60,6 +60,9 @@ public class UserController {
 						if (UsersManager.getInstance().getUserFromCache(email) != null) {
 							return "{\"msg\" : \"USER EXISTS\"}";
 						}
+						if (description.length() >= 2000) {
+							return "{\"msg\" : \"Wrong data!\"}";
+						}
 						File dir = new File("userPics");
 						if (!dir.exists()) {
 							dir.mkdir();
@@ -268,8 +271,9 @@ public class UserController {
 	private static boolean validateData(String firstName, String lastName, String email, String password,
 			String description) {
 		if ((firstName != null && lastName != null && email != null && password != null)) {
-			return description != null && firstName.matches(NAME_PATTERN) && lastName.matches(NAME_PATTERN)
-					&& email.matches(EMAIL_PATTERN) && password.length() >= MINIMUM_PASSWORD_LENGTH;
+			return description != null && description.length() < 2000 && firstName.matches(NAME_PATTERN)
+					&& lastName.matches(NAME_PATTERN) && email.matches(EMAIL_PATTERN)
+					&& password.length() >= MINIMUM_PASSWORD_LENGTH;
 		}
 		return false;
 	}

@@ -100,12 +100,12 @@ public class DBManager {
 
 			String createUsersTable = "CREATE TABLE users (\r\n" + "email VARCHAR(64) NOT NULL PRIMARY KEY,\r\n"
 					+ "password VARCHAR(64) NOT NULL,\r\n" + "first_name VARCHAR(64) NOT NULL,\r\n"
-					+ "last_name VARCHAR(64) NOT NULL,\r\n" + "description VARCHAR(500) NOT NULL,\r\n"
+					+ "last_name VARCHAR(64) NOT NULL,\r\n" + "description VARCHAR(2000) NOT NULL,\r\n"
 					+ "profile_picture VARCHAR(100) NOT NULL,\r\n" + "rating DOUBLE NOT NULL,\r\n"
 					+ "times_liked INT NOT NULL\r\n" + ") ENGINE=InnoDB;\r\n" + "";
 
 			String createDestinationsTable = "CREATE TABLE destinations (\r\n"
-					+ "name VARCHAR(64) NOT NULL PRIMARY KEY,\r\n" + "description VARCHAR(500) NOT NULL,\r\n"
+					+ "name VARCHAR(64) NOT NULL PRIMARY KEY,\r\n" + "description VARCHAR(2000) NOT NULL,\r\n"
 					+ "lattitude DOUBLE NOT NULL,\r\n" + "longitude DOUBLE NOT NULL,\r\n"
 					+ "main_picture VARCHAR(100) NOT NULL, \r\n" + "author_email VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_author_email FOREIGN KEY (author_email)\r\n" + "REFERENCES users (email)\r\n"
@@ -127,9 +127,10 @@ public class DBManager {
 					+ "CONSTRAINT FK_userauthor_email FOREIGN KEY (author_email)\r\n" + "REFERENCES users (email)\r\n"
 					+ "ON DELETE CASCADE,\r\n" + "place_name VARCHAR(64) NOT NULL,\r\n"
 					+ "CONSTRAINT FK_place_name FOREIGN KEY (place_name)\r\n" + "REFERENCES destinations (name)\r\n"
-					+ "ON DELETE CASCADE,\r\n" + "text VARCHAR(500) NOT NULL,\r\n" + "number_of_likes INT NOT NULL,\r\n"
-					+ "number_of_dislikes INT NOT NULL,\r\n" + "date_and_time VARCHAR(20) NOT NULL,\r\n"
-					+ "video VARCHAR(100)\r\n" + ") ENGINE=InnoDB;\r\n" + "";
+					+ "ON DELETE CASCADE,\r\n" + "text VARCHAR(2000) NOT NULL,\r\n"
+					+ "number_of_likes INT NOT NULL,\r\n" + "number_of_dislikes INT NOT NULL,\r\n"
+					+ "date_and_time VARCHAR(20) NOT NULL,\r\n" + "video VARCHAR(100)\r\n" + ") ENGINE=InnoDB;\r\n"
+					+ "";
 
 			String createCommentLikesTable = "CREATE TABLE comment_likes (\r\n"
 					+ "commenter_email VARCHAR(64) NOT NULL,\r\n" + "comment_id INT NOT NULL,\r\n"
